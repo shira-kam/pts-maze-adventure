@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elephant Maze Adventure</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #87CEEB, #98FB98);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 {
+            color: #2E8B57;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        
+        #gameContainer {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        #gameCanvas {
+            border: 3px solid #2E8B57;
+            border-radius: 10px;
+            display: block;
+        }
+        
+        #gameInfo {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        #score {
+            color: #FF6347;
+        }
+        
+        #level {
+            color: #4169E1;
+        }
+        
+        #puzzleModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+        }
+        
+        #puzzleContent {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            min-width: 300px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        .puzzle-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            margin: 10px;
+            border-radius: 25px;
+            font-size: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            min-width: 80px;
+            min-height: 60px;
+        }
+        
+        .puzzle-button:hover {
+            background: #45a049;
+        }
+        
+        #instructions {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #2E8B57;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐘 Elephant Maze Adventure 🌊</h1>
+    
+    <div id="gameContainer">
+        <div id="gameInfo">
+            <div id="score">Points: 10</div>
+            <div id="level">Level: 1</div>
+        </div>
+        
+        <div id="instructions">
+            Use arrow keys to move the elephant to the watering hole!<br>
+            Solve puzzles to open doors and earn points!
+        </div>
+        
+        <canvas id="gameCanvas" width="860" height="860"></canvas>
+    </div>
+    
+    <div id="puzzleModal">
+        <div id="puzzleContent">
+            <h2 id="puzzleTitle">Puzzle Time!</h2>
+            <p id="puzzleQuestion"></p>
+            <div id="puzzleOptions"></div>
+            <div id="puzzleResult"></div>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Load elephant sprite sheet (SVG)
+        const elephantSprites = new Image();
+        elephantSprites.src = 'Sprites.svg';
+        
+        // Improve canvas rendering quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        const game = {
+            score: 10,
+            level: 1,
+            player: {
+                x: 0,
+                y: 0,
+                size: 20,
+                speed: 40,
+                direction: 'right', // current facing direction
+                animFrame: 0, // current animation frame (0 or 1)
+                animTimer: 0, // timer for animation
+                isMoving: false // whether player is currently moving
+            },
+            maze: [],
+            doors: [
+                // Math doors (m)
+                { x: 520, y: 0, type: 'math', open: false, color: '#FF6B6B' },
+                { x: 760, y: 120, type: 'math', open: false, color: '#FF6B6B' },
+                { x: 0, y: 200, type: 'math', open: false, color: '#FF6B6B' },
+                { x: 240, y: 240, type: 'math', open: false, color: '#FF6B6B' },
+                { x: 400, y: 280, type: 'math', open: false, color: '#FF6B6B' },
+                { x: 120, y: 320, type: 'math', open: false, color: '#FF6B6B' },
+                { x: 440, y: 400, type: 'math', open: false, color: '#FF6B6B' },
+                { x: 520, y: 560, type: 'math', open: false, color: '#FF6B6B' },
+                { x: 0, y: 720, type: 'math', open: false, color: '#FF6B6B' },
+                { x: 600, y: 760, type: 'math', open: false, color: '#FF6B6B' },
+                
+                // Reading doors (r)
+                { x: 40, y: 80, type: 'reading', open: false, color: '#4ECDC4' },
+                { x: 320, y: 160, type: 'reading', open: false, color: '#4ECDC4' },
+                { x: 760, y: 360, type: 'reading', open: false, color: '#4ECDC4' },
+                { x: 320, y: 400, type: 'reading', open: false, color: '#4ECDC4' },
+                { x: 440, y: 520, type: 'reading', open: false, color: '#4ECDC4' },
+                { x: 600, y: 520, type: 'math', open: false, color: '#FF6B6B' },
+                { x: 0, y: 600, type: 'reading', open: false, color: '#4ECDC4' },
+                { x: 360, y: 760, type: 'reading', open: false, color: '#4ECDC4' }
+            ],
+            watering_hole: { x: 760, y: 760 },
+            tileSize: 40,
+            puzzleActive: false,
+            paths: [
+                // Regular paths from CSV
+                {x: 0, y: 0, width: 40, height: 40}, {x: 40, y: 0, width: 40, height: 40}, {x: 80, y: 0, width: 40, height: 40}, {x: 120, y: 0, width: 40, height: 40}, {x: 160, y: 0, width: 40, height: 40}, {x: 200, y: 0, width: 40, height: 40}, {x: 240, y: 0, width: 40, height: 40}, {x: 280, y: 0, width: 40, height: 40}, {x: 320, y: 0, width: 40, height: 40}, {x: 360, y: 0, width: 40, height: 40}, {x: 400, y: 0, width: 40, height: 40}, {x: 440, y: 0, width: 40, height: 40}, {x: 480, y: 0, width: 40, height: 40}, {x: 560, y: 0, width: 40, height: 40}, {x: 600, y: 0, width: 40, height: 40}, {x: 640, y: 0, width: 40, height: 40}, {x: 680, y: 0, width: 40, height: 40}, {x: 720, y: 0, width: 40, height: 40}, {x: 760, y: 0, width: 40, height: 40}, {x: 40, y: 40, width: 40, height: 40}, {x: 640, y: 40, width: 40, height: 40}, {x: 760, y: 40, width: 40, height: 40}, {x: 80, y: 80, width: 40, height: 40}, {x: 120, y: 80, width: 40, height: 40}, {x: 160, y: 80, width: 40, height: 40}, {x: 240, y: 80, width: 40, height: 40}, {x: 320, y: 80, width: 40, height: 40}, {x: 360, y: 80, width: 40, height: 40}, {x: 400, y: 80, width: 40, height: 40}, {x: 440, y: 80, width: 40, height: 40}, {x: 480, y: 80, width: 40, height: 40}, {x: 520, y: 80, width: 40, height: 40}, {x: 560, y: 80, width: 40, height: 40}, {x: 640, y: 80, width: 40, height: 40}, {x: 160, y: 120, width: 40, height: 40}, {x: 240, y: 120, width: 40, height: 40}, {x: 320, y: 120, width: 40, height: 40}, {x: 560, y: 120, width: 40, height: 40}, {x: 640, y: 120, width: 40, height: 40}, {x: 680, y: 120, width: 40, height: 40}, {x: 720, y: 120, width: 40, height: 40}, {x: 0, y: 160, width: 40, height: 40}, {x: 40, y: 160, width: 40, height: 40}, {x: 80, y: 160, width: 40, height: 40}, {x: 120, y: 160, width: 40, height: 40}, {x: 160, y: 160, width: 40, height: 40}, {x: 240, y: 160, width: 40, height: 40}, {x: 280, y: 160, width: 40, height: 40}, {x: 400, y: 160, width: 40, height: 40}, {x: 440, y: 160, width: 40, height: 40}, {x: 480, y: 160, width: 40, height: 40}, {x: 520, y: 160, width: 40, height: 40}, {x: 560, y: 160, width: 40, height: 40}, {x: 760, y: 160, width: 40, height: 40}, {x: 320, y: 200, width: 40, height: 40}, {x: 400, y: 200, width: 40, height: 40}, {x: 760, y: 200, width: 40, height: 40}, {x: 0, y: 240, width: 40, height: 40}, {x: 40, y: 240, width: 40, height: 40}, {x: 80, y: 240, width: 40, height: 40}, {x: 120, y: 240, width: 40, height: 40}, {x: 160, y: 240, width: 40, height: 40}, {x: 200, y: 240, width: 40, height: 40}, {x: 320, y: 240, width: 40, height: 40}, {x: 400, y: 240, width: 40, height: 40}, {x: 480, y: 240, width: 40, height: 40}, {x: 520, y: 240, width: 40, height: 40}, {x: 560, y: 240, width: 40, height: 40}, {x: 600, y: 240, width: 40, height: 40}, {x: 640, y: 240, width: 40, height: 40}, {x: 680, y: 240, width: 40, height: 40}, {x: 720, y: 240, width: 40, height: 40}, {x: 760, y: 240, width: 40, height: 40}, {x: 240, y: 280, width: 40, height: 40}, {x: 320, y: 280, width: 40, height: 40}, {x: 760, y: 280, width: 40, height: 40}, {x: 40, y: 320, width: 40, height: 40}, {x: 80, y: 320, width: 40, height: 40}, {x: 160, y: 320, width: 40, height: 40}, {x: 240, y: 320, width: 40, height: 40}, {x: 320, y: 320, width: 40, height: 40}, {x: 400, y: 320, width: 40, height: 40}, {x: 440, y: 320, width: 40, height: 40}, {x: 480, y: 320, width: 40, height: 40}, {x: 520, y: 320, width: 40, height: 40}, {x: 560, y: 320, width: 40, height: 40}, {x: 600, y: 320, width: 40, height: 40}, {x: 640, y: 320, width: 40, height: 40}, {x: 680, y: 320, width: 40, height: 40}, {x: 720, y: 320, width: 40, height: 40}, {x: 760, y: 320, width: 40, height: 40}, {x: 40, y: 360, width: 40, height: 40}, {x: 160, y: 360, width: 40, height: 40}, {x: 240, y: 360, width: 40, height: 40}, {x: 320, y: 360, width: 40, height: 40}, {x: 40, y: 400, width: 40, height: 40}, {x: 120, y: 400, width: 40, height: 40}, {x: 160, y: 400, width: 40, height: 40}, {x: 200, y: 400, width: 40, height: 40}, {x: 240, y: 400, width: 40, height: 40}, {x: 280, y: 400, width: 40, height: 40}, {x: 360, y: 400, width: 40, height: 40}, {x: 400, y: 400, width: 40, height: 40}, {x: 480, y: 400, width: 40, height: 40}, {x: 520, y: 400, width: 40, height: 40}, {x: 560, y: 400, width: 40, height: 40}, {x: 600, y: 400, width: 40, height: 40}, {x: 640, y: 400, width: 40, height: 40}, {x: 680, y: 400, width: 40, height: 40}, {x: 760, y: 400, width: 40, height: 40}, {x: 40, y: 440, width: 40, height: 40}, {x: 240, y: 440, width: 40, height: 40}, {x: 320, y: 440, width: 40, height: 40}, {x: 680, y: 440, width: 40, height: 40}, {x: 760, y: 440, width: 40, height: 40}, {x: 40, y: 480, width: 40, height: 40}, {x: 80, y: 480, width: 40, height: 40}, {x: 120, y: 480, width: 40, height: 40}, {x: 160, y: 480, width: 40, height: 40}, {x: 200, y: 480, width: 40, height: 40}, {x: 240, y: 480, width: 40, height: 40}, {x: 320, y: 480, width: 40, height: 40}, {x: 440, y: 480, width: 40, height: 40}, {x: 480, y: 480, width: 40, height: 40}, {x: 520, y: 480, width: 40, height: 40}, {x: 560, y: 480, width: 40, height: 40}, {x: 600, y: 480, width: 40, height: 40}, {x: 680, y: 480, width: 40, height: 40}, {x: 760, y: 480, width: 40, height: 40}, {x: 320, y: 520, width: 40, height: 40}, {x: 360, y: 520, width: 40, height: 40}, {x: 400, y: 520, width: 40, height: 40}, {x: 680, y: 520, width: 40, height: 40}, {x: 720, y: 520, width: 40, height: 40}, {x: 760, y: 520, width: 40, height: 40}, {x: 0, y: 560, width: 40, height: 40}, {x: 40, y: 560, width: 40, height: 40}, {x: 80, y: 560, width: 40, height: 40}, {x: 120, y: 560, width: 40, height: 40}, {x: 160, y: 560, width: 40, height: 40}, {x: 200, y: 560, width: 40, height: 40}, {x: 240, y: 560, width: 40, height: 40}, {x: 320, y: 560, width: 40, height: 40}, {x: 440, y: 560, width: 40, height: 40}, {x: 600, y: 560, width: 40, height: 40}, {x: 320, y: 600, width: 40, height: 40}, {x: 360, y: 600, width: 40, height: 40}, {x: 400, y: 600, width: 40, height: 40}, {x: 440, y: 600, width: 40, height: 40}, {x: 520, y: 600, width: 40, height: 40}, {x: 600, y: 600, width: 40, height: 40}, {x: 640, y: 600, width: 40, height: 40}, {x: 680, y: 600, width: 40, height: 40}, {x: 720, y: 600, width: 40, height: 40}, {x: 760, y: 600, width: 40, height: 40}, {x: 0, y: 640, width: 40, height: 40}, {x: 80, y: 640, width: 40, height: 40}, {x: 120, y: 640, width: 40, height: 40}, {x: 160, y: 640, width: 40, height: 40}, {x: 200, y: 640, width: 40, height: 40}, {x: 240, y: 640, width: 40, height: 40}, {x: 280, y: 640, width: 40, height: 40}, {x: 320, y: 640, width: 40, height: 40}, {x: 520, y: 640, width: 40, height: 40}, {x: 760, y: 640, width: 40, height: 40}, {x: 0, y: 680, width: 40, height: 40}, {x: 80, y: 680, width: 40, height: 40}, {x: 120, y: 680, width: 40, height: 40}, {x: 160, y: 680, width: 40, height: 40}, {x: 200, y: 680, width: 40, height: 40}, {x: 240, y: 680, width: 40, height: 40}, {x: 280, y: 680, width: 40, height: 40}, {x: 320, y: 680, width: 40, height: 40}, {x: 360, y: 680, width: 40, height: 40}, {x: 400, y: 680, width: 40, height: 40}, {x: 440, y: 680, width: 40, height: 40}, {x: 480, y: 680, width: 40, height: 40}, {x: 520, y: 680, width: 40, height: 40}, {x: 560, y: 680, width: 40, height: 40}, {x: 600, y: 680, width: 40, height: 40}, {x: 640, y: 680, width: 40, height: 40}, {x: 680, y: 680, width: 40, height: 40}, {x: 720, y: 680, width: 40, height: 40}, {x: 760, y: 680, width: 40, height: 40}, {x: 760, y: 720, width: 40, height: 40}, {x: 0, y: 760, width: 40, height: 40}, {x: 40, y: 760, width: 40, height: 40}, {x: 80, y: 760, width: 40, height: 40}, {x: 120, y: 760, width: 40, height: 40}, {x: 160, y: 760, width: 40, height: 40}, {x: 200, y: 760, width: 40, height: 40}, {x: 240, y: 760, width: 40, height: 40}, {x: 280, y: 760, width: 40, height: 40}, {x: 320, y: 760, width: 40, height: 40}, {x: 400, y: 760, width: 40, height: 40}, {x: 440, y: 760, width: 40, height: 40}, {x: 480, y: 760, width: 40, height: 40}, {x: 520, y: 760, width: 40, height: 40}, {x: 560, y: 760, width: 40, height: 40}, {x: 640, y: 760, width: 40, height: 40}, {x: 680, y: 760, width: 40, height: 40}, {x: 720, y: 760, width: 40, height: 40},
+                
+                // Add paths under all door positions so they're walkable
+                // Math doors
+                {x: 520, y: 0, width: 40, height: 40}, // N1 math door
+                {x: 760, y: 120, width: 40, height: 40}, // T4 math door
+                {x: 0, y: 200, width: 40, height: 40}, // A6 math door
+                {x: 240, y: 240, width: 40, height: 40}, // G7 math door
+                {x: 400, y: 280, width: 40, height: 40}, // K8 math door
+                {x: 120, y: 320, width: 40, height: 40}, // D9 math door
+                {x: 440, y: 400, width: 40, height: 40}, // L11 math door
+                {x: 520, y: 560, width: 40, height: 40}, // N15 math door
+                {x: 0, y: 720, width: 40, height: 40}, // A19 math door
+                {x: 600, y: 760, width: 40, height: 40}, // P20 math door
+                
+                // Reading doors
+                {x: 40, y: 80, width: 40, height: 40}, // B3 reading door
+                {x: 320, y: 160, width: 40, height: 40}, // I5 reading door
+                {x: 760, y: 360, width: 40, height: 40}, // T10 reading door
+                {x: 320, y: 400, width: 40, height: 40}, // I11 reading door
+                {x: 440, y: 520, width: 40, height: 40}, // L14 reading door
+                {x: 0, y: 600, width: 40, height: 40}, // A16 reading door
+                {x: 360, y: 760, width: 40, height: 40}, // J20 reading door
+                {x: 600, y: 520, width: 40, height: 40}, // P14 math door
+                
+                {x: 760, y: 760, width: 40, height: 40} // T20 watering hole
+            ]
+        };
+        
+        function updateScore(points) {
+            game.score += points;
+            document.getElementById('score').textContent = `Points: ${game.score}`;
+            
+            if (game.score <= 0) {
+                gameOver();
+            }
+        }
+        
+        function gameOver() {
+            alert('Game Over! The elephant needs more practice. Try again!');
+            game.score = 10;
+            game.player.x = 0;
+            game.player.y = 0;
+            updateScore(0);
+        }
+        
+        function isOnPath(x, y) {
+            return game.paths.some(path => 
+                x >= path.x && x < path.x + path.width &&
+                y >= path.y && y < path.y + path.height
+            );
+        }
+        
+        function isDoorBlocking(newX, newY) {
+            return game.doors.some(door => 
+                !door.open && 
+                newX === door.x && newY === door.y
+            );
+        }
+        
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw maze background (offset for labels)
+            ctx.fillStyle = '#2F4F2F';
+            ctx.fillRect(30, 30, 800, 800); // 20 * 40 = 800
+            
+            // Draw grid labels with background for visibility
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, 860, 30); // Top label area
+            ctx.fillRect(0, 0, 30, 860); // Left label area
+            
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            
+            // Column labels (A-T)
+            for (let i = 0; i < 20; i++) {
+                const letter = String.fromCharCode(65 + i); // A=65, B=66, etc.
+                ctx.fillText(letter, 30 + i * 40 + 20, 20);
+            }
+            
+            // Row labels (1-20)
+            ctx.textAlign = 'center';
+            for (let i = 0; i < 20; i++) {
+                ctx.fillText((i + 1).toString(), 15, 30 + i * 40 + 25);
+            }
+            
+            // Draw grid lines for reference
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 1;
+            // Vertical grid lines
+            for (let i = 0; i <= 20; i++) {
+                ctx.beginPath();
+                ctx.moveTo(30 + i * 40, 30); // 40px grid
+                ctx.lineTo(30 + i * 40, 830);
+                ctx.stroke();
+            }
+            // Horizontal grid lines
+            for (let i = 0; i <= 20; i++) {
+                ctx.beginPath();
+                ctx.moveTo(30, 30 + i * 40); // 40px grid
+                ctx.lineTo(830, 30 + i * 40);
+                ctx.stroke();
+            }
+            
+            // Draw paths (offset by 30px)
+            ctx.fillStyle = '#90EE90'; // Light green paths
+            game.paths.forEach(path => {
+                ctx.fillRect(path.x + 30, path.y + 30, path.width, path.height);
+            });
+            
+            // Draw path borders for visual clarity
+            ctx.strokeStyle = '#228B22';
+            ctx.lineWidth = 2;
+            game.paths.forEach(path => {
+                ctx.strokeRect(path.x + 30, path.y + 30, path.width, path.height);
+            });
+            
+            // Draw doors (offset by 30px)
+            game.doors.forEach(door => {
+                if (!door.open) {
+                    ctx.fillStyle = door.color;
+                    ctx.fillRect(door.x + 30, door.y + 30, game.tileSize, game.tileSize);
+                    ctx.fillStyle = '#000';
+                    ctx.font = '20px Arial';
+                    ctx.textAlign = 'center';
+                    const symbol = door.type === 'math' ? '➕' : door.type === 'reading' ? '📖' : '🔀';
+                    ctx.fillText(symbol, door.x + 30 + 20, door.y + 30 + 25);
+                }
+            });
+            
+            // Draw watering hole (offset by 30px and centered in grid cell)
+            ctx.fillStyle = '#1E90FF';
+            ctx.beginPath();
+            ctx.arc(game.watering_hole.x + 30 + 20, game.watering_hole.y + 30 + 20, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#87CEEB';
+            ctx.beginPath();
+            ctx.arc(game.watering_hole.x + 30 + 20, game.watering_hole.y + 30 + 20, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw elephant sprite (offset by 30px)
+            if (elephantSprites.complete) {
+                // Calculate which frame to use based on direction and animation
+                let frameX = 0;
+                if (game.player.direction === 'right') {
+                    frameX = (game.player.animFrame === 0) ? 0 : 160; // Frames A1, A2
+                } else if (game.player.direction === 'left') {
+                    frameX = (game.player.animFrame === 0) ? 320 : 480; // Frames A3, A4
+                }
+                
+                // Draw the sprite frame (160x160 from SVG sprite sheet)
+                ctx.drawImage(
+                    elephantSprites,
+                    frameX, 0, 160, 160, // Source: x, y, width, height from sprite sheet
+                    game.player.x + 30 - 10, game.player.y + 30 - 10, 60, 60 // Destination: x, y, width, height (centered in 40px grid)
+                );
+            } else {
+                // Fallback while sprite loads
+                ctx.fillStyle = '#D3D3D3';
+                ctx.beginPath();
+                ctx.arc(game.player.x + 30 + 20, game.player.y + 30 + 20, game.player.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#000';
+                ctx.font = '30px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('🐘', game.player.x + 30 + 20, game.player.y + 30 + 23);
+            }
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            // Don't allow movement if puzzle is active
+            if (game.puzzleActive) return;
+            
+            // Snap current position to grid first
+            let currentGridX = Math.round(game.player.x / game.tileSize) * game.tileSize;
+            let currentGridY = Math.round(game.player.y / game.tileSize) * game.tileSize;
+            
+            let newX = currentGridX;
+            let newY = currentGridY;
+            
+            switch(e.key) {
+                case 'ArrowUp':
+                    newY -= game.tileSize;
+                    break;
+                case 'ArrowDown':
+                    newY += game.tileSize;
+                    break;
+                case 'ArrowLeft':
+                    newX -= game.tileSize;
+                    break;
+                case 'ArrowRight':
+                    newX += game.tileSize;
+                    break;
+                default:
+                    return;
+            }
+            
+            // Check if new position is on a valid path
+            if (isOnPath(newX, newY)) {
+                // Check if a door is blocking the path
+                if (!isDoorBlocking(newX, newY)) {
+                    // Update player position
+                    game.player.x = newX;
+                    game.player.y = newY;
+                    
+                    // Update direction and start animation
+                    if (e.key === 'ArrowLeft') {
+                        game.player.direction = 'left';
+                    } else if (e.key === 'ArrowRight') {
+                        game.player.direction = 'right';
+                    }
+                    // For now, up/down will use right direction until you add those sprites
+                    else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                        game.player.direction = 'right';
+                    }
+                    
+                    // Trigger walking animation
+                    game.player.isMoving = true;
+                    game.player.animFrame = (game.player.animFrame + 1) % 2; // Toggle between frames 0 and 1
+                } else {
+                    // Find which door is blocking and show puzzle
+                    const blockingDoor = game.doors.find(door => 
+                        !door.open && 
+                        newX === door.x && newY === door.y
+                    );
+                    if (blockingDoor && !game.puzzleActive) {
+                        showPuzzle(blockingDoor.type, blockingDoor);
+                    }
+                }
+            }
+            
+            // Check for watering hole win condition
+            const distance = Math.sqrt(
+                Math.pow(game.player.x + 20 - game.watering_hole.x, 2) + 
+                Math.pow(game.player.y + 20 - game.watering_hole.y, 2)
+            );
+            if (distance < 40) {
+                alert('🎉 Congratulations! The elephant reached the watering hole! 🎉');
+                game.level++;
+                document.getElementById('level').textContent = `Level: ${game.level}`;
+                game.player.x = 0;
+                game.player.y = 0;
+            }
+        });
+        
+        function showPuzzle(type, door) {
+            const modal = document.getElementById('puzzleModal');
+            const title = document.getElementById('puzzleTitle');
+            const question = document.getElementById('puzzleQuestion');
+            const options = document.getElementById('puzzleOptions');
+            
+            game.puzzleActive = true;
+            modal.style.display = 'block';
+            
+            if (type === 'math') {
+                const isAddition = Math.random() < 0.5;
+                let num1, num2, answer;
+                
+                if (isAddition) {
+                    // For addition, ensure sum doesn't exceed 20
+                    num1 = Math.floor(Math.random() * 19) + 1; // 1-19
+                    num2 = Math.floor(Math.random() * (20 - num1)) + 1; // 1 to (20-num1)
+                    answer = num1 + num2;
+                    title.textContent = `${num1} + ${num2} = ?`;
+                } else {
+                    // For subtraction, ensure result is between 1-20
+                    num1 = Math.floor(Math.random() * 20) + 1;
+                    num2 = Math.floor(Math.random() * Math.min(num1, 20)) + 1;
+                    answer = num1 - num2;
+                    title.textContent = `${num1} - ${num2} = ?`;
+                }
+                
+                question.textContent = '';
+                
+                // Generate wrong answers between 1-20
+                const wrongAnswers = [];
+                while (wrongAnswers.length < 2) {
+                    const wrong = Math.floor(Math.random() * 20) + 1;
+                    if (wrong !== answer && !wrongAnswers.includes(wrong)) {
+                        wrongAnswers.push(wrong);
+                    }
+                }
+                
+                const allAnswers = [answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+                
+                options.innerHTML = '';
+                allAnswers.forEach(ans => {
+                    const button = document.createElement('button');
+                    button.className = 'puzzle-button';
+                    button.textContent = ans;
+                    button.onclick = () => checkAnswer(ans === answer, type, door, button);
+                    options.appendChild(button);
+                });
+            } else if (type === 'reading') {
+                // Reading problems - word to emoji matching
+                const wordEmojiPairs = [
+                    { word: "BAG", emoji: "💼" },
+                    { word: "MAP", emoji: "🗺️" },
+                    { word: "HAT", emoji: "🧢" },
+                    { word: "LEG", emoji: "🦵" },
+                    { word: "GEM", emoji: "💎" },
+                    { word: "DOT", emoji: "⚪️" },
+                    { word: "TEN", emoji: "🔟" },
+                    { word: "BOX", emoji: "📦" },
+                    { word: "FOX", emoji: "🦊" },
+                    { word: "CAR", emoji: "🚗" },
+                    { word: "CAT", emoji: "🐈" },
+                    { word: "DOG", emoji: "🐕" },
+                    { word: "LOG", emoji: "🪵" },
+                    { word: "SUN", emoji: "☀️" },
+                    { word: "CUP", emoji: "☕️" },
+                    { word: "FLY", emoji: "🪰" },
+                    { word: "BED", emoji: "🛏️" },
+                    { word: "RAT", emoji: "🐀" },
+                    { word: "BAT", emoji: "🦇" },
+                    { word: "PEN", emoji: "🖊️" },
+                    { word: "PIG", emoji: "🐖" }
+                ];
+                
+                // Pick a random word-emoji pair
+                const correctPair = wordEmojiPairs[Math.floor(Math.random() * wordEmojiPairs.length)];
+                
+                // Generate random wrong emojis
+                const allEmojis = wordEmojiPairs.map(pair => pair.emoji);
+                const wrongEmojis = [];
+                while (wrongEmojis.length < 2) {
+                    const randomEmoji = allEmojis[Math.floor(Math.random() * allEmojis.length)];
+                    if (randomEmoji !== correctPair.emoji && !wrongEmojis.includes(randomEmoji)) {
+                        wrongEmojis.push(randomEmoji);
+                    }
+                }
+                
+                title.textContent = correctPair.word;
+                question.textContent = '';
+                
+                const allAnswers = [correctPair.emoji, ...wrongEmojis].sort(() => Math.random() - 0.5);
+                
+                options.innerHTML = '';
+                allAnswers.forEach(emoji => {
+                    const button = document.createElement('button');
+                    button.className = 'puzzle-button';
+                    button.textContent = emoji;
+                    button.style.fontSize = '32px'; // Make emojis bigger
+                    button.style.background = 'white'; // White background for emoji buttons
+                    button.style.color = 'black'; // Black text for better contrast
+                    button.style.border = '3px solid #4CAF50'; // Green border
+                    button.onclick = () => checkAnswer(emoji === correctPair.emoji, type, door, button);
+                    options.appendChild(button);
+                });
+            }
+        }
+        
+        function checkAnswer(correct, type, door, buttonElement) {
+            const result = document.getElementById('puzzleResult');
+            
+            // Track attempts for this problem
+            if (!door.currentProblemAttempts) door.currentProblemAttempts = 0;
+            door.currentProblemAttempts++;
+            
+            if (correct) {
+                result.innerHTML = '👍';
+                result.style.color = 'green';
+                door.open = true;
+                
+                // Give +1 point for correct answer (net effect: 1 - number_of_wrong_attempts)
+                if (type === 'math') updateScore(1);
+                if (type === 'reading') updateScore(1);
+                if (type === 'sorting') updateScore(1);
+                
+                // Reset attempt counters
+                door.currentProblemAttempts = 0;
+                door.failedAttempts = 0;
+                
+                setTimeout(() => {
+                    document.getElementById('puzzleModal').style.display = 'none';
+                    result.innerHTML = '';
+                    game.puzzleActive = false;
+                }, 1500);
+            } else {
+                result.innerHTML = '👎';
+                result.style.color = 'red';
+                
+                // Immediately deduct 1 point for wrong answer
+                if (type === 'math') updateScore(-1);
+                if (type === 'reading') updateScore(-1);
+                if (type === 'sorting') updateScore(-1);
+                
+                // Disable the wrong answer button
+                buttonElement.disabled = true;
+                buttonElement.style.backgroundColor = '#ccc';
+                buttonElement.style.cursor = 'not-allowed';
+                
+                // Track failed attempts
+                if (!door.failedAttempts) door.failedAttempts = 0;
+                door.failedAttempts++;
+                
+                // If 3 failures, generate new problem
+                if (door.failedAttempts >= 3) {
+                    setTimeout(() => {
+                        door.failedAttempts = 0;
+                        door.currentProblemAttempts = 0; // Reset for new problem
+                        showPuzzle(type, door); // Generate new problem
+                    }, 1500);
+                } else {
+                    // Clear result after showing thumbs down
+                    setTimeout(() => {
+                        result.innerHTML = '';
+                    }, 1500);
+                }
+            }
+        }
+        
+        // Game loop
+        function gameLoop() {
+            // Update animation timer
+            game.player.animTimer++;
+            
+            // Reset moving flag after a short time (creates a brief walking animation)
+            if (game.player.isMoving && game.player.animTimer > 10) {
+                game.player.isMoving = false;
+                game.player.animTimer = 0;
+            }
+            
+            drawGame();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        gameLoop();
+    </script>
+</body>
+</html>
