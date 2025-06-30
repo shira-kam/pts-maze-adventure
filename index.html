@@ -288,6 +288,152 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
+        // CSV Parser for dynamic maze loading
+        async function loadMazeFromCSV() {
+            try {
+                console.log('Attempting to load grid.csv...');
+                const response = await fetch('grid.csv?v=' + Date.now());
+                console.log('Fetch response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const csvText = await response.text();
+                console.log('CSV loaded successfully, length:', csvText.length);
+                console.log('First few lines:', csvText.split('\n').slice(0, 3).join('\n'));
+                return parseMazeFromCSV(csvText);
+            } catch (error) {
+                console.error('Error loading CSV:', error);
+                console.log('Falling back to embedded CSV data');
+                // Fallback to embedded CSV data if file load fails
+                const fallbackCSV = `,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T
+1,o,o,o,o,o,o,o,o,o,o,o,o,o,m,o,o,o,o,o,o
+2,,o,,,,,,,,,,,,,,,o,,,o
+3,,r,o,o,o,,o,,o,o,o,o,o,o,o,,o,,,
+4,,,,,o,,o,,o,,,,,,o,,o,o,o,m
+5,o,o,o,o,o,,o,o,r,,o,o,o,o,o,,,,,o
+6,m,,,,,,,,o,,o,,,,,,,,,o
+7,o,o,o,o,o,o,m,,o,,o,,o,o,o,o,o,o,o,o
+8,,,,,,,o,,o,,m,,,,,,,,,o
+9,,o,o,m,o,,o,,o,,o,o,o,o,o,o,o,o,o,o
+10,,o,,,o,,o,,o,,,,,,,,,,,r
+11,,o,,o,o,o,o,o,r,o,o,m,o,o,o,o,o,o,,o
+12,,o,,,,,o,,o,,,,,,,,,o,,o
+13,,o,o,o,o,o,o,,o,,,o,o,o,o,o,,o,,o
+14,,,,,,,,,o,o,o,r,,,,m,,o,o,o
+15,o,o,o,o,o,o,o, ,o,,,o,,m,,o,,,,
+16,r,,,,,,,,o,o,o,o,,o,,o,o,o,o,o
+17,o,,o,o,o,o,o,o,o,,,,,o,,,,,,o
+18,o,,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o
+19,m,,,,,,,,,,,,,,,,,,,o
+20,o,o,o,o,o,o,o,o,o,r,o,o,o,o,o,m,o,o,o,w`;
+                return parseMazeFromCSV(fallbackCSV);
+            }
+        }
+        
+        function parseMazeFromCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const doors = [];
+            const paths = [];
+            let watering_hole = null;
+            
+            // Skip header row (line 0)
+            for (let rowIndex = 1; rowIndex < lines.length; rowIndex++) {
+                const cells = lines[rowIndex].split(',');
+                
+                // Skip first column (row number), start from column 1
+                for (let colIndex = 1; colIndex < cells.length; colIndex++) {
+                    const cellValue = cells[colIndex].trim();
+                    
+                    // Calculate actual coordinates (0-based for arrays)
+                    const x = (colIndex - 1) * 40; // Column A=0, B=1, etc. * 40
+                    const y = (rowIndex - 1) * 40; // Row 1=0, Row 2=1, etc. * 40
+                    
+                    switch (cellValue) {
+                        case 'o':
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
+                        case 'm':
+                            doors.push({ x, y, type: 'math', open: false, color: '#FF6B6B' });
+                            // Add path under door for walkability
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
+                        case 'r':
+                            doors.push({ x, y, type: 'reading', open: false, color: '#4ECDC4' });
+                            // Add path under door for walkability
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
+                        case 's':
+                            doors.push({ x, y, type: 'sorting', open: false, color: '#FFD93D' });
+                            // Add path under door for walkability
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
+                        case 'w':
+                            watering_hole = { x, y };
+                            // Add path under watering hole for walkability
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
+                        // Empty cells and walls are ignored
+                    }
+                }
+            }
+            
+            return { doors, paths, watering_hole };
+        }
+        
+        // Word list parser for dynamic loading
+        async function loadWordListFromFile() {
+            try {
+                const response = await fetch('Word-List.txt?v=' + Date.now());
+                const wordListText = await response.text();
+                return parseWordList(wordListText);
+            } catch (error) {
+                console.error('Error loading Word-List.txt:', error);
+                // Fallback to embedded word list if file load fails
+                const fallbackWordList = `BAG 💼,
+MAP 🗺️,
+HAT 🧢,
+LEG 🦵,
+GEM 💎,
+DOT ⚪️,
+TEN 🔟,
+BOX 📦,
+FOX 🦊,
+CAR 🚗,
+CAT 🐈,
+DOG 🐕,
+LOG 🪵,
+SUN ☀️,
+CUP ☕️,
+FLY 🪰,
+BED 🛏️,
+RAT 🐀,
+BAT 🦇,
+PEN 🖊️,
+PIG 🐖`;
+                return parseWordList(fallbackWordList);
+            }
+        }
+        
+        function parseWordList(wordListText) {
+            const lines = wordListText.trim().split('\n');
+            const wordEmojiPairs = [];
+            
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                if (trimmedLine && trimmedLine.endsWith(',')) {
+                    // Remove trailing comma and split by space
+                    const parts = trimmedLine.slice(0, -1).split(' ');
+                    if (parts.length >= 2) {
+                        const word = parts[0];
+                        const emoji = parts.slice(1).join(' '); // Join in case emoji has spaces
+                        wordEmojiPairs.push({ word, emoji });
+                    }
+                }
+            });
+            
+            return wordEmojiPairs;
+        }
+        
         // Load sprite sheets for both levels
         const levelSprites = {
             1: {
@@ -316,6 +462,7 @@
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
         
+        // Game object - will be populated with dynamic maze data
         const game = {
             score: 5,
             currentLevel: 1,
@@ -331,65 +478,33 @@
                 isMoving: false // whether player is currently moving
             },
             maze: [],
-            doors: [
-                // Math doors (m)
-                { x: 520, y: 0, type: 'math', open: false, color: '#FF6B6B' },
-                { x: 760, y: 120, type: 'math', open: false, color: '#FF6B6B' },
-                { x: 0, y: 200, type: 'math', open: false, color: '#FF6B6B' },
-                { x: 240, y: 240, type: 'math', open: false, color: '#FF6B6B' },
-                { x: 400, y: 280, type: 'math', open: false, color: '#FF6B6B' },
-                { x: 120, y: 320, type: 'math', open: false, color: '#FF6B6B' },
-                { x: 440, y: 400, type: 'math', open: false, color: '#FF6B6B' },
-                { x: 520, y: 560, type: 'math', open: false, color: '#FF6B6B' },
-                { x: 0, y: 720, type: 'math', open: false, color: '#FF6B6B' },
-                { x: 600, y: 760, type: 'math', open: false, color: '#FF6B6B' },
-                
-                // Reading doors (r)
-                { x: 40, y: 80, type: 'reading', open: false, color: '#4ECDC4' },
-                { x: 320, y: 160, type: 'reading', open: false, color: '#4ECDC4' },
-                { x: 760, y: 360, type: 'reading', open: false, color: '#4ECDC4' },
-                { x: 320, y: 400, type: 'reading', open: false, color: '#4ECDC4' },
-                { x: 440, y: 520, type: 'reading', open: false, color: '#4ECDC4' },
-                { x: 600, y: 520, type: 'math', open: false, color: '#FF6B6B' },
-                { x: 0, y: 600, type: 'reading', open: false, color: '#4ECDC4' },
-                { x: 360, y: 760, type: 'reading', open: false, color: '#4ECDC4' }
-            ],
-            watering_hole: { x: 760, y: 760 },
+            doors: [], // Will be populated from CSV
+            watering_hole: null, // Will be populated from CSV
+            wordEmojiPairs: [], // Will be populated from Word-List.txt
             tileSize: 40,
             puzzleActive: false,
             celebrating: false,
             celebrationFrame: 0,
             celebrationTimer: 0,
-            paths: [
-                // Regular paths from CSV
-                {x: 0, y: 0, width: 40, height: 40}, {x: 40, y: 0, width: 40, height: 40}, {x: 80, y: 0, width: 40, height: 40}, {x: 120, y: 0, width: 40, height: 40}, {x: 160, y: 0, width: 40, height: 40}, {x: 200, y: 0, width: 40, height: 40}, {x: 240, y: 0, width: 40, height: 40}, {x: 280, y: 0, width: 40, height: 40}, {x: 320, y: 0, width: 40, height: 40}, {x: 360, y: 0, width: 40, height: 40}, {x: 400, y: 0, width: 40, height: 40}, {x: 440, y: 0, width: 40, height: 40}, {x: 480, y: 0, width: 40, height: 40}, {x: 560, y: 0, width: 40, height: 40}, {x: 600, y: 0, width: 40, height: 40}, {x: 640, y: 0, width: 40, height: 40}, {x: 680, y: 0, width: 40, height: 40}, {x: 720, y: 0, width: 40, height: 40}, {x: 760, y: 0, width: 40, height: 40}, {x: 40, y: 40, width: 40, height: 40}, {x: 640, y: 40, width: 40, height: 40}, {x: 760, y: 40, width: 40, height: 40}, {x: 80, y: 80, width: 40, height: 40}, {x: 120, y: 80, width: 40, height: 40}, {x: 160, y: 80, width: 40, height: 40}, {x: 240, y: 80, width: 40, height: 40}, {x: 320, y: 80, width: 40, height: 40}, {x: 360, y: 80, width: 40, height: 40}, {x: 400, y: 80, width: 40, height: 40}, {x: 440, y: 80, width: 40, height: 40}, {x: 480, y: 80, width: 40, height: 40}, {x: 520, y: 80, width: 40, height: 40}, {x: 560, y: 80, width: 40, height: 40}, {x: 640, y: 80, width: 40, height: 40}, {x: 160, y: 120, width: 40, height: 40}, {x: 240, y: 120, width: 40, height: 40}, {x: 320, y: 120, width: 40, height: 40}, {x: 560, y: 120, width: 40, height: 40}, {x: 640, y: 120, width: 40, height: 40}, {x: 680, y: 120, width: 40, height: 40}, {x: 720, y: 120, width: 40, height: 40}, {x: 0, y: 160, width: 40, height: 40}, {x: 40, y: 160, width: 40, height: 40}, {x: 80, y: 160, width: 40, height: 40}, {x: 120, y: 160, width: 40, height: 40}, {x: 160, y: 160, width: 40, height: 40}, {x: 240, y: 160, width: 40, height: 40}, {x: 280, y: 160, width: 40, height: 40}, {x: 400, y: 160, width: 40, height: 40}, {x: 440, y: 160, width: 40, height: 40}, {x: 480, y: 160, width: 40, height: 40}, {x: 520, y: 160, width: 40, height: 40}, {x: 560, y: 160, width: 40, height: 40}, {x: 760, y: 160, width: 40, height: 40}, {x: 320, y: 200, width: 40, height: 40}, {x: 400, y: 200, width: 40, height: 40}, {x: 760, y: 200, width: 40, height: 40}, {x: 0, y: 240, width: 40, height: 40}, {x: 40, y: 240, width: 40, height: 40}, {x: 80, y: 240, width: 40, height: 40}, {x: 120, y: 240, width: 40, height: 40}, {x: 160, y: 240, width: 40, height: 40}, {x: 200, y: 240, width: 40, height: 40}, {x: 320, y: 240, width: 40, height: 40}, {x: 400, y: 240, width: 40, height: 40}, {x: 480, y: 240, width: 40, height: 40}, {x: 520, y: 240, width: 40, height: 40}, {x: 560, y: 240, width: 40, height: 40}, {x: 600, y: 240, width: 40, height: 40}, {x: 640, y: 240, width: 40, height: 40}, {x: 680, y: 240, width: 40, height: 40}, {x: 720, y: 240, width: 40, height: 40}, {x: 760, y: 240, width: 40, height: 40}, {x: 240, y: 280, width: 40, height: 40}, {x: 320, y: 280, width: 40, height: 40}, {x: 760, y: 280, width: 40, height: 40}, {x: 40, y: 320, width: 40, height: 40}, {x: 80, y: 320, width: 40, height: 40}, {x: 160, y: 320, width: 40, height: 40}, {x: 240, y: 320, width: 40, height: 40}, {x: 320, y: 320, width: 40, height: 40}, {x: 400, y: 320, width: 40, height: 40}, {x: 440, y: 320, width: 40, height: 40}, {x: 480, y: 320, width: 40, height: 40}, {x: 520, y: 320, width: 40, height: 40}, {x: 560, y: 320, width: 40, height: 40}, {x: 600, y: 320, width: 40, height: 40}, {x: 640, y: 320, width: 40, height: 40}, {x: 680, y: 320, width: 40, height: 40}, {x: 720, y: 320, width: 40, height: 40}, {x: 760, y: 320, width: 40, height: 40}, {x: 40, y: 360, width: 40, height: 40}, {x: 160, y: 360, width: 40, height: 40}, {x: 240, y: 360, width: 40, height: 40}, {x: 320, y: 360, width: 40, height: 40}, {x: 40, y: 400, width: 40, height: 40}, {x: 120, y: 400, width: 40, height: 40}, {x: 160, y: 400, width: 40, height: 40}, {x: 200, y: 400, width: 40, height: 40}, {x: 240, y: 400, width: 40, height: 40}, {x: 280, y: 400, width: 40, height: 40}, {x: 360, y: 400, width: 40, height: 40}, {x: 400, y: 400, width: 40, height: 40}, {x: 480, y: 400, width: 40, height: 40}, {x: 520, y: 400, width: 40, height: 40}, {x: 560, y: 400, width: 40, height: 40}, {x: 600, y: 400, width: 40, height: 40}, {x: 640, y: 400, width: 40, height: 40}, {x: 680, y: 400, width: 40, height: 40}, {x: 760, y: 400, width: 40, height: 40}, {x: 40, y: 440, width: 40, height: 40}, {x: 240, y: 440, width: 40, height: 40}, {x: 320, y: 440, width: 40, height: 40}, {x: 680, y: 440, width: 40, height: 40}, {x: 760, y: 440, width: 40, height: 40}, {x: 40, y: 480, width: 40, height: 40}, {x: 80, y: 480, width: 40, height: 40}, {x: 120, y: 480, width: 40, height: 40}, {x: 160, y: 480, width: 40, height: 40}, {x: 200, y: 480, width: 40, height: 40}, {x: 240, y: 480, width: 40, height: 40}, {x: 320, y: 480, width: 40, height: 40}, {x: 440, y: 480, width: 40, height: 40}, {x: 480, y: 480, width: 40, height: 40}, {x: 520, y: 480, width: 40, height: 40}, {x: 560, y: 480, width: 40, height: 40}, {x: 600, y: 480, width: 40, height: 40}, {x: 680, y: 480, width: 40, height: 40}, {x: 760, y: 480, width: 40, height: 40}, {x: 320, y: 520, width: 40, height: 40}, {x: 360, y: 520, width: 40, height: 40}, {x: 400, y: 520, width: 40, height: 40}, {x: 680, y: 520, width: 40, height: 40}, {x: 720, y: 520, width: 40, height: 40}, {x: 760, y: 520, width: 40, height: 40}, {x: 0, y: 560, width: 40, height: 40}, {x: 40, y: 560, width: 40, height: 40}, {x: 80, y: 560, width: 40, height: 40}, {x: 120, y: 560, width: 40, height: 40}, {x: 160, y: 560, width: 40, height: 40}, {x: 200, y: 560, width: 40, height: 40}, {x: 240, y: 560, width: 40, height: 40}, {x: 320, y: 560, width: 40, height: 40}, {x: 440, y: 560, width: 40, height: 40}, {x: 600, y: 560, width: 40, height: 40}, {x: 320, y: 600, width: 40, height: 40}, {x: 360, y: 600, width: 40, height: 40}, {x: 400, y: 600, width: 40, height: 40}, {x: 440, y: 600, width: 40, height: 40}, {x: 520, y: 600, width: 40, height: 40}, {x: 600, y: 600, width: 40, height: 40}, {x: 640, y: 600, width: 40, height: 40}, {x: 680, y: 600, width: 40, height: 40}, {x: 720, y: 600, width: 40, height: 40}, {x: 760, y: 600, width: 40, height: 40}, {x: 0, y: 640, width: 40, height: 40}, {x: 80, y: 640, width: 40, height: 40}, {x: 120, y: 640, width: 40, height: 40}, {x: 160, y: 640, width: 40, height: 40}, {x: 200, y: 640, width: 40, height: 40}, {x: 240, y: 640, width: 40, height: 40}, {x: 280, y: 640, width: 40, height: 40}, {x: 320, y: 640, width: 40, height: 40}, {x: 520, y: 640, width: 40, height: 40}, {x: 760, y: 640, width: 40, height: 40}, {x: 0, y: 680, width: 40, height: 40}, {x: 80, y: 680, width: 40, height: 40}, {x: 120, y: 680, width: 40, height: 40}, {x: 160, y: 680, width: 40, height: 40}, {x: 200, y: 680, width: 40, height: 40}, {x: 240, y: 680, width: 40, height: 40}, {x: 280, y: 680, width: 40, height: 40}, {x: 320, y: 680, width: 40, height: 40}, {x: 360, y: 680, width: 40, height: 40}, {x: 400, y: 680, width: 40, height: 40}, {x: 440, y: 680, width: 40, height: 40}, {x: 480, y: 680, width: 40, height: 40}, {x: 520, y: 680, width: 40, height: 40}, {x: 560, y: 680, width: 40, height: 40}, {x: 600, y: 680, width: 40, height: 40}, {x: 640, y: 680, width: 40, height: 40}, {x: 680, y: 680, width: 40, height: 40}, {x: 720, y: 680, width: 40, height: 40}, {x: 760, y: 680, width: 40, height: 40}, {x: 760, y: 720, width: 40, height: 40}, {x: 0, y: 760, width: 40, height: 40}, {x: 40, y: 760, width: 40, height: 40}, {x: 80, y: 760, width: 40, height: 40}, {x: 120, y: 760, width: 40, height: 40}, {x: 160, y: 760, width: 40, height: 40}, {x: 200, y: 760, width: 40, height: 40}, {x: 240, y: 760, width: 40, height: 40}, {x: 280, y: 760, width: 40, height: 40}, {x: 320, y: 760, width: 40, height: 40}, {x: 400, y: 760, width: 40, height: 40}, {x: 440, y: 760, width: 40, height: 40}, {x: 480, y: 760, width: 40, height: 40}, {x: 520, y: 760, width: 40, height: 40}, {x: 560, y: 760, width: 40, height: 40}, {x: 640, y: 760, width: 40, height: 40}, {x: 680, y: 760, width: 40, height: 40}, {x: 720, y: 760, width: 40, height: 40},
-                
-                // Add paths under all door positions so they're walkable
-                // Math doors
-                {x: 520, y: 0, width: 40, height: 40}, // N1 math door
-                {x: 760, y: 120, width: 40, height: 40}, // T4 math door
-                {x: 0, y: 200, width: 40, height: 40}, // A6 math door
-                {x: 240, y: 240, width: 40, height: 40}, // G7 math door
-                {x: 400, y: 280, width: 40, height: 40}, // K8 math door
-                {x: 120, y: 320, width: 40, height: 40}, // D9 math door
-                {x: 440, y: 400, width: 40, height: 40}, // L11 math door
-                {x: 520, y: 560, width: 40, height: 40}, // N15 math door
-                {x: 0, y: 720, width: 40, height: 40}, // A19 math door
-                {x: 600, y: 760, width: 40, height: 40}, // P20 math door
-                
-                // Reading doors
-                {x: 40, y: 80, width: 40, height: 40}, // B3 reading door
-                {x: 320, y: 160, width: 40, height: 40}, // I5 reading door
-                {x: 760, y: 360, width: 40, height: 40}, // T10 reading door
-                {x: 320, y: 400, width: 40, height: 40}, // I11 reading door
-                {x: 440, y: 520, width: 40, height: 40}, // L14 reading door
-                {x: 0, y: 600, width: 40, height: 40}, // A16 reading door
-                {x: 360, y: 760, width: 40, height: 40}, // J20 reading door
-                {x: 600, y: 520, width: 40, height: 40}, // P14 math door
-                
-                {x: 760, y: 760, width: 40, height: 40} // T20 watering hole
-            ]
+            paths: [] // Will be populated from CSV
         };
+        
+        // Initialize game with dynamic maze and word list data
+        async function initializeGame() {
+            // Load both maze data and word list in parallel
+            const [mazeData, wordList] = await Promise.all([
+                loadMazeFromCSV(),
+                loadWordListFromFile()
+            ]);
+            
+            game.doors = mazeData.doors;
+            game.paths = mazeData.paths;
+            game.watering_hole = mazeData.watering_hole;
+            game.wordEmojiPairs = wordList;
+            
+            // Start the game after both are loaded
+            gameLoop();
+        }
         
         function updateScore(points) {
             game.score += points;
@@ -656,32 +771,17 @@
                 });
             } else if (type === 'reading') {
                 // Reading problems - word to emoji matching
-                const wordEmojiPairs = [
-                    { word: "BAG", emoji: "💼" },
-                    { word: "MAP", emoji: "🗺️" },
-                    { word: "HAT", emoji: "🧢" },
-                    { word: "LEG", emoji: "🦵" },
-                    { word: "GEM", emoji: "💎" },
-                    { word: "DOT", emoji: "⚪️" },
-                    { word: "TEN", emoji: "🔟" },
-                    { word: "BOX", emoji: "📦" },
-                    { word: "FOX", emoji: "🦊" },
-                    { word: "CAR", emoji: "🚗" },
-                    { word: "CAT", emoji: "🐈" },
-                    { word: "DOG", emoji: "🐕" },
-                    { word: "LOG", emoji: "🪵" },
-                    { word: "SUN", emoji: "☀️" },
-                    { word: "CUP", emoji: "☕️" },
-                    { word: "FLY", emoji: "🪰" },
-                    { word: "BED", emoji: "🛏️" },
-                    { word: "RAT", emoji: "🐀" },
-                    { word: "BAT", emoji: "🦇" },
-                    { word: "PEN", emoji: "🖊️" },
-                    { word: "PIG", emoji: "🐖" }
-                ];
+                // Use dynamically loaded word list
+                const wordEmojiPairs = game.wordEmojiPairs;
                 
                 // Pick a random word-emoji pair
                 const correctPair = wordEmojiPairs[Math.floor(Math.random() * wordEmojiPairs.length)];
+                
+                // Check if word list is loaded
+                if (!wordEmojiPairs || wordEmojiPairs.length === 0) {
+                    console.error('Word list not loaded yet!');
+                    return;
+                }
                 
                 // Generate random wrong emojis
                 const allEmojis = wordEmojiPairs.map(pair => pair.emoji);
@@ -917,7 +1017,8 @@
         levelSprites[1].movement.onload = drawLevelSprites;
         levelSprites[2].movement.onload = drawLevelSprites;
         
-        gameLoop();
+        // Initialize game with dynamic maze loading
+        initializeGame();
     </script>
 </body>
 </html>
