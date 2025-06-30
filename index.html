@@ -63,57 +63,190 @@
         
         #puzzleContent {
             position: absolute;
-            top: 50%;
+            top: 35%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            padding: 30px;
+            padding: 40px;
             border-radius: 20px;
             text-align: center;
-            min-width: 300px;
+            min-width: 500px;
+            max-width: 700px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        #puzzleTitle {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        
+        #puzzleQuestion {
+            font-size: 20px;
+            margin-bottom: 25px;
         }
         
         .puzzle-button {
             background: #4CAF50;
             color: white;
             border: none;
-            padding: 16px 32px;
-            margin: 10px;
+            padding: 20px 40px;
+            margin: 12px;
             border-radius: 25px;
-            font-size: 20px;
+            font-size: 24px;
             cursor: pointer;
             font-family: inherit;
-            min-width: 80px;
-            min-height: 60px;
+            min-width: 100px;
+            min-height: 80px;
         }
         
         .puzzle-button:hover {
             background: #45a049;
         }
         
-        #instructions {
+        
+        #celebrationScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #87CEEB;
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #celebrationContent {
             text-align: center;
-            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #celebrationSprite {
+            margin-bottom: 30px;
+        }
+        
+        #playAgainBtn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-family: inherit;
+            font-weight: bold;
+        }
+        
+        #playAgainBtn:hover {
+            background: #45a049;
+        }
+        
+        #levelSelect {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #87CEEB, #98FB98);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #levelSelectContent {
+            text-align: center;
             color: #2E8B57;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+        
+        .level-btn {
+            background: white;
+            border: 3px solid #4CAF50;
+            padding: 20px;
+            margin: 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            min-width: 200px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .level-btn:hover {
+            border-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .level-sprite {
+            width: 120px;
+            height: 120px;
+        }
+        
+        #gameOverScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #gameOverContent {
+            text-align: center;
+            color: white;
+        }
+        
+        #gameOverContent h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+        }
+        
+        #gameOverBtn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 25px 50px;
+            font-size: 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            min-width: 250px;
+        }
+        
+        #gameOverBtn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
-    <h1>🐘 Elephant Maze Adventure 🌊</h1>
     
     <div id="gameContainer">
         <div id="gameInfo">
-            <div id="score">Points: 10</div>
+            <div id="score">♥️♥️♥️♥️♥️</div>
             <div id="level">Level: 1</div>
         </div>
         
-        <div id="instructions">
-            Use arrow keys to move the elephant to the watering hole!<br>
-            Solve puzzles to open doors and earn points!
-        </div>
-        
-        <canvas id="gameCanvas" width="860" height="860"></canvas>
+        <canvas id="gameCanvas" width="820" height="820"></canvas>
     </div>
     
     <div id="puzzleModal">
@@ -125,21 +258,68 @@
         </div>
     </div>
     
+    <div id="celebrationScreen">
+        <div id="celebrationContent">
+            <canvas id="celebrationSprite" width="620" height="747"></canvas>
+            <button id="playAgainBtn" onclick="playAgain()">Play Again</button>
+        </div>
+    </div>
+    
+    <div id="levelSelect">
+        <div id="levelSelectContent">
+            <h1>Maze Game</h1>
+            <button class="level-btn" onclick="selectLevel(1)">
+                <canvas class="level-sprite" id="level1Sprite" width="120" height="120"></canvas>
+            </button>
+            <button class="level-btn" onclick="selectLevel(2)">
+                <canvas class="level-sprite" id="level2Sprite" width="120" height="120"></canvas>
+            </button>
+        </div>
+    </div>
+    
+    <div id="gameOverScreen">
+        <div id="gameOverContent">
+            <h1>GAME OVER 😭</h1>
+            <button id="gameOverBtn" onclick="restartGame()">Try Again</button>
+        </div>
+    </div>
+    
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
-        // Load elephant sprite sheet (SVG)
-        const elephantSprites = new Image();
-        elephantSprites.src = 'Sprites.svg';
+        // Load sprite sheets for both levels
+        const levelSprites = {
+            1: {
+                movement: new Image(),
+                celebration: new Image()
+            },
+            2: {
+                movement: new Image(),
+                celebration: new Image()
+            }
+        };
+        
+        // Load Level 1 sprites (Elephant)
+        levelSprites[1].movement.src = 'PT-sprite.svg';
+        levelSprites[1].celebration.src = 'celebrate.png';
+        
+        // Load Level 2 sprites (Enderman)
+        levelSprites[2].movement.src = 'enderman-sprite.svg';
+        levelSprites[2].celebration.src = 'enderman-celebration.png';
+        
+        // Current sprites (will be set based on selected level)
+        let currentMovementSprites = levelSprites[1].movement;
+        let currentCelebrationSprites = levelSprites[1].celebration;
         
         // Improve canvas rendering quality
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
         
         const game = {
-            score: 10,
-            level: 1,
+            score: 5,
+            currentLevel: 1,
+            selectedLevel: 1,
             player: {
                 x: 0,
                 y: 0,
@@ -177,6 +357,9 @@
             watering_hole: { x: 760, y: 760 },
             tileSize: 40,
             puzzleActive: false,
+            celebrating: false,
+            celebrationFrame: 0,
+            celebrationTimer: 0,
             paths: [
                 // Regular paths from CSV
                 {x: 0, y: 0, width: 40, height: 40}, {x: 40, y: 0, width: 40, height: 40}, {x: 80, y: 0, width: 40, height: 40}, {x: 120, y: 0, width: 40, height: 40}, {x: 160, y: 0, width: 40, height: 40}, {x: 200, y: 0, width: 40, height: 40}, {x: 240, y: 0, width: 40, height: 40}, {x: 280, y: 0, width: 40, height: 40}, {x: 320, y: 0, width: 40, height: 40}, {x: 360, y: 0, width: 40, height: 40}, {x: 400, y: 0, width: 40, height: 40}, {x: 440, y: 0, width: 40, height: 40}, {x: 480, y: 0, width: 40, height: 40}, {x: 560, y: 0, width: 40, height: 40}, {x: 600, y: 0, width: 40, height: 40}, {x: 640, y: 0, width: 40, height: 40}, {x: 680, y: 0, width: 40, height: 40}, {x: 720, y: 0, width: 40, height: 40}, {x: 760, y: 0, width: 40, height: 40}, {x: 40, y: 40, width: 40, height: 40}, {x: 640, y: 40, width: 40, height: 40}, {x: 760, y: 40, width: 40, height: 40}, {x: 80, y: 80, width: 40, height: 40}, {x: 120, y: 80, width: 40, height: 40}, {x: 160, y: 80, width: 40, height: 40}, {x: 240, y: 80, width: 40, height: 40}, {x: 320, y: 80, width: 40, height: 40}, {x: 360, y: 80, width: 40, height: 40}, {x: 400, y: 80, width: 40, height: 40}, {x: 440, y: 80, width: 40, height: 40}, {x: 480, y: 80, width: 40, height: 40}, {x: 520, y: 80, width: 40, height: 40}, {x: 560, y: 80, width: 40, height: 40}, {x: 640, y: 80, width: 40, height: 40}, {x: 160, y: 120, width: 40, height: 40}, {x: 240, y: 120, width: 40, height: 40}, {x: 320, y: 120, width: 40, height: 40}, {x: 560, y: 120, width: 40, height: 40}, {x: 640, y: 120, width: 40, height: 40}, {x: 680, y: 120, width: 40, height: 40}, {x: 720, y: 120, width: 40, height: 40}, {x: 0, y: 160, width: 40, height: 40}, {x: 40, y: 160, width: 40, height: 40}, {x: 80, y: 160, width: 40, height: 40}, {x: 120, y: 160, width: 40, height: 40}, {x: 160, y: 160, width: 40, height: 40}, {x: 240, y: 160, width: 40, height: 40}, {x: 280, y: 160, width: 40, height: 40}, {x: 400, y: 160, width: 40, height: 40}, {x: 440, y: 160, width: 40, height: 40}, {x: 480, y: 160, width: 40, height: 40}, {x: 520, y: 160, width: 40, height: 40}, {x: 560, y: 160, width: 40, height: 40}, {x: 760, y: 160, width: 40, height: 40}, {x: 320, y: 200, width: 40, height: 40}, {x: 400, y: 200, width: 40, height: 40}, {x: 760, y: 200, width: 40, height: 40}, {x: 0, y: 240, width: 40, height: 40}, {x: 40, y: 240, width: 40, height: 40}, {x: 80, y: 240, width: 40, height: 40}, {x: 120, y: 240, width: 40, height: 40}, {x: 160, y: 240, width: 40, height: 40}, {x: 200, y: 240, width: 40, height: 40}, {x: 320, y: 240, width: 40, height: 40}, {x: 400, y: 240, width: 40, height: 40}, {x: 480, y: 240, width: 40, height: 40}, {x: 520, y: 240, width: 40, height: 40}, {x: 560, y: 240, width: 40, height: 40}, {x: 600, y: 240, width: 40, height: 40}, {x: 640, y: 240, width: 40, height: 40}, {x: 680, y: 240, width: 40, height: 40}, {x: 720, y: 240, width: 40, height: 40}, {x: 760, y: 240, width: 40, height: 40}, {x: 240, y: 280, width: 40, height: 40}, {x: 320, y: 280, width: 40, height: 40}, {x: 760, y: 280, width: 40, height: 40}, {x: 40, y: 320, width: 40, height: 40}, {x: 80, y: 320, width: 40, height: 40}, {x: 160, y: 320, width: 40, height: 40}, {x: 240, y: 320, width: 40, height: 40}, {x: 320, y: 320, width: 40, height: 40}, {x: 400, y: 320, width: 40, height: 40}, {x: 440, y: 320, width: 40, height: 40}, {x: 480, y: 320, width: 40, height: 40}, {x: 520, y: 320, width: 40, height: 40}, {x: 560, y: 320, width: 40, height: 40}, {x: 600, y: 320, width: 40, height: 40}, {x: 640, y: 320, width: 40, height: 40}, {x: 680, y: 320, width: 40, height: 40}, {x: 720, y: 320, width: 40, height: 40}, {x: 760, y: 320, width: 40, height: 40}, {x: 40, y: 360, width: 40, height: 40}, {x: 160, y: 360, width: 40, height: 40}, {x: 240, y: 360, width: 40, height: 40}, {x: 320, y: 360, width: 40, height: 40}, {x: 40, y: 400, width: 40, height: 40}, {x: 120, y: 400, width: 40, height: 40}, {x: 160, y: 400, width: 40, height: 40}, {x: 200, y: 400, width: 40, height: 40}, {x: 240, y: 400, width: 40, height: 40}, {x: 280, y: 400, width: 40, height: 40}, {x: 360, y: 400, width: 40, height: 40}, {x: 400, y: 400, width: 40, height: 40}, {x: 480, y: 400, width: 40, height: 40}, {x: 520, y: 400, width: 40, height: 40}, {x: 560, y: 400, width: 40, height: 40}, {x: 600, y: 400, width: 40, height: 40}, {x: 640, y: 400, width: 40, height: 40}, {x: 680, y: 400, width: 40, height: 40}, {x: 760, y: 400, width: 40, height: 40}, {x: 40, y: 440, width: 40, height: 40}, {x: 240, y: 440, width: 40, height: 40}, {x: 320, y: 440, width: 40, height: 40}, {x: 680, y: 440, width: 40, height: 40}, {x: 760, y: 440, width: 40, height: 40}, {x: 40, y: 480, width: 40, height: 40}, {x: 80, y: 480, width: 40, height: 40}, {x: 120, y: 480, width: 40, height: 40}, {x: 160, y: 480, width: 40, height: 40}, {x: 200, y: 480, width: 40, height: 40}, {x: 240, y: 480, width: 40, height: 40}, {x: 320, y: 480, width: 40, height: 40}, {x: 440, y: 480, width: 40, height: 40}, {x: 480, y: 480, width: 40, height: 40}, {x: 520, y: 480, width: 40, height: 40}, {x: 560, y: 480, width: 40, height: 40}, {x: 600, y: 480, width: 40, height: 40}, {x: 680, y: 480, width: 40, height: 40}, {x: 760, y: 480, width: 40, height: 40}, {x: 320, y: 520, width: 40, height: 40}, {x: 360, y: 520, width: 40, height: 40}, {x: 400, y: 520, width: 40, height: 40}, {x: 680, y: 520, width: 40, height: 40}, {x: 720, y: 520, width: 40, height: 40}, {x: 760, y: 520, width: 40, height: 40}, {x: 0, y: 560, width: 40, height: 40}, {x: 40, y: 560, width: 40, height: 40}, {x: 80, y: 560, width: 40, height: 40}, {x: 120, y: 560, width: 40, height: 40}, {x: 160, y: 560, width: 40, height: 40}, {x: 200, y: 560, width: 40, height: 40}, {x: 240, y: 560, width: 40, height: 40}, {x: 320, y: 560, width: 40, height: 40}, {x: 440, y: 560, width: 40, height: 40}, {x: 600, y: 560, width: 40, height: 40}, {x: 320, y: 600, width: 40, height: 40}, {x: 360, y: 600, width: 40, height: 40}, {x: 400, y: 600, width: 40, height: 40}, {x: 440, y: 600, width: 40, height: 40}, {x: 520, y: 600, width: 40, height: 40}, {x: 600, y: 600, width: 40, height: 40}, {x: 640, y: 600, width: 40, height: 40}, {x: 680, y: 600, width: 40, height: 40}, {x: 720, y: 600, width: 40, height: 40}, {x: 760, y: 600, width: 40, height: 40}, {x: 0, y: 640, width: 40, height: 40}, {x: 80, y: 640, width: 40, height: 40}, {x: 120, y: 640, width: 40, height: 40}, {x: 160, y: 640, width: 40, height: 40}, {x: 200, y: 640, width: 40, height: 40}, {x: 240, y: 640, width: 40, height: 40}, {x: 280, y: 640, width: 40, height: 40}, {x: 320, y: 640, width: 40, height: 40}, {x: 520, y: 640, width: 40, height: 40}, {x: 760, y: 640, width: 40, height: 40}, {x: 0, y: 680, width: 40, height: 40}, {x: 80, y: 680, width: 40, height: 40}, {x: 120, y: 680, width: 40, height: 40}, {x: 160, y: 680, width: 40, height: 40}, {x: 200, y: 680, width: 40, height: 40}, {x: 240, y: 680, width: 40, height: 40}, {x: 280, y: 680, width: 40, height: 40}, {x: 320, y: 680, width: 40, height: 40}, {x: 360, y: 680, width: 40, height: 40}, {x: 400, y: 680, width: 40, height: 40}, {x: 440, y: 680, width: 40, height: 40}, {x: 480, y: 680, width: 40, height: 40}, {x: 520, y: 680, width: 40, height: 40}, {x: 560, y: 680, width: 40, height: 40}, {x: 600, y: 680, width: 40, height: 40}, {x: 640, y: 680, width: 40, height: 40}, {x: 680, y: 680, width: 40, height: 40}, {x: 720, y: 680, width: 40, height: 40}, {x: 760, y: 680, width: 40, height: 40}, {x: 760, y: 720, width: 40, height: 40}, {x: 0, y: 760, width: 40, height: 40}, {x: 40, y: 760, width: 40, height: 40}, {x: 80, y: 760, width: 40, height: 40}, {x: 120, y: 760, width: 40, height: 40}, {x: 160, y: 760, width: 40, height: 40}, {x: 200, y: 760, width: 40, height: 40}, {x: 240, y: 760, width: 40, height: 40}, {x: 280, y: 760, width: 40, height: 40}, {x: 320, y: 760, width: 40, height: 40}, {x: 400, y: 760, width: 40, height: 40}, {x: 440, y: 760, width: 40, height: 40}, {x: 480, y: 760, width: 40, height: 40}, {x: 520, y: 760, width: 40, height: 40}, {x: 560, y: 760, width: 40, height: 40}, {x: 640, y: 760, width: 40, height: 40}, {x: 680, y: 760, width: 40, height: 40}, {x: 720, y: 760, width: 40, height: 40},
@@ -210,7 +393,10 @@
         
         function updateScore(points) {
             game.score += points;
-            document.getElementById('score').textContent = `Points: ${game.score}`;
+            
+            // Update hearts display
+            const heartsDisplay = '♥️'.repeat(Math.max(0, game.score));
+            document.getElementById('score').textContent = heartsDisplay;
             
             if (game.score <= 0) {
                 gameOver();
@@ -218,10 +404,24 @@
         }
         
         function gameOver() {
-            alert('Game Over! The elephant needs more practice. Try again!');
-            game.score = 10;
+            document.getElementById('gameOverScreen').style.display = 'flex';
+        }
+        
+        function restartGame() {
+            document.getElementById('gameOverScreen').style.display = 'none';
+            game.score = 5;
             game.player.x = 0;
             game.player.y = 0;
+            game.player.direction = 'right';
+            
+            // Reset all doors
+            game.doors.forEach(door => {
+                door.open = false;
+                door.color = door.type === 'math' ? '#FF6B6B' : '#4ECDC4';
+                door.currentProblemAttempts = 0;
+                door.failedAttempts = 0;
+            });
+            
             updateScore(0);
         }
         
@@ -242,113 +442,86 @@
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Draw maze background (offset for labels)
+            // Draw maze background with padding for character visibility
             ctx.fillStyle = '#2F4F2F';
-            ctx.fillRect(30, 30, 800, 800); // 20 * 40 = 800
+            ctx.fillRect(10, 10, 800, 800);
             
-            // Draw grid labels with background for visibility
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, 860, 30); // Top label area
-            ctx.fillRect(0, 0, 30, 860); // Left label area
-            
-            ctx.fillStyle = '#FFFFFF';
-            ctx.font = '20px Arial';
-            ctx.textAlign = 'center';
-            
-            // Column labels (A-T)
-            for (let i = 0; i < 20; i++) {
-                const letter = String.fromCharCode(65 + i); // A=65, B=66, etc.
-                ctx.fillText(letter, 30 + i * 40 + 20, 20);
-            }
-            
-            // Row labels (1-20)
-            ctx.textAlign = 'center';
-            for (let i = 0; i < 20; i++) {
-                ctx.fillText((i + 1).toString(), 15, 30 + i * 40 + 25);
-            }
-            
-            // Draw grid lines for reference
-            ctx.strokeStyle = '#555';
-            ctx.lineWidth = 1;
-            // Vertical grid lines
-            for (let i = 0; i <= 20; i++) {
-                ctx.beginPath();
-                ctx.moveTo(30 + i * 40, 30); // 40px grid
-                ctx.lineTo(30 + i * 40, 830);
-                ctx.stroke();
-            }
-            // Horizontal grid lines
-            for (let i = 0; i <= 20; i++) {
-                ctx.beginPath();
-                ctx.moveTo(30, 30 + i * 40); // 40px grid
-                ctx.lineTo(830, 30 + i * 40);
-                ctx.stroke();
-            }
-            
-            // Draw paths (offset by 30px)
-            ctx.fillStyle = '#90EE90'; // Light green paths
+            // Draw paths (with 10px padding)
+            ctx.fillStyle = '#B8F2B8'; // Lighter shade of green paths
             game.paths.forEach(path => {
-                ctx.fillRect(path.x + 30, path.y + 30, path.width, path.height);
+                ctx.fillRect(path.x + 10, path.y + 10, path.width, path.height);
             });
             
             // Draw path borders for visual clarity
             ctx.strokeStyle = '#228B22';
             ctx.lineWidth = 2;
             game.paths.forEach(path => {
-                ctx.strokeRect(path.x + 30, path.y + 30, path.width, path.height);
+                ctx.strokeRect(path.x + 10, path.y + 10, path.width, path.height);
             });
             
             // Draw doors (offset by 30px)
             game.doors.forEach(door => {
                 if (!door.open) {
                     ctx.fillStyle = door.color;
-                    ctx.fillRect(door.x + 30, door.y + 30, game.tileSize, game.tileSize);
+                    ctx.fillRect(door.x + 10, door.y + 10, game.tileSize, game.tileSize);
                     ctx.fillStyle = '#000';
                     ctx.font = '20px Arial';
                     ctx.textAlign = 'center';
-                    const symbol = door.type === 'math' ? '➕' : door.type === 'reading' ? '📖' : '🔀';
-                    ctx.fillText(symbol, door.x + 30 + 20, door.y + 30 + 25);
+                    const symbol = door.type === 'math' ? '🪨' : door.type === 'reading' ? '📚' : '🔀';
+                    ctx.fillText(symbol, door.x + 30, door.y + 35);
                 }
             });
             
-            // Draw watering hole (offset by 30px and centered in grid cell)
-            ctx.fillStyle = '#1E90FF';
-            ctx.beginPath();
-            ctx.arc(game.watering_hole.x + 30 + 20, game.watering_hole.y + 30 + 20, 15, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#87CEEB';
-            ctx.beginPath();
-            ctx.arc(game.watering_hole.x + 30 + 20, game.watering_hole.y + 30 + 20, 10, 0, Math.PI * 2);
-            ctx.fill();
+            // Draw watering hole (pink background with cake emoji)
+            ctx.fillStyle = '#FFB6C1'; // Light pink background
+            ctx.fillRect(game.watering_hole.x + 10, game.watering_hole.y + 10, 40, 40);
+            ctx.fillStyle = '#000';
+            ctx.font = '30px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🎂', game.watering_hole.x + 30, game.watering_hole.y + 38);
             
             // Draw elephant sprite (offset by 30px)
-            if (elephantSprites.complete) {
+            if (currentMovementSprites.complete) {
                 // Calculate which frame to use based on direction and animation
                 let frameX = 0;
                 if (game.player.direction === 'right') {
-                    frameX = (game.player.animFrame === 0) ? 0 : 160; // Frames A1, A2
+                    frameX = (game.player.animFrame === 0) ? 0 : 160; // Frames 1, 2
                 } else if (game.player.direction === 'left') {
-                    frameX = (game.player.animFrame === 0) ? 320 : 480; // Frames A3, A4
+                    frameX = (game.player.animFrame === 0) ? 320 : 480; // Frames 3, 4
+                } else if (game.player.direction === 'up') {
+                    frameX = (game.player.animFrame === 0) ? 640 : 800; // Frames 5, 6
+                } else if (game.player.direction === 'down') {
+                    frameX = (game.player.animFrame === 0) ? 640 : 800; // Frames 5, 6 (same as up for now)
                 }
                 
                 // Draw the sprite frame (160x160 from SVG sprite sheet)
                 ctx.drawImage(
-                    elephantSprites,
+                    currentMovementSprites,
                     frameX, 0, 160, 160, // Source: x, y, width, height from sprite sheet
-                    game.player.x + 30 - 10, game.player.y + 30 - 10, 60, 60 // Destination: x, y, width, height (centered in 40px grid)
+                    game.player.x, game.player.y, 60, 60 // Destination: x, y, width, height (centered in 40px grid)
                 );
             } else {
                 // Fallback while sprite loads
                 ctx.fillStyle = '#D3D3D3';
                 ctx.beginPath();
-                ctx.arc(game.player.x + 30 + 20, game.player.y + 30 + 20, game.player.size, 0, Math.PI * 2);
+                ctx.arc(game.player.x + 30, game.player.y + 30, game.player.size, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.fillStyle = '#000';
                 ctx.font = '30px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('🐘', game.player.x + 30 + 20, game.player.y + 30 + 23);
+                ctx.fillText('🐘', game.player.x + 30, game.player.y + 33);
             }
         }
+        
+        // Global arrow key prevention (works even during puzzles)
+        document.addEventListener('keydown', (e) => {
+            // Handle both modern and legacy key codes
+            const key = e.key || e.code;
+            const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Up', 'Down', 'Left', 'Right'];
+            if (arrowKeys.includes(key)) {
+                e.preventDefault();
+            }
+        });
         
         // Keyboard controls
         document.addEventListener('keydown', (e) => {
@@ -364,15 +537,23 @@
             
             switch(e.key) {
                 case 'ArrowUp':
+                case 'w':
+                case 'W':
                     newY -= game.tileSize;
                     break;
                 case 'ArrowDown':
+                case 's':
+                case 'S':
                     newY += game.tileSize;
                     break;
                 case 'ArrowLeft':
+                case 'a':
+                case 'A':
                     newX -= game.tileSize;
                     break;
                 case 'ArrowRight':
+                case 'd':
+                case 'D':
                     newX += game.tileSize;
                     break;
                 default:
@@ -388,14 +569,14 @@
                     game.player.y = newY;
                     
                     // Update direction and start animation
-                    if (e.key === 'ArrowLeft') {
+                    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
                         game.player.direction = 'left';
-                    } else if (e.key === 'ArrowRight') {
+                    } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
                         game.player.direction = 'right';
-                    }
-                    // For now, up/down will use right direction until you add those sprites
-                    else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                        game.player.direction = 'right';
+                    } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+                        game.player.direction = 'up';
+                    } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+                        game.player.direction = 'down';
                     }
                     
                     // Trigger walking animation
@@ -419,11 +600,7 @@
                 Math.pow(game.player.y + 20 - game.watering_hole.y, 2)
             );
             if (distance < 40) {
-                alert('🎉 Congratulations! The elephant reached the watering hole! 🎉');
-                game.level++;
-                document.getElementById('level').textContent = `Level: ${game.level}`;
-                game.player.x = 0;
-                game.player.y = 0;
+                showCelebration();
             }
         });
         
@@ -439,27 +616,29 @@
             if (type === 'math') {
                 const isAddition = Math.random() < 0.5;
                 let num1, num2, answer;
+                const maxAnswer = game.selectedLevel === 2 ? 10 : 20; // Level 2 (Enderman) max 10, Level 1 max 20
                 
                 if (isAddition) {
-                    // For addition, ensure sum doesn't exceed 20
-                    num1 = Math.floor(Math.random() * 19) + 1; // 1-19
-                    num2 = Math.floor(Math.random() * (20 - num1)) + 1; // 1 to (20-num1)
+                    // For addition, ensure sum doesn't exceed maxAnswer
+                    const maxNum1 = maxAnswer - 1;
+                    num1 = Math.floor(Math.random() * maxNum1) + 1; // 1 to (maxAnswer-1)
+                    num2 = Math.floor(Math.random() * (maxAnswer - num1)) + 1; // 1 to (maxAnswer-num1)
                     answer = num1 + num2;
                     title.textContent = `${num1} + ${num2} = ?`;
                 } else {
-                    // For subtraction, ensure result is between 1-20
-                    num1 = Math.floor(Math.random() * 20) + 1;
-                    num2 = Math.floor(Math.random() * Math.min(num1, 20)) + 1;
+                    // For subtraction, ensure result is between 1-maxAnswer
+                    num1 = Math.floor(Math.random() * maxAnswer) + 1;
+                    num2 = Math.floor(Math.random() * Math.min(num1, maxAnswer)) + 1;
                     answer = num1 - num2;
                     title.textContent = `${num1} - ${num2} = ?`;
                 }
                 
                 question.textContent = '';
                 
-                // Generate wrong answers between 1-20
+                // Generate wrong answers between 1-maxAnswer
                 const wrongAnswers = [];
                 while (wrongAnswers.length < 2) {
-                    const wrong = Math.floor(Math.random() * 20) + 1;
+                    const wrong = Math.floor(Math.random() * maxAnswer) + 1;
                     if (wrong !== answer && !wrongAnswers.includes(wrong)) {
                         wrongAnswers.push(wrong);
                     }
@@ -524,7 +703,7 @@
                     const button = document.createElement('button');
                     button.className = 'puzzle-button';
                     button.textContent = emoji;
-                    button.style.fontSize = '32px'; // Make emojis bigger
+                    button.style.fontSize = '40px'; // Make emojis bigger
                     button.style.background = 'white'; // White background for emoji buttons
                     button.style.color = 'black'; // Black text for better contrast
                     button.style.border = '3px solid #4CAF50'; // Green border
@@ -544,6 +723,7 @@
             if (correct) {
                 result.innerHTML = '👍';
                 result.style.color = 'green';
+                result.style.fontSize = '48px'; // Make thumbs up bigger
                 door.open = true;
                 
                 // Give +1 point for correct answer (net effect: 1 - number_of_wrong_attempts)
@@ -555,11 +735,15 @@
                 door.currentProblemAttempts = 0;
                 door.failedAttempts = 0;
                 
+                // Change door color to match open path
+                door.color = '#B8F2B8';
+                
                 setTimeout(() => {
                     document.getElementById('puzzleModal').style.display = 'none';
                     result.innerHTML = '';
+                    result.style.fontSize = ''; // Reset font size
                     game.puzzleActive = false;
-                }, 1500);
+                }, 800); // Faster disappear (800ms instead of 1500ms)
             } else {
                 result.innerHTML = '👎';
                 result.style.color = 'red';
@@ -594,6 +778,93 @@
             }
         }
         
+        function showCelebration() {
+            game.celebrating = true;
+            game.celebrationFrame = 0;
+            game.celebrationTimer = 0;
+            document.getElementById('celebrationScreen').style.display = 'flex';
+            animateCelebration();
+        }
+        
+        function animateCelebration() {
+            if (!game.celebrating) return;
+            
+            const canvas = document.getElementById('celebrationSprite');
+            const ctx = canvas.getContext('2d');
+            
+            if (currentCelebrationSprites.complete) {
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Calculate frame position (8 frames, 620x747 each)
+                const frameX = game.celebrationFrame * 620;
+                
+                // Draw current frame (full size)
+                ctx.drawImage(
+                    currentCelebrationSprites,
+                    frameX, 0, 620, 747, // Source frame
+                    0, 0, 620, 747 // Destination (full size)
+                );
+                
+                // Update frame counter
+                game.celebrationTimer++;
+                if (game.celebrationTimer >= 25) { // Change frame every 25 animation cycles (slower)
+                    game.celebrationFrame = (game.celebrationFrame + 1) % 8; // Loop through 8 frames
+                    game.celebrationTimer = 0;
+                }
+            }
+            
+            requestAnimationFrame(animateCelebration);
+        }
+        
+        function selectLevel(levelNum) {
+            game.selectedLevel = levelNum;
+            game.currentLevel = 1;
+            
+            // Set current sprites based on selected level
+            currentMovementSprites = levelSprites[levelNum].movement;
+            currentCelebrationSprites = levelSprites[levelNum].celebration;
+            
+            // Hide level select and start game
+            document.getElementById('levelSelect').style.display = 'none';
+            
+            // Reset game state
+            resetGame();
+        }
+        
+        function resetGame() {
+            game.player.x = 0;
+            game.player.y = 0;
+            game.player.direction = 'right';
+            game.score = 5;
+            updateScore(0); // This will set the hearts display
+            document.getElementById('level').textContent = `Level: ${game.currentLevel}`;
+            
+            // Reset all doors
+            game.doors.forEach(door => {
+                door.open = false;
+                door.color = door.type === 'math' ? '#FF6B6B' : '#4ECDC4';
+                door.currentProblemAttempts = 0;
+                door.failedAttempts = 0;
+            });
+        }
+        
+        function playAgain() {
+            game.celebrating = false;
+            document.getElementById('celebrationScreen').style.display = 'none';
+            
+            // Go to next level or back to level select
+            game.currentLevel++;
+            if (game.currentLevel > 1) {
+                // Completed all levels for this character, go back to level select
+                game.currentLevel = 1;
+                document.getElementById('levelSelect').style.display = 'flex';
+            } else {
+                // Continue to next level with same character
+                resetGame();
+            }
+        }
+        
         // Game loop
         function gameLoop() {
             // Update animation timer
@@ -605,9 +876,46 @@
                 game.player.animTimer = 0;
             }
             
-            drawGame();
+            if (!game.celebrating) {
+                drawGame();
+            }
             requestAnimationFrame(gameLoop);
         }
+        
+        // Draw level selection sprites
+        function drawLevelSprites() {
+            // Draw Level 1 sprite (last frame of elephant movement)
+            const canvas1 = document.getElementById('level1Sprite');
+            const ctx1 = canvas1.getContext('2d');
+            if (levelSprites[1].movement.complete) {
+                ctx1.drawImage(
+                    levelSprites[1].movement,
+                    800, 0, 160, 160, // Last frame (frame 6) from movement sprite sheet
+                    0, 0, 120, 120 // Scale down to fit button
+                );
+            }
+            
+            // Draw Level 2 sprite (last frame of enderman movement)
+            const canvas2 = document.getElementById('level2Sprite');
+            const ctx2 = canvas2.getContext('2d');
+            if (levelSprites[2].movement.complete) {
+                ctx2.drawImage(
+                    levelSprites[2].movement,
+                    800, 0, 160, 160, // Last frame (frame 6) from movement sprite sheet
+                    0, 0, 120, 120 // Scale down to fit button
+                );
+            }
+        }
+        
+        // Start with level selection screen
+        document.getElementById('levelSelect').style.display = 'flex';
+        
+        // Initialize hearts display
+        updateScore(0);
+        
+        // Draw level sprites when images load
+        levelSprites[1].movement.onload = drawLevelSprites;
+        levelSprites[2].movement.onload = drawLevelSprites;
         
         gameLoop();
     </script>
