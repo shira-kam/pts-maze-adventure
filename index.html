@@ -58,7 +58,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.7);
-            z-index: 1000;
+            z-index: 5000;
         }
         
         #puzzleContent {
@@ -236,6 +236,54 @@
             background: #45a049;
             transform: translateY(-2px);
         }
+        
+        #difficultySelect {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #87CEEB, #98FB98);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #difficultySelectContent {
+            text-align: center;
+            color: #2E8B57;
+        }
+        
+        #difficultySelectContent h1 {
+            font-size: 48px;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .difficulty-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 30px 60px;
+            margin: 20px;
+            border-radius: 25px;
+            font-size: 28px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            min-width: 300px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
     </style>
 </head>
 <body>
@@ -260,7 +308,7 @@
     
     <div id="celebrationScreen">
         <div id="celebrationContent">
-            <canvas id="celebrationSprite" width="620" height="747"></canvas>
+            <canvas id="celebrationSprite" width="800" height="900"></canvas>
             <button id="playAgainBtn" onclick="playAgain()">Play Again</button>
         </div>
     </div>
@@ -284,6 +332,15 @@
         </div>
     </div>
     
+    <div id="difficultySelect">
+        <div id="difficultySelectContent">
+            <h1>Choose Difficulty</h1>
+            <button class="difficulty-btn" onclick="selectDifficulty(1)">Level 1 💪</button>
+            <button class="difficulty-btn" onclick="selectDifficulty(2)">Level 2 💪💪</button>
+            <button class="difficulty-btn" onclick="selectDifficulty(3)">Level 3 💪💪💪</button>
+        </div>
+    </div>
+    
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -291,8 +348,10 @@
         // CSV Parser for dynamic maze loading
         async function loadMazeFromCSV() {
             try {
-                console.log('Attempting to load grid.csv...');
-                const response = await fetch('grid.csv?v=' + Date.now());
+                const csvPath = `level-${game.selectedDifficulty}/grid.csv`;
+                console.log(`Attempting to load ${csvPath}...`);
+                console.log('Selected difficulty:', game.selectedDifficulty);
+                const response = await fetch(csvPath + '?v=' + Date.now());
                 console.log('Fetch response status:', response.status);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -300,9 +359,10 @@
                 const csvText = await response.text();
                 console.log('CSV loaded successfully, length:', csvText.length);
                 console.log('First few lines:', csvText.split('\n').slice(0, 3).join('\n'));
+                console.log('Looking for r1/r2 doors in CSV:', csvText.includes('r1'), csvText.includes('r2'));
                 return parseMazeFromCSV(csvText);
             } catch (error) {
-                console.error('Error loading CSV:', error);
+                console.error('Error loading CSV for level', game.selectedDifficulty, ':', error);
                 console.log('Falling back to embedded CSV data');
                 // Fallback to embedded CSV data if file load fails
                 const fallbackCSV = `,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T
@@ -362,6 +422,16 @@
                             // Add path under door for walkability
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
+                        case 'r1':
+                            doors.push({ x, y, type: 'reading1', open: false, color: '#9C27B0' }); // Purple
+                            // Add path under door for walkability
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
+                        case 'r2':
+                            doors.push({ x, y, type: 'reading2', open: false, color: '#FF9800' }); // Orange
+                            // Add path under door for walkability
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
                         case 's':
                             doors.push({ x, y, type: 'sorting', open: false, color: '#FFD93D' });
                             // Add path under door for walkability
@@ -383,11 +453,13 @@
         // Word list parser for dynamic loading
         async function loadWordListFromFile() {
             try {
-                const response = await fetch('Word-List.txt?v=' + Date.now());
+                const wordListPath = `level-${game.selectedDifficulty}/Word-List.txt`;
+                console.log(`Attempting to load ${wordListPath}...`);
+                const response = await fetch(wordListPath + '?v=' + Date.now());
                 const wordListText = await response.text();
                 return parseWordList(wordListText);
             } catch (error) {
-                console.error('Error loading Word-List.txt:', error);
+                console.error(`Error loading Word-List.txt from level-${game.selectedDifficulty}:`, error);
                 // Fallback to embedded word list if file load fails
                 const fallbackWordList = `BAG 💼,
 MAP 🗺️,
@@ -438,7 +510,7 @@ PIG 🐖`;
         const levelSprites = {
             1: {
                 movement: new Image(),
-                celebration: new Image()
+                celebration: {}
             },
             2: {
                 movement: new Image(),
@@ -448,11 +520,37 @@ PIG 🐖`;
         
         // Load Level 1 sprites (Elephant)
         levelSprites[1].movement.src = 'PT-sprite.svg';
-        levelSprites[1].celebration.src = 'celebrate.png';
+        // Level 1 celebration sprites will be loaded dynamically based on difficulty
         
         // Load Level 2 sprites (Enderman)
         levelSprites[2].movement.src = 'enderman-sprite.svg';
         levelSprites[2].celebration.src = 'enderman-celebration.png';
+        
+        // Function to load celebration sprite based on character and difficulty
+        function loadCelebrationSprite(characterLevel, difficulty) {
+            const celebrationSprite = new Image();
+            const cacheBuster = '?v=' + Date.now();
+            
+            if (characterLevel === 1) { // Elephant
+                if (difficulty === 1) {
+                    celebrationSprite.src = 'celebrate.png' + cacheBuster;
+                } else if (difficulty === 2) {
+                    celebrationSprite.src = 'level-2/celebrate.png' + cacheBuster;
+                } else if (difficulty === 3) {
+                    celebrationSprite.src = 'level-3/celebrate.png' + cacheBuster;
+                }
+            } else if (characterLevel === 2) { // Enderman
+                if (difficulty === 1) {
+                    celebrationSprite.src = 'enderman-celebration.png' + cacheBuster;
+                } else if (difficulty === 2) {
+                    celebrationSprite.src = 'level-2/enderman-celebration.png' + cacheBuster;
+                } else if (difficulty === 3) {
+                    celebrationSprite.src = 'level-3/enderman-celebration.png' + cacheBuster;
+                }
+            }
+            
+            return celebrationSprite;
+        }
         
         // Current sprites (will be set based on selected level)
         let currentMovementSprites = levelSprites[1].movement;
@@ -467,6 +565,7 @@ PIG 🐖`;
             score: 5,
             currentLevel: 1,
             selectedLevel: 1,
+            selectedDifficulty: 1,
             player: {
                 x: 0,
                 y: 0,
@@ -502,6 +601,9 @@ PIG 🐖`;
             game.watering_hole = mazeData.watering_hole;
             game.wordEmojiPairs = wordList;
             
+            // Reset game state with new data
+            resetGame();
+            
             // Start the game after both are loaded
             gameLoop();
         }
@@ -523,21 +625,9 @@ PIG 🐖`;
         }
         
         function restartGame() {
+            // Show level selection screen again
             document.getElementById('gameOverScreen').style.display = 'none';
-            game.score = 5;
-            game.player.x = 0;
-            game.player.y = 0;
-            game.player.direction = 'right';
-            
-            // Reset all doors
-            game.doors.forEach(door => {
-                door.open = false;
-                door.color = door.type === 'math' ? '#FF6B6B' : '#4ECDC4';
-                door.currentProblemAttempts = 0;
-                door.failedAttempts = 0;
-            });
-            
-            updateScore(0);
+            document.getElementById('levelSelect').style.display = 'flex';
         }
         
         function isOnPath(x, y) {
@@ -582,7 +672,11 @@ PIG 🐖`;
                     ctx.fillStyle = '#000';
                     ctx.font = '20px Arial';
                     ctx.textAlign = 'center';
-                    const symbol = door.type === 'math' ? '🪨' : door.type === 'reading' ? '📚' : '🔀';
+                    let symbol = '🔀'; // Default sorting symbol
+                    if (door.type === 'math') symbol = '🪨';
+                    else if (door.type === 'reading') symbol = '📚';
+                    else if (door.type === 'reading1') symbol = '🔤';
+                    else if (door.type === 'reading2') symbol = '🏞️';
                     ctx.fillText(symbol, door.x + 30, door.y + 35);
                 }
             });
@@ -810,6 +904,71 @@ PIG 🐖`;
                     button.onclick = () => checkAnswer(emoji === correctPair.emoji, type, door, button);
                     options.appendChild(button);
                 });
+            } else if (type === 'reading1') {
+                // Letter matching - show lowercase letter, choose uppercase
+                const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+                const correctLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+                const correctUppercase = correctLetter.toUpperCase();
+                
+                // Generate 2 wrong uppercase letters
+                const wrongLetters = [];
+                while (wrongLetters.length < 2) {
+                    const randomLetter = alphabet[Math.floor(Math.random() * alphabet.length)].toUpperCase();
+                    if (randomLetter !== correctUppercase && !wrongLetters.includes(randomLetter)) {
+                        wrongLetters.push(randomLetter);
+                    }
+                }
+                
+                title.textContent = ''; // No title for new reading types
+                question.innerHTML = `<div style=\"font-size: 48px; margin: 20px 0;\">${correctLetter}</div>`;
+                
+                const allAnswers = [correctUppercase, ...wrongLetters].sort(() => Math.random() - 0.5);
+                
+                options.innerHTML = '';
+                allAnswers.forEach(letter => {
+                    const button = document.createElement('button');
+                    button.className = 'puzzle-button';
+                    button.textContent = letter;
+                    button.style.fontSize = '24px';
+                    button.onclick = () => checkAnswer(letter === correctUppercase, type, door, button);
+                    options.appendChild(button);
+                });
+            } else if (type === 'reading2') {
+                // Emoji to word matching - show emoji, choose word
+                const wordEmojiPairs = game.wordEmojiPairs;
+                
+                // Check if word list is loaded
+                if (!wordEmojiPairs || wordEmojiPairs.length === 0) {
+                    console.error('Word list not loaded yet!');
+                    return;
+                }
+                
+                // Pick a random word-emoji pair
+                const correctPair = wordEmojiPairs[Math.floor(Math.random() * wordEmojiPairs.length)];
+                
+                // Generate 2 wrong words
+                const wrongWords = [];
+                while (wrongWords.length < 2) {
+                    const randomPair = wordEmojiPairs[Math.floor(Math.random() * wordEmojiPairs.length)];
+                    if (randomPair.word !== correctPair.word && !wrongWords.includes(randomPair.word)) {
+                        wrongWords.push(randomPair.word);
+                    }
+                }
+                
+                title.textContent = ''; // No title for new reading types
+                question.innerHTML = `<div style=\"font-size: 48px; margin: 20px 0;\">${correctPair.emoji}</div>`;
+                
+                const allAnswers = [correctPair.word, ...wrongWords].sort(() => Math.random() - 0.5);
+                
+                options.innerHTML = '';
+                allAnswers.forEach(word => {
+                    const button = document.createElement('button');
+                    button.className = 'puzzle-button';
+                    button.textContent = word;
+                    button.style.fontSize = '24px';
+                    button.onclick = () => checkAnswer(word === correctPair.word, type, door, button);
+                    options.appendChild(button);
+                });
             }
         }
         
@@ -829,6 +988,8 @@ PIG 🐖`;
                 // Give +1 point for correct answer (net effect: 1 - number_of_wrong_attempts)
                 if (type === 'math') updateScore(1);
                 if (type === 'reading') updateScore(1);
+                if (type === 'reading1') updateScore(1);
+                if (type === 'reading2') updateScore(1);
                 if (type === 'sorting') updateScore(1);
                 
                 // Reset attempt counters
@@ -851,6 +1012,8 @@ PIG 🐖`;
                 // Immediately deduct 1 point for wrong answer
                 if (type === 'math') updateScore(-1);
                 if (type === 'reading') updateScore(-1);
+                if (type === 'reading1') updateScore(-1);
+                if (type === 'reading2') updateScore(-1);
                 if (type === 'sorting') updateScore(-1);
                 
                 // Disable the wrong answer button
@@ -896,20 +1059,64 @@ PIG 🐖`;
                 // Clear canvas
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // Calculate frame position (8 frames, 620x747 each)
-                const frameX = game.celebrationFrame * 620;
+                // Determine sprite format based on character and difficulty
+                let frameWidth, frameHeight, framesPerRow, totalFrames;
                 
-                // Draw current frame (full size)
+                if (game.selectedDifficulty === 2) {
+                    // Level 2 sprites: 2 rows × 31 frames, calculate from actual sprite dimensions
+                    const actualSheetWidth = currentCelebrationSprites.width;
+                    const actualSheetHeight = currentCelebrationSprites.height;
+                    framesPerRow = 31;
+                    const rows = 2;
+                    
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight / rows;
+                    totalFrames = 62; // 2 rows × 31 frames
+                } else if (game.selectedDifficulty === 3) {
+                    // Level 3 sprites: 43 frames horizontal, calculate from actual sprite dimensions
+                    const actualSheetWidth = currentCelebrationSprites.width; // 32768
+                    const actualSheetHeight = currentCelebrationSprites.height; // 894
+                    framesPerRow = 43;
+                    
+                    frameWidth = Math.floor(actualSheetWidth / framesPerRow); // 32768 / 43 = 762
+                    frameHeight = actualSheetHeight; // 894
+                    totalFrames = 43;
+                } else {
+                    // Level 1 sprites: Default format (8 frames horizontal)
+                    frameWidth = 620;
+                    frameHeight = 747;
+                    framesPerRow = 8;
+                    totalFrames = 8;
+                }
+                
+                // Calculate frame position
+                const row = Math.floor(game.celebrationFrame / framesPerRow);
+                const col = game.celebrationFrame % framesPerRow;
+                const frameX = col * frameWidth;
+                const frameY = row * frameHeight;
+                
+                // Scale to fit canvas while maintaining aspect ratio
+                const scaleX = canvas.width / frameWidth;
+                const scaleY = canvas.height / frameHeight;
+                const scale = Math.min(scaleX, scaleY) * 0.9; // 90% of canvas size for padding
+                
+                const scaledWidth = frameWidth * scale;
+                const scaledHeight = frameHeight * scale;
+                const offsetX = (canvas.width - scaledWidth) / 2;
+                const offsetY = (canvas.height - scaledHeight) / 2;
+                
+                // Draw current frame (scaled to fit)
                 ctx.drawImage(
                     currentCelebrationSprites,
-                    frameX, 0, 620, 747, // Source frame
-                    0, 0, 620, 747 // Destination (full size)
+                    frameX, frameY, frameWidth, frameHeight, // Source frame
+                    offsetX, offsetY, scaledWidth, scaledHeight // Destination (scaled and centered)
                 );
                 
-                // Update frame counter
+                // Update frame counter (slower for Level 3)
                 game.celebrationTimer++;
-                if (game.celebrationTimer >= 25) { // Change frame every 25 animation cycles (slower)
-                    game.celebrationFrame = (game.celebrationFrame + 1) % 8; // Loop through 8 frames
+                const frameDelay = game.selectedDifficulty === 3 ? 40 : 25; // Slower for Level 3
+                if (game.celebrationTimer >= frameDelay) {
+                    game.celebrationFrame = (game.celebrationFrame + 1) % totalFrames;
                     game.celebrationTimer = 0;
                 }
             }
@@ -925,11 +1132,22 @@ PIG 🐖`;
             currentMovementSprites = levelSprites[levelNum].movement;
             currentCelebrationSprites = levelSprites[levelNum].celebration;
             
-            // Hide level select and start game
+            // Hide level select and show difficulty selection
             document.getElementById('levelSelect').style.display = 'none';
+            document.getElementById('difficultySelect').style.display = 'flex';
+        }
+        
+        function selectDifficulty(difficulty) {
+            game.selectedDifficulty = difficulty;
             
-            // Reset game state
-            resetGame();
+            // Load appropriate celebration sprite for character and difficulty
+            currentCelebrationSprites = loadCelebrationSprite(game.selectedLevel, difficulty);
+            
+            // Hide difficulty selection and start game
+            document.getElementById('difficultySelect').style.display = 'none';
+            
+            // Initialize game with selected difficulty
+            initializeGame();
         }
         
         function resetGame() {
@@ -1017,8 +1235,8 @@ PIG 🐖`;
         levelSprites[1].movement.onload = drawLevelSprites;
         levelSprites[2].movement.onload = drawLevelSprites;
         
-        // Initialize game with dynamic maze loading
-        initializeGame();
+        // Game will be initialized after difficulty selection
+        // initializeGame() will be called from selectDifficulty()
     </script>
 </body>
 </html>
