@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-This is an educational maze game called "Elephant Maze Adventure" built as a single-page HTML5 Canvas application. The game features two character options (Elephant and Enderman) with three difficulty levels each, incorporating educational puzzles (math, reading, letter matching) that players must solve to unlock doors in dynamically loaded mazes.
+This is an educational maze game called "PT's Maze Adventure" built as a single-page HTML5 Canvas application. The game features PT the elephant with three difficulty levels, incorporating educational puzzles (math, reading, letter matching) that players must solve to unlock doors in dynamically loaded mazes.
 
 ## Architecture
 
@@ -16,7 +16,7 @@ This is an educational maze game called "Elephant Maze Adventure" built as a sin
 
 ### Game Structure
 The game uses a state-based architecture with these main states:
-1. Level selection (character choice)
+1. Start screen with PT
 2. Difficulty selection  
 3. Game play with puzzle modals
 4. Celebration screen
@@ -26,7 +26,7 @@ The game uses a state-based architecture with these main states:
 - Mazes are loaded from CSV files via `loadMazeFromCSV()` 
 - Word lists are loaded from text files via `loadWordListFromFile()`
 - Both have fallback embedded data if file loading fails
-- Celebration sprites are loaded dynamically based on character and difficulty
+- Celebration sprites are loaded dynamically based on difficulty
 
 ### CSV Maze Format
 Grid cells use single-character codes:
@@ -40,9 +40,9 @@ Grid cells use single-character codes:
 - Empty: Wall
 
 ### Sprite System
-- Movement sprites: SVG sprite sheets with 6 frames (160x160 each)
+- Movement sprites: SVG sprite sheets with 6 frames (160x160 each) for PT
 - Celebration sprites: PNG sheets with variable frame counts and layouts
-- Character sprites are loaded based on selected level (1=Elephant, 2=Enderman)
+- All sprites feature PT the elephant character
 
 ## Development Notes
 
@@ -60,7 +60,7 @@ Manual testing only - play through different levels and difficulties to verify:
 1. Create new level directory (e.g., `level-4/`)
 2. Add `grid.csv` with maze layout using the character codes above
 3. Add `Word-List.txt` with format: `WORD EMOJI,` (one per line)
-4. Add celebration sprites for both characters if needed
+4. Add celebration sprites for PT if needed
 5. Update difficulty selection logic in `selectDifficulty()`
 
 ### Modifying Puzzles

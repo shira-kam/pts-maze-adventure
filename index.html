@@ -147,7 +147,7 @@
             background: #45a049;
         }
         
-        #levelSelect {
+        #difficultyScreen {
             display: flex;
             position: fixed;
             top: 0;
@@ -161,39 +161,159 @@
             flex-direction: column;
         }
         
-        #levelSelectContent {
+        #difficultyContent {
             text-align: center;
-            color: #2E8B57;
             background: white;
-            padding: 40px;
+            padding: 50px;
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
         
-        .level-btn {
-            background: white;
-            border: 3px solid #4CAF50;
-            padding: 20px;
+        #difficultyTitle {
+            font-size: 36px;
+            color: #2E8B57;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .difficulty-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 25px 40px;
             margin: 15px;
             border-radius: 25px;
+            font-size: 24px;
             cursor: pointer;
-            min-width: 200px;
-            min-height: 150px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-family: inherit;
+            font-weight: bold;
+            min-width: 250px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
         
-        .level-btn:hover {
-            border-color: #45a049;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .difficulty-button:hover {
+            background: #45a049;
+            transform: scale(1.05);
         }
         
-        .level-sprite {
-            width: 120px;
-            height: 120px;
+        .difficulty-button.easy {
+            background: #4CAF50;
         }
+        
+        .difficulty-button.medium {
+            background: #FF9800;
+        }
+        
+        .difficulty-button.hard {
+            background: #F44336;
+        }
+        
+        #debugScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 4000;
+            overflow-y: auto;
+            color: white;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        #debugContent {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        #debugTitle {
+            font-size: 32px;
+            color: #FFD700;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .debug-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #FFD700;
+        }
+        
+        .debug-section h3 {
+            color: #FFD700;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        
+        .celebration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .celebration-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #666;
+        }
+        
+        .celebration-item h4 {
+            color: #FFD700;
+            margin-top: 0;
+        }
+        
+        .celebration-preview {
+            width: 200px;
+            height: 200px;
+            border: 2px solid #FFD700;
+            margin: 10px auto;
+            background: #333;
+        }
+        
+        .debug-button {
+            background: #FFD700;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .debug-button:hover {
+            background: #FFA500;
+        }
+        
+        #debugCloseBtn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #F44336;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 4001;
+        }
+        
+        #debugCloseBtn:hover {
+            background: #D32F2F;
+        }
+        
         
         #gameOverScreen {
             display: none;
@@ -212,11 +332,21 @@
         #gameOverContent {
             text-align: center;
             color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
         }
         
         #gameOverContent h1 {
             font-size: 48px;
-            margin-bottom: 30px;
+            margin: 0;
+        }
+        
+        #gameOverSprite {
+            border: 2px solid #fff;
+            border-radius: 10px;
         }
         
         #gameOverBtn {
@@ -237,52 +367,6 @@
             transform: translateY(-2px);
         }
         
-        #difficultySelect {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #87CEEB, #98FB98);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        #difficultySelectContent {
-            text-align: center;
-            color: #2E8B57;
-        }
-        
-        #difficultySelectContent h1 {
-            font-size: 48px;
-            margin-bottom: 40px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .difficulty-btn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 30px 60px;
-            margin: 20px;
-            border-radius: 25px;
-            font-size: 28px;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: bold;
-            min-width: 300px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .difficulty-btn:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-        }
         
     </style>
 </head>
@@ -294,7 +378,7 @@
             <div id="level">Level: 1</div>
         </div>
         
-        <canvas id="gameCanvas" width="820" height="820"></canvas>
+        <canvas id="gameCanvas" width="880" height="880"></canvas>
     </div>
     
     <div id="puzzleModal">
@@ -313,33 +397,60 @@
         </div>
     </div>
     
-    <div id="levelSelect">
-        <div id="levelSelectContent">
-            <h1>Maze Game</h1>
-            <button class="level-btn" onclick="selectLevel(1)">
-                <canvas class="level-sprite" id="level1Sprite" width="120" height="120"></canvas>
-            </button>
-            <button class="level-btn" onclick="selectLevel(2)">
-                <canvas class="level-sprite" id="level2Sprite" width="120" height="120"></canvas>
-            </button>
+    
+    <div id="difficultyScreen">
+        <div id="difficultyContent">
+            <div id="difficultyTitle">Choose Your Difficulty</div>
+            <button class="difficulty-button easy" onclick="selectDifficulty('easy')">Easy Peasy 🫛</button>
+            <button class="difficulty-button medium" onclick="selectDifficulty('medium')">Neutral 😐</button>
+            <button class="difficulty-button hard" onclick="selectDifficulty('hard')">Hard Mode 🙀</button>
+        </div>
+    </div>
+    
+    <div id="debugScreen">
+        <button id="debugCloseBtn" onclick="closeDebugMode()">✕ Close Debug</button>
+        <div id="debugContent">
+            <div id="debugTitle">🐛 DEBUG MODE 🐛</div>
+            
+            <div class="debug-section">
+                <h3>🎉 Celebration Animations</h3>
+                <p>View all celebration sprites from each level:</p>
+                <button class="debug-button" onclick="loadDebugCelebrationSprites()" style="margin-bottom: 15px;">🔄 Reload All Sprites</button>
+                <div class="celebration-grid">
+                    <div class="celebration-item">
+                        <h4>Level 1 - PT Celebration</h4>
+                        <canvas class="celebration-preview" id="debugCelebration1" width="200" height="200"></canvas>
+                        <br>
+                        <button class="debug-button" onclick="debugPlayCelebration(1)">Play Animation</button>
+                        <button class="debug-button" onclick="debugStopCelebration(1)">Stop</button>
+                    </div>
+                    <div class="celebration-item">
+                        <h4>Level 2 - PT Celebration</h4>
+                        <canvas class="celebration-preview" id="debugCelebration2" width="200" height="200"></canvas>
+                        <br>
+                        <button class="debug-button" onclick="debugPlayCelebration(2)">Play Animation</button>
+                        <button class="debug-button" onclick="debugStopCelebration(2)">Stop</button>
+                    </div>
+                    <div class="celebration-item">
+                        <h4>Level 3 - PT Celebration</h4>
+                        <canvas class="celebration-preview" id="debugCelebration3" width="200" height="200"></canvas>
+                        <br>
+                        <button class="debug-button" onclick="debugPlayCelebration(3)">Play Animation</button>
+                        <button class="debug-button" onclick="debugStopCelebration(3)">Stop</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
     <div id="gameOverScreen">
         <div id="gameOverContent">
-            <h1>GAME OVER 😭</h1>
+            <h1>GAME OVER</h1>
+            <canvas id="gameOverSprite" width="436" height="436"></canvas>
             <button id="gameOverBtn" onclick="restartGame()">Try Again</button>
         </div>
     </div>
     
-    <div id="difficultySelect">
-        <div id="difficultySelectContent">
-            <h1>Choose Difficulty</h1>
-            <button class="difficulty-btn" onclick="selectDifficulty(1)">Level 1 💪</button>
-            <button class="difficulty-btn" onclick="selectDifficulty(2)">Level 2 💪💪</button>
-            <button class="difficulty-btn" onclick="selectDifficulty(3)">Level 3 💪💪💪</button>
-        </div>
-    </div>
     
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -486,6 +597,35 @@ PIG 🐖`;
             }
         }
         
+        // Distractor list parser
+        async function loadDistractorsFromFile() {
+            try {
+                const response = await fetch('distractors.txt' + '?v=' + Date.now());
+                const distractorText = await response.text();
+                return parseDistractors(distractorText);
+            } catch (error) {
+                console.error('Error loading distractors.txt:', error);
+                return {};
+            }
+        }
+        
+        function parseDistractors(distractorText) {
+            const lines = distractorText.trim().split('\n');
+            const distractors = {};
+            
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                if (trimmedLine.includes(':')) {
+                    const [letter, emojis] = trimmedLine.split(':');
+                    const letterKey = letter.trim().toUpperCase();
+                    const emojiList = emojis.trim().split(/\s+/).filter(emoji => emoji.length > 0);
+                    distractors[letterKey] = emojiList;
+                }
+            });
+            
+            return distractors;
+        }
+        
         function parseWordList(wordListText) {
             const lines = wordListText.trim().split('\n');
             const wordEmojiPairs = [];
@@ -506,55 +646,97 @@ PIG 🐖`;
             return wordEmojiPairs;
         }
         
-        // Load sprite sheets for both levels
-        const levelSprites = {
-            1: {
-                movement: new Image(),
-                celebration: {}
-            },
-            2: {
-                movement: new Image(),
-                celebration: new Image()
-            }
+        // Load sprite sheets for PT
+        const ptSprites = {
+            movement: new Image(),
+            celebration: {}
         };
         
-        // Load Level 1 sprites (Elephant)
-        levelSprites[1].movement.src = 'PT-sprite.svg';
-        // Level 1 celebration sprites will be loaded dynamically based on difficulty
+        // Load PT sprites
+        ptSprites.movement.src = 'PT-sprite.svg';
+        // Celebration sprites will be loaded dynamically based on difficulty
         
-        // Load Level 2 sprites (Enderman)
-        levelSprites[2].movement.src = 'enderman-sprite.svg';
-        levelSprites[2].celebration.src = 'enderman-celebration.png';
-        
-        // Function to load celebration sprite based on character and difficulty
-        function loadCelebrationSprite(characterLevel, difficulty) {
+        // Function to load celebration sprite based on difficulty
+        function loadCelebrationSprite(difficulty) {
             const celebrationSprite = new Image();
             const cacheBuster = '?v=' + Date.now();
             
-            if (characterLevel === 1) { // Elephant
-                if (difficulty === 1) {
-                    celebrationSprite.src = 'celebrate.png' + cacheBuster;
-                } else if (difficulty === 2) {
-                    celebrationSprite.src = 'level-2/celebrate.png' + cacheBuster;
-                } else if (difficulty === 3) {
-                    celebrationSprite.src = 'level-3/celebrate.png' + cacheBuster;
-                }
-            } else if (characterLevel === 2) { // Enderman
-                if (difficulty === 1) {
-                    celebrationSprite.src = 'enderman-celebration.png' + cacheBuster;
-                } else if (difficulty === 2) {
-                    celebrationSprite.src = 'level-2/enderman-celebration.png' + cacheBuster;
-                } else if (difficulty === 3) {
-                    celebrationSprite.src = 'level-3/enderman-celebration.png' + cacheBuster;
-                }
+            if (difficulty === 1) {
+                celebrationSprite.src = 'level-1/celebrate.png' + cacheBuster;
+            } else if (difficulty === 2) {
+                celebrationSprite.src = 'level-2/celebrate.png' + cacheBuster;
+            } else if (difficulty === 3) {
+                celebrationSprite.src = 'level-3/celebrate.png' + cacheBuster;
             }
             
             return celebrationSprite;
         }
         
-        // Current sprites (will be set based on selected level)
-        let currentMovementSprites = levelSprites[1].movement;
-        let currentCelebrationSprites = levelSprites[1].celebration;
+        // Current sprites
+        let currentMovementSprites = ptSprites.movement;
+        let currentCelebrationSprites = ptSprites.celebration;
+        
+        // Texture system for maze elements
+        const textures = {
+            wall: new Image(),
+            open: new Image(),
+            math: new Image(),
+            reading: new Image(),
+            endpoint: new Image(),
+            reading1: new Image(), // Will fallback to reading texture
+            reading2: new Image(), // Will fallback to reading texture
+            sorting: new Image(),  // Will fallback to math texture
+            loaded: false
+        };
+        
+        // Game over sprite
+        const gameOverSprite = new Image();
+        gameOverSprite.src = 'game-over.png' + '?v=' + Date.now();
+        gameOverSprite.onload = () => {
+            console.log('Game over sprite loaded successfully');
+        };
+        gameOverSprite.onerror = () => {
+            console.error('Failed to load game over sprite');
+        };
+        
+        // Function to load textures for current level
+        function loadTextures(level) {
+            const basePath = `level-${level}/`;
+            const cacheBuster = '?v=' + Date.now();
+            
+            textures.wall.src = basePath + 'wall.png' + cacheBuster;
+            textures.open.src = basePath + 'open.png' + cacheBuster;
+            textures.math.src = basePath + 'math.png' + cacheBuster;
+            textures.reading.src = basePath + 'reading.png' + cacheBuster;
+            textures.endpoint.src = basePath + 'endpoint.png' + cacheBuster;
+            
+            // For door types without specific textures, use existing ones
+            textures.reading1 = textures.reading; // Use reading texture for letter matching
+            textures.reading2 = textures.reading; // Use reading texture for emoji-to-word
+            textures.sorting = textures.math;     // Use math texture for sorting
+            
+            // Track when all main textures are loaded
+            let loadedCount = 0;
+            const requiredTextures = ['wall', 'open', 'math', 'reading', 'endpoint'];
+            
+            requiredTextures.forEach(textureType => {
+                textures[textureType].onload = () => {
+                    loadedCount++;
+                    if (loadedCount === requiredTextures.length) {
+                        textures.loaded = true;
+                        console.log(`Textures loaded for level ${level}`);
+                    }
+                };
+                
+                textures[textureType].onerror = () => {
+                    console.warn(`Failed to load ${textureType} texture for level ${level}, using fallback`);
+                    loadedCount++;
+                    if (loadedCount === requiredTextures.length) {
+                        textures.loaded = true;
+                    }
+                };
+            });
+        }
         
         // Improve canvas rendering quality
         ctx.imageSmoothingEnabled = true;
@@ -562,10 +744,11 @@ PIG 🐖`;
         
         // Game object - will be populated with dynamic maze data
         const game = {
-            score: 5,
+            score: 3,
             currentLevel: 1,
-            selectedLevel: 1,
             selectedDifficulty: 1,
+            maxUnlockedLevel: parseInt(localStorage.getItem('ptMazeMaxLevel')) || 1, // Track highest level unlocked
+            gameLoopRunning: false, // Track if game loop is already running
             player: {
                 x: 0,
                 y: 0,
@@ -580,32 +763,232 @@ PIG 🐖`;
             doors: [], // Will be populated from CSV
             watering_hole: null, // Will be populated from CSV
             wordEmojiPairs: [], // Will be populated from Word-List.txt
+            distractors: {}, // Will be populated from distractors.txt
+            usedWords: [], // Track words used in current level to prevent repetition
+            difficultyMode: 'hard', // easy, medium, hard
+            debugMode: false, // Debug mode toggle
             tileSize: 40,
             puzzleActive: false,
             celebrating: false,
             celebrationFrame: 0,
             celebrationTimer: 0,
+            gameOverActive: false,
+            gameOverFrame: 0,
+            gameOverTimer: 0,
             paths: [] // Will be populated from CSV
         };
         
+        // Function to unlock next level
+        function unlockNextLevel() {
+            if (game.selectedDifficulty < 3) {
+                game.maxUnlockedLevel = Math.max(game.maxUnlockedLevel, game.selectedDifficulty + 1);
+                localStorage.setItem('ptMazeMaxLevel', game.maxUnlockedLevel.toString());
+            }
+        }
+        
+        // Debug function to reset progress (call in browser console)
+        function resetProgress() {
+            localStorage.removeItem('ptMazeMaxLevel');
+            game.maxUnlockedLevel = 1;
+            console.log('Progress reset to level 1');
+        }
+        
+        // Difficulty selection function
+        function selectDifficulty(difficulty) {
+            game.difficultyMode = difficulty;
+            console.log(`Selected difficulty: ${difficulty}`);
+            
+            // Hide difficulty selection screen
+            document.getElementById('difficultyScreen').style.display = 'none';
+            
+            // Start the game with selected difficulty
+            game.selectedDifficulty = 1;
+            currentCelebrationSprites = loadCelebrationSprite(1);
+            initializeGame();
+        }
+        
+        // Debug mode variables
+        const debugState = {
+            celebrationSprites: {},
+            animationFrames: {},
+            animationTimers: {},
+            isAnimating: {}
+        };
+        
+        // Debug mode toggle function
+        function toggleDebugMode() {
+            game.debugMode = !game.debugMode;
+            if (game.debugMode) {
+                console.log('🐛 Debug mode enabled');
+                document.getElementById('debugScreen').style.display = 'block';
+                loadDebugCelebrationSprites();
+            } else {
+                console.log('🐛 Debug mode disabled');
+                document.getElementById('debugScreen').style.display = 'none';
+                stopAllDebugAnimations();
+            }
+        }
+        
+        // Close debug mode
+        function closeDebugMode() {
+            game.debugMode = false;
+            document.getElementById('debugScreen').style.display = 'none';
+            stopAllDebugAnimations();
+        }
+        
+        // Load all celebration sprites for debug mode
+        function loadDebugCelebrationSprites() {
+            for (let level = 1; level <= 3; level++) {
+                const sprite = new Image();
+                const cacheBuster = '?v=' + Date.now() + '_' + Math.random();
+                
+                if (level === 1) {
+                    sprite.src = 'level-1/celebrate.png' + cacheBuster;
+                } else if (level === 2) {
+                    sprite.src = 'level-2/celebrate.png' + cacheBuster;
+                } else if (level === 3) {
+                    sprite.src = 'level-3/celebrate.png' + cacheBuster;
+                }
+                
+                sprite.onload = () => {
+                    console.log(`Debug sprite loaded for level ${level}: ${sprite.width}x${sprite.height}`);
+                };
+                
+                debugState.celebrationSprites[level] = sprite;
+                debugState.animationFrames[level] = 0;
+                debugState.animationTimers[level] = 0;
+                debugState.isAnimating[level] = false;
+            }
+        }
+        
+        // Play celebration animation in debug mode
+        function debugPlayCelebration(level) {
+            debugState.isAnimating[level] = true;
+            debugState.animationFrames[level] = 0;
+            debugState.animationTimers[level] = 0;
+            animateDebugCelebration(level);
+        }
+        
+        // Stop celebration animation in debug mode
+        function debugStopCelebration(level) {
+            debugState.isAnimating[level] = false;
+        }
+        
+        // Stop all debug animations
+        function stopAllDebugAnimations() {
+            for (let level = 1; level <= 3; level++) {
+                debugState.isAnimating[level] = false;
+            }
+        }
+        
+        // Animate celebration in debug mode
+        function animateDebugCelebration(level) {
+            if (!debugState.isAnimating[level]) return;
+            
+            const canvas = document.getElementById(`debugCelebration${level}`);
+            const ctx = canvas.getContext('2d');
+            const sprite = debugState.celebrationSprites[level];
+            
+            if (sprite && sprite.complete) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Get sprite configuration based on level
+                let frameWidth, frameHeight, framesPerRow, totalFrames;
+                
+                if (level === 1) {
+                    const actualSheetWidth = sprite.width;
+                    const actualSheetHeight = sprite.height;
+                    framesPerRow = 9;
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 9;
+                } else if (level === 2) {
+                    // Level 2: Single row of 62 frames - auto-calculate from actual sprite
+                    const actualSheetWidth = sprite.width;
+                    const actualSheetHeight = sprite.height;
+                    framesPerRow = 62;
+                    frameWidth = actualSheetWidth / framesPerRow; // Don't use Math.floor to avoid drift
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 62;
+                    console.log(`Level 2: Single row ${actualSheetWidth}x${actualSheetHeight}, frameW=${frameWidth}, frameH=${frameHeight}`);
+                } else if (level === 3) {
+                    const actualSheetWidth = sprite.width;
+                    const actualSheetHeight = sprite.height;
+                    framesPerRow = 43;
+                    frameWidth = Math.floor(actualSheetWidth / framesPerRow);
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 43;
+                }
+                
+                // Calculate frame position
+                const row = Math.floor(debugState.animationFrames[level] / framesPerRow);
+                const col = debugState.animationFrames[level] % framesPerRow;
+                const frameX = col * frameWidth;
+                const frameY = row * frameHeight;
+                
+                // Scale to fit debug canvas
+                const scaleX = canvas.width / frameWidth;
+                const scaleY = canvas.height / frameHeight;
+                const scale = Math.min(scaleX, scaleY) * 0.9;
+                
+                const scaledWidth = frameWidth * scale;
+                const scaledHeight = frameHeight * scale;
+                const offsetX = (canvas.width - scaledWidth) / 2;
+                const offsetY = (canvas.height - scaledHeight) / 2;
+                
+                // Draw current frame
+                ctx.drawImage(
+                    sprite,
+                    frameX, frameY, frameWidth, frameHeight,
+                    offsetX, offsetY, scaledWidth, scaledHeight
+                );
+                
+                // Update frame counter
+                debugState.animationTimers[level]++;
+                const frameDelay = level === 3 ? 40 : 25;
+                if (debugState.animationTimers[level] >= frameDelay) {
+                    debugState.animationFrames[level] = (debugState.animationFrames[level] + 1) % totalFrames;
+                    debugState.animationTimers[level] = 0;
+                }
+            }
+            
+            if (debugState.isAnimating[level]) {
+                requestAnimationFrame(() => animateDebugCelebration(level));
+            }
+        }
+        
         // Initialize game with dynamic maze and word list data
         async function initializeGame() {
-            // Load both maze data and word list in parallel
-            const [mazeData, wordList] = await Promise.all([
+            console.log(`Initializing game for level ${game.selectedDifficulty}`);
+            
+            // Load textures for this level
+            loadTextures(game.selectedDifficulty);
+            
+            // Load maze data, word list, and distractors in parallel
+            const [mazeData, wordList, distractors] = await Promise.all([
                 loadMazeFromCSV(),
-                loadWordListFromFile()
+                loadWordListFromFile(),
+                loadDistractorsFromFile()
             ]);
+            
+            console.log(`Loaded maze data:`, mazeData);
+            console.log(`Loaded word list:`, wordList);
+            console.log(`Loaded distractors:`, distractors);
             
             game.doors = mazeData.doors;
             game.paths = mazeData.paths;
             game.watering_hole = mazeData.watering_hole;
             game.wordEmojiPairs = wordList;
+            game.distractors = distractors;
             
             // Reset game state with new data
             resetGame();
             
-            // Start the game after both are loaded
-            gameLoop();
+            // Start the game after both are loaded (only if not already running)
+            if (!game.gameLoopRunning) {
+                game.gameLoopRunning = true;
+                gameLoop();
+            }
         }
         
         function updateScore(points) {
@@ -616,18 +999,83 @@ PIG 🐖`;
             document.getElementById('score').textContent = heartsDisplay;
             
             if (game.score <= 0) {
+                // Immediately dismiss any open puzzle dialog
+                if (game.puzzleActive) {
+                    document.getElementById('puzzleModal').style.display = 'none';
+                    game.puzzleActive = false;
+                }
                 gameOver();
             }
         }
         
         function gameOver() {
+            console.log('Game over triggered');
+            game.gameOverActive = true;
+            game.gameOverFrame = 0;
+            game.gameOverTimer = 0;
             document.getElementById('gameOverScreen').style.display = 'flex';
+            console.log('Starting game over animation');
+            animateGameOver();
+        }
+        
+        function animateGameOver() {
+            if (!game.gameOverActive) return;
+            
+            const canvas = document.getElementById('gameOverSprite');
+            const ctx = canvas.getContext('2d');
+            
+            if (!canvas) {
+                console.error('Game over canvas not found');
+                return;
+            }
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (gameOverSprite.complete) {
+                // 17 frames, each 436x436 pixels
+                const frameWidth = 436;
+                const frameHeight = 436;
+                const totalFrames = 17;
+                
+                // Calculate frame position (horizontal layout)
+                const frameX = game.gameOverFrame * frameWidth;
+                const frameY = 0;
+                
+                // Draw current frame
+                ctx.drawImage(
+                    gameOverSprite,
+                    frameX, frameY, frameWidth, frameHeight, // Source frame
+                    0, 0, canvas.width, canvas.height // Destination (full canvas)
+                );
+                
+                // Update frame counter
+                game.gameOverTimer++;
+                if (game.gameOverTimer >= 15) { // Slower animation
+                    game.gameOverFrame = (game.gameOverFrame + 1) % totalFrames;
+                    game.gameOverTimer = 0;
+                }
+            } else {
+                // Show a placeholder while sprite loads
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Loading...', canvas.width/2, canvas.height/2);
+                console.log('Game over sprite not loaded yet');
+            }
+            
+            requestAnimationFrame(animateGameOver);
         }
         
         function restartGame() {
-            // Show level selection screen again
+            // Stop game over animation
+            game.gameOverActive = false;
+            
+            // Hide game over screen and show difficulty selection
             document.getElementById('gameOverScreen').style.display = 'none';
-            document.getElementById('levelSelect').style.display = 'flex';
+            document.getElementById('difficultyScreen').style.display = 'flex';
         }
         
         function isOnPath(x, y) {
@@ -647,49 +1095,89 @@ PIG 🐖`;
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Draw maze background with padding for character visibility
-            ctx.fillStyle = '#2F4F2F';
-            ctx.fillRect(10, 10, 800, 800);
+            // Draw wall texture background across the entire canvas (including padding areas)
+            if (textures.loaded && textures.wall.complete) {
+                // Draw wall texture in a proper grid pattern covering entire canvas
+                for (let x = 0; x < Math.ceil(canvas.width / 40); x++) {
+                    for (let y = 0; y < Math.ceil(canvas.height / 40); y++) {
+                        ctx.drawImage(textures.wall, x * 40, y * 40, 40, 40);
+                    }
+                }
+            } else {
+                // Fallback to solid color if texture isn't loaded
+                ctx.fillStyle = '#2F4F2F';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
             
-            // Draw paths (with 10px padding)
-            ctx.fillStyle = '#B8F2B8'; // Lighter shade of green paths
+            // Draw open paths using texture (same maze layout with thicker border)
             game.paths.forEach(path => {
-                ctx.fillRect(path.x + 10, path.y + 10, path.width, path.height);
-            });
-            
-            // Draw path borders for visual clarity
-            ctx.strokeStyle = '#228B22';
-            ctx.lineWidth = 2;
-            game.paths.forEach(path => {
-                ctx.strokeRect(path.x + 10, path.y + 10, path.width, path.height);
-            });
-            
-            // Draw doors (offset by 30px)
-            game.doors.forEach(door => {
-                if (!door.open) {
-                    ctx.fillStyle = door.color;
-                    ctx.fillRect(door.x + 10, door.y + 10, game.tileSize, game.tileSize);
-                    ctx.fillStyle = '#000';
-                    ctx.font = '20px Arial';
-                    ctx.textAlign = 'center';
-                    let symbol = '🔀'; // Default sorting symbol
-                    if (door.type === 'math') symbol = '🪨';
-                    else if (door.type === 'reading') symbol = '📚';
-                    else if (door.type === 'reading1') symbol = '🔤';
-                    else if (door.type === 'reading2') symbol = '🏞️';
-                    ctx.fillText(symbol, door.x + 30, door.y + 35);
+                if (textures.loaded && textures.open.complete) {
+                    // Direct positioning with 40px border padding
+                    ctx.drawImage(textures.open, path.x + 40, path.y + 40, 40, 40);
+                } else {
+                    // Fallback to solid color
+                    ctx.fillStyle = '#B8F2B8';
+                    ctx.fillRect(path.x + 40, path.y + 40, 40, 40);
                 }
             });
             
-            // Draw watering hole (pink background with cake emoji)
-            ctx.fillStyle = '#FFB6C1'; // Light pink background
-            ctx.fillRect(game.watering_hole.x + 10, game.watering_hole.y + 10, 40, 40);
-            ctx.fillStyle = '#000';
-            ctx.font = '30px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('🎂', game.watering_hole.x + 30, game.watering_hole.y + 38);
+            // Draw doors using textures
+            game.doors.forEach(door => {
+                if (!door.open) {
+                    let doorTexture = null;
+                    
+                    // Select appropriate texture
+                    if (door.type === 'math') {
+                        doorTexture = textures.math;
+                    } else if (door.type === 'reading') {
+                        doorTexture = textures.reading;
+                    } else if (door.type === 'reading1') {
+                        doorTexture = textures.reading1;
+                    } else if (door.type === 'reading2') {
+                        doorTexture = textures.reading2;
+                    } else if (door.type === 'sorting') {
+                        doorTexture = textures.sorting;
+                    }
+                    
+                    // Draw door texture or fallback color with symbol
+                    if (textures.loaded && doorTexture && doorTexture.complete) {
+                        // Simple direct positioning with thicker border
+                        ctx.drawImage(doorTexture, door.x + 40, door.y + 40, 40, 40);
+                    } else {
+                        // Fallback to original color system with symbols
+                        ctx.fillStyle = door.color;
+                        ctx.fillRect(door.x + 40, door.y + 40, 40, 40);
+                        
+                        // Only draw symbols when using fallback colors
+                        ctx.fillStyle = '#000';
+                        ctx.font = '20px Arial';
+                        ctx.textAlign = 'center';
+                        let symbol = '🔀'; // Default sorting symbol
+                        if (door.type === 'math') symbol = '🪨';
+                        else if (door.type === 'reading') symbol = '📚';
+                        else if (door.type === 'reading1') symbol = '🔤';
+                        else if (door.type === 'reading2') symbol = '🏞️';
+                        ctx.fillText(symbol, door.x + 60, door.y + 65);
+                    }
+                }
+            });
             
-            // Draw elephant sprite (offset by 30px)
+            // Draw watering hole (endpoint) using texture
+            if (game.watering_hole) {
+                if (textures.loaded && textures.endpoint.complete) {
+                    ctx.drawImage(textures.endpoint, game.watering_hole.x + 40, game.watering_hole.y + 40, 40, 40);
+                } else {
+                    // Fallback to original style
+                    ctx.fillStyle = '#FFB6C1'; // Light pink background
+                    ctx.fillRect(game.watering_hole.x + 40, game.watering_hole.y + 40, 40, 40);
+                    ctx.fillStyle = '#000';
+                    ctx.font = '30px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('🎂', game.watering_hole.x + 60, game.watering_hole.y + 68);
+                }
+            }
+            
+            // Draw PT sprite (offset by 30px)
             if (currentMovementSprites.complete) {
                 // Calculate which frame to use based on direction and animation
                 let frameX = 0;
@@ -704,23 +1192,37 @@ PIG 🐖`;
                 }
                 
                 // Draw the sprite frame (160x160 from SVG sprite sheet)
+                // PT should be 45x45 to be bigger than the tile (overlaps slightly)
+                const ptSize = 45;
+                const ptOffset = -2.5; // Negative offset to center the larger sprite
+                
                 ctx.drawImage(
                     currentMovementSprites,
                     frameX, 0, 160, 160, // Source: x, y, width, height from sprite sheet
-                    game.player.x, game.player.y, 60, 60 // Destination: x, y, width, height (centered in 40px grid)
+                    game.player.x + 40 + ptOffset, game.player.y + 40 + ptOffset, ptSize, ptSize // Centered in tile with thicker border
                 );
             } else {
-                // Fallback while sprite loads
+                // Fallback while sprite loads - bigger and centered
+                const tileCenter = 20;
                 ctx.fillStyle = '#D3D3D3';
                 ctx.beginPath();
-                ctx.arc(game.player.x + 30, game.player.y + 30, game.player.size, 0, Math.PI * 2);
+                ctx.arc(game.player.x + 40 + tileCenter, game.player.y + 40 + tileCenter, 22, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.fillStyle = '#000';
-                ctx.font = '30px Arial';
+                ctx.font = '36px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('🐘', game.player.x + 30, game.player.y + 33);
+                ctx.fillText('🐘', game.player.x + 40 + tileCenter, game.player.y + 40 + tileCenter + 10);
             }
         }
+        
+        // Debug mode keyboard listener (Shift + Ctrl + D)
+        document.addEventListener('keydown', (e) => {
+            if (e.shiftKey && e.ctrlKey && (e.key === 'D' || e.key === 'd')) {
+                e.preventDefault();
+                toggleDebugMode();
+                return;
+            }
+        });
         
         // Global arrow key prevention (works even during puzzles)
         document.addEventListener('keydown', (e) => {
@@ -804,12 +1306,14 @@ PIG 🐖`;
             }
             
             // Check for watering hole win condition
-            const distance = Math.sqrt(
-                Math.pow(game.player.x + 20 - game.watering_hole.x, 2) + 
-                Math.pow(game.player.y + 20 - game.watering_hole.y, 2)
-            );
-            if (distance < 40) {
-                showCelebration();
+            if (game.watering_hole) {
+                const distance = Math.sqrt(
+                    Math.pow(game.player.x + 20 - game.watering_hole.x, 2) + 
+                    Math.pow(game.player.y + 20 - game.watering_hole.y, 2)
+                );
+                if (distance < 40) {
+                    showCelebration();
+                }
             }
         });
         
@@ -825,7 +1329,7 @@ PIG 🐖`;
             if (type === 'math') {
                 const isAddition = Math.random() < 0.5;
                 let num1, num2, answer;
-                const maxAnswer = game.selectedLevel === 2 ? 10 : 20; // Level 2 (Enderman) max 10, Level 1 max 20
+                const maxAnswer = 20; // Max answer for math problems
                 
                 if (isAddition) {
                     // For addition, ensure sum doesn't exceed maxAnswer
@@ -864,12 +1368,26 @@ PIG 🐖`;
                     options.appendChild(button);
                 });
             } else if (type === 'reading') {
-                // Reading problems - word to emoji matching
-                // Use dynamically loaded word list
+                // Reading problems - word to emoji matching with same-first-letter strategy
                 const wordEmojiPairs = game.wordEmojiPairs;
                 
-                // Pick a random word-emoji pair
-                const correctPair = wordEmojiPairs[Math.floor(Math.random() * wordEmojiPairs.length)];
+                // Filter out already used words in this level
+                const availableWords = wordEmojiPairs.filter(pair => !game.usedWords.includes(pair.word));
+                
+                // If all words have been used, reset the used words list
+                const wordsToUse = availableWords.length > 0 ? availableWords : wordEmojiPairs;
+                if (availableWords.length === 0) {
+                    game.usedWords = [];
+                    console.log('All words used - resetting word tracking for this level');
+                }
+                
+                // Pick a random word-emoji pair from available words
+                const correctPair = wordsToUse[Math.floor(Math.random() * wordsToUse.length)];
+                
+                // Add this word to used words list
+                if (!game.usedWords.includes(correctPair.word)) {
+                    game.usedWords.push(correctPair.word);
+                }
                 
                 // Check if word list is loaded
                 if (!wordEmojiPairs || wordEmojiPairs.length === 0) {
@@ -877,13 +1395,40 @@ PIG 🐖`;
                     return;
                 }
                 
-                // Generate random wrong emojis
-                const allEmojis = wordEmojiPairs.map(pair => pair.emoji);
+                const firstLetter = correctPair.word.charAt(0).toUpperCase();
                 const wrongEmojis = [];
-                while (wrongEmojis.length < 2) {
-                    const randomEmoji = allEmojis[Math.floor(Math.random() * allEmojis.length)];
-                    if (randomEmoji !== correctPair.emoji && !wrongEmojis.includes(randomEmoji)) {
-                        wrongEmojis.push(randomEmoji);
+                
+                // Try to find words with same first letter
+                const sameLetterWords = wordEmojiPairs.filter(pair => 
+                    pair.word.charAt(0).toUpperCase() === firstLetter && 
+                    pair.word !== correctPair.word
+                );
+                
+                // Add wrong emojis from same-letter words
+                while (wrongEmojis.length < 2 && sameLetterWords.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * sameLetterWords.length);
+                    const wrongPair = sameLetterWords.splice(randomIndex, 1)[0];
+                    wrongEmojis.push(wrongPair.emoji);
+                }
+                
+                // If not enough same-letter words, use distractors
+                if (wrongEmojis.length < 2 && game.distractors[firstLetter]) {
+                    const distractorEmojis = [...game.distractors[firstLetter]];
+                    while (wrongEmojis.length < 2 && distractorEmojis.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * distractorEmojis.length);
+                        const distractor = distractorEmojis.splice(randomIndex, 1)[0];
+                        wrongEmojis.push(distractor);
+                    }
+                }
+                
+                // Final fallback to any random emojis if still not enough
+                if (wrongEmojis.length < 2) {
+                    const allEmojis = wordEmojiPairs.map(pair => pair.emoji);
+                    while (wrongEmojis.length < 2) {
+                        const randomEmoji = allEmojis[Math.floor(Math.random() * allEmojis.length)];
+                        if (randomEmoji !== correctPair.emoji && !wrongEmojis.includes(randomEmoji)) {
+                            wrongEmojis.push(randomEmoji);
+                        }
                     }
                 }
                 
@@ -905,36 +1450,49 @@ PIG 🐖`;
                     options.appendChild(button);
                 });
             } else if (type === 'reading1') {
-                // Letter matching - show lowercase letter, choose uppercase
-                const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-                const correctLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
-                const correctUppercase = correctLetter.toUpperCase();
+                // Math problems (same as main math problems)
+                const isAddition = Math.random() < 0.5;
+                let num1, num2, answer;
+                const maxAnswer = 20; // Max answer for math problems
                 
-                // Generate 2 wrong uppercase letters
-                const wrongLetters = [];
-                while (wrongLetters.length < 2) {
-                    const randomLetter = alphabet[Math.floor(Math.random() * alphabet.length)].toUpperCase();
-                    if (randomLetter !== correctUppercase && !wrongLetters.includes(randomLetter)) {
-                        wrongLetters.push(randomLetter);
+                if (isAddition) {
+                    // For addition, ensure sum doesn't exceed maxAnswer
+                    const maxNum1 = maxAnswer - 1;
+                    num1 = Math.floor(Math.random() * maxNum1) + 1; // 1 to (maxAnswer-1)
+                    num2 = Math.floor(Math.random() * (maxAnswer - num1)) + 1; // 1 to (maxAnswer-num1)
+                    answer = num1 + num2;
+                    title.textContent = `${num1} + ${num2} = ?`;
+                } else {
+                    // For subtraction, ensure result is between 1-maxAnswer
+                    num1 = Math.floor(Math.random() * maxAnswer) + 1;
+                    num2 = Math.floor(Math.random() * Math.min(num1, maxAnswer)) + 1;
+                    answer = num1 - num2;
+                    title.textContent = `${num1} - ${num2} = ?`;
+                }
+                
+                question.textContent = '';
+                
+                // Generate wrong answers between 1-maxAnswer
+                const wrongAnswers = [];
+                while (wrongAnswers.length < 2) {
+                    const wrong = Math.floor(Math.random() * maxAnswer) + 1;
+                    if (wrong !== answer && !wrongAnswers.includes(wrong)) {
+                        wrongAnswers.push(wrong);
                     }
                 }
                 
-                title.textContent = ''; // No title for new reading types
-                question.innerHTML = `<div style=\"font-size: 48px; margin: 20px 0;\">${correctLetter}</div>`;
-                
-                const allAnswers = [correctUppercase, ...wrongLetters].sort(() => Math.random() - 0.5);
+                const allAnswers = [answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
                 
                 options.innerHTML = '';
-                allAnswers.forEach(letter => {
+                allAnswers.forEach(ans => {
                     const button = document.createElement('button');
                     button.className = 'puzzle-button';
-                    button.textContent = letter;
-                    button.style.fontSize = '24px';
-                    button.onclick = () => checkAnswer(letter === correctUppercase, type, door, button);
+                    button.textContent = ans;
+                    button.onclick = () => checkAnswer(ans === answer, type, door, button);
                     options.appendChild(button);
                 });
             } else if (type === 'reading2') {
-                // Emoji to word matching - show emoji, choose word
+                // Emoji to word matching with same-first-letter strategy - show emoji, choose word
                 const wordEmojiPairs = game.wordEmojiPairs;
                 
                 // Check if word list is loaded
@@ -943,19 +1501,83 @@ PIG 🐖`;
                     return;
                 }
                 
-                // Pick a random word-emoji pair
-                const correctPair = wordEmojiPairs[Math.floor(Math.random() * wordEmojiPairs.length)];
+                // Filter out already used words in this level
+                const availableWords = wordEmojiPairs.filter(pair => !game.usedWords.includes(pair.word));
                 
-                // Generate 2 wrong words
+                // If all words have been used, reset the used words list
+                const wordsToUse = availableWords.length > 0 ? availableWords : wordEmojiPairs;
+                if (availableWords.length === 0) {
+                    game.usedWords = [];
+                    console.log('All words used - resetting word tracking for this level');
+                }
+                
+                // Pick a random word-emoji pair from available words
+                const correctPair = wordsToUse[Math.floor(Math.random() * wordsToUse.length)];
+                
+                // Add this word to used words list
+                if (!game.usedWords.includes(correctPair.word)) {
+                    game.usedWords.push(correctPair.word);
+                }
+                const firstLetter = correctPair.word.charAt(0).toUpperCase();
                 const wrongWords = [];
-                while (wrongWords.length < 2) {
-                    const randomPair = wordEmojiPairs[Math.floor(Math.random() * wordEmojiPairs.length)];
-                    if (randomPair.word !== correctPair.word && !wrongWords.includes(randomPair.word)) {
-                        wrongWords.push(randomPair.word);
+                
+                // Try to find words with same first letter
+                const sameLetterWords = wordEmojiPairs.filter(pair => 
+                    pair.word.charAt(0).toUpperCase() === firstLetter && 
+                    pair.word !== correctPair.word
+                );
+                
+                // Add wrong words from same-letter words
+                while (wrongWords.length < 2 && sameLetterWords.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * sameLetterWords.length);
+                    const wrongPair = sameLetterWords.splice(randomIndex, 1)[0];
+                    wrongWords.push(wrongPair.word);
+                }
+                
+                // If not enough same-letter words, use distractors (words that start with same letter)
+                if (wrongWords.length < 2 && game.distractors[firstLetter]) {
+                    // Convert distractors to fake words that start with the same letter
+                    const commonWords = {
+                        'A': ['APPLE', 'ARROW', 'ANGEL'],
+                        'B': ['BREAD', 'BRUSH', 'BRAIN'],
+                        'C': ['CLOUD', 'CHAIR', 'CROWN'],
+                        'D': ['DUCK', 'DRUM', 'DOOR'],
+                        'F': ['FISH', 'FIRE', 'FARM'],
+                        'G': ['GRASS', 'GIFT', 'GUARD'],
+                        'H': ['HOUSE', 'HEART', 'HORSE'],
+                        'L': ['LAMP', 'LEAF', 'LOCK'],
+                        'M': ['MILK', 'MASK', 'MAGIC'],
+                        'P': ['PLANT', 'PIZZA', 'PLANE'],
+                        'R': ['ROBOT', 'RING', 'ROCK'],
+                        'S': ['STAR', 'SNAKE', 'SMILE'],
+                        'T': ['TREE', 'TRUCK', 'TIGER']
+                    };
+                    
+                    if (commonWords[firstLetter]) {
+                        const availableWords = commonWords[firstLetter].filter(word => 
+                            word !== correctPair.word.toUpperCase() && 
+                            !wrongWords.includes(word)
+                        );
+                        
+                        while (wrongWords.length < 2 && availableWords.length > 0) {
+                            const randomIndex = Math.floor(Math.random() * availableWords.length);
+                            const word = availableWords.splice(randomIndex, 1)[0];
+                            wrongWords.push(word);
+                        }
                     }
                 }
                 
-                title.textContent = ''; // No title for new reading types
+                // Final fallback to any random words if still not enough
+                if (wrongWords.length < 2) {
+                    while (wrongWords.length < 2) {
+                        const randomPair = wordEmojiPairs[Math.floor(Math.random() * wordEmojiPairs.length)];
+                        if (randomPair.word !== correctPair.word && !wrongWords.includes(randomPair.word)) {
+                            wrongWords.push(randomPair.word);
+                        }
+                    }
+                }
+                
+                title.textContent = ''; // No title for reading2 type
                 question.innerHTML = `<div style=\"font-size: 48px; margin: 20px 0;\">${correctPair.emoji}</div>`;
                 
                 const allAnswers = [correctPair.word, ...wrongWords].sort(() => Math.random() - 0.5);
@@ -1009,12 +1631,23 @@ PIG 🐖`;
                 result.innerHTML = '👎';
                 result.style.color = 'red';
                 
-                // Immediately deduct 1 point for wrong answer
-                if (type === 'math') updateScore(-1);
-                if (type === 'reading') updateScore(-1);
-                if (type === 'reading1') updateScore(-1);
-                if (type === 'reading2') updateScore(-1);
-                if (type === 'sorting') updateScore(-1);
+                // Deduct points based on difficulty mode
+                let pointsToDeduct = 0;
+                
+                if (game.difficultyMode === 'easy') {
+                    pointsToDeduct = -1; // Always lose 1 point in easy mode
+                } else if (game.difficultyMode === 'medium') {
+                    // In medium mode: first wrong answer = -1, second wrong answer = -2
+                    pointsToDeduct = door.currentProblemAttempts === 1 ? -1 : -2;
+                } else {
+                    pointsToDeduct = -2; // Hard mode: always lose 2 points
+                }
+                
+                if (type === 'math') updateScore(pointsToDeduct);
+                if (type === 'reading') updateScore(pointsToDeduct);
+                if (type === 'reading1') updateScore(pointsToDeduct);
+                if (type === 'reading2') updateScore(pointsToDeduct);
+                if (type === 'sorting') updateScore(pointsToDeduct);
                 
                 // Disable the wrong answer button
                 buttonElement.disabled = true;
@@ -1042,9 +1675,21 @@ PIG 🐖`;
         }
         
         function showCelebration() {
+            // Unlock next level
+            unlockNextLevel();
+            
             game.celebrating = true;
             game.celebrationFrame = 0;
             game.celebrationTimer = 0;
+            
+            // Update button text based on whether there's a next level
+            const playAgainBtn = document.getElementById('playAgainBtn');
+            if (game.selectedDifficulty < 3) {
+                playAgainBtn.textContent = 'Next Level';
+            } else {
+                playAgainBtn.textContent = 'Play Again';
+            }
+            
             document.getElementById('celebrationScreen').style.display = 'flex';
             animateCelebration();
         }
@@ -1063,15 +1708,13 @@ PIG 🐖`;
                 let frameWidth, frameHeight, framesPerRow, totalFrames;
                 
                 if (game.selectedDifficulty === 2) {
-                    // Level 2 sprites: 2 rows × 31 frames, calculate from actual sprite dimensions
+                    // Level 2: Single row of 62 frames - auto-calculate from actual sprite
                     const actualSheetWidth = currentCelebrationSprites.width;
                     const actualSheetHeight = currentCelebrationSprites.height;
-                    framesPerRow = 31;
-                    const rows = 2;
-                    
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight / rows;
-                    totalFrames = 62; // 2 rows × 31 frames
+                    framesPerRow = 62;
+                    frameWidth = actualSheetWidth / framesPerRow; // Don't use Math.floor to avoid drift
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 62;
                 } else if (game.selectedDifficulty === 3) {
                     // Level 3 sprites: 43 frames horizontal, calculate from actual sprite dimensions
                     const actualSheetWidth = currentCelebrationSprites.width; // 32768
@@ -1082,11 +1725,14 @@ PIG 🐖`;
                     frameHeight = actualSheetHeight; // 894
                     totalFrames = 43;
                 } else {
-                    // Level 1 sprites: Default format (8 frames horizontal)
-                    frameWidth = 620;
-                    frameHeight = 747;
-                    framesPerRow = 8;
-                    totalFrames = 8;
+                    // Level 1 sprites: New format (9 frames horizontal)
+                    const actualSheetWidth = currentCelebrationSprites.width;
+                    const actualSheetHeight = currentCelebrationSprites.height;
+                    framesPerRow = 9;
+                    
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 9;
                 }
                 
                 // Calculate frame position
@@ -1124,39 +1770,32 @@ PIG 🐖`;
             requestAnimationFrame(animateCelebration);
         }
         
-        function selectLevel(levelNum) {
-            game.selectedLevel = levelNum;
-            game.currentLevel = 1;
-            
-            // Set current sprites based on selected level
-            currentMovementSprites = levelSprites[levelNum].movement;
-            currentCelebrationSprites = levelSprites[levelNum].celebration;
-            
-            // Hide level select and show difficulty selection
-            document.getElementById('levelSelect').style.display = 'none';
-            document.getElementById('difficultySelect').style.display = 'flex';
-        }
         
-        function selectDifficulty(difficulty) {
-            game.selectedDifficulty = difficulty;
-            
-            // Load appropriate celebration sprite for character and difficulty
-            currentCelebrationSprites = loadCelebrationSprite(game.selectedLevel, difficulty);
-            
-            // Hide difficulty selection and start game
-            document.getElementById('difficultySelect').style.display = 'none';
-            
-            // Initialize game with selected difficulty
-            initializeGame();
-        }
         
         function resetGame() {
             game.player.x = 0;
             game.player.y = 0;
             game.player.direction = 'right';
-            game.score = 5;
+            
+            // Set starting hearts based on difficulty mode
+            if (game.difficultyMode === 'easy' || game.difficultyMode === 'medium') {
+                game.score = 5;
+            } else {
+                game.score = 3; // hard mode
+            }
+            
             updateScore(0); // This will set the hearts display
-            document.getElementById('level').textContent = `Level: ${game.currentLevel}`;
+            
+            // Display level and difficulty mode
+            const difficultyEmoji = {
+                'easy': '🫛',
+                'medium': '😐', 
+                'hard': '🙀'
+            };
+            document.getElementById('level').textContent = `Level: ${game.selectedDifficulty} (${difficultyEmoji[game.difficultyMode]})`;
+            
+            // Reset used words for this level to prevent repetition
+            game.usedWords = [];
             
             // Reset all doors
             game.doors.forEach(door => {
@@ -1171,15 +1810,19 @@ PIG 🐖`;
             game.celebrating = false;
             document.getElementById('celebrationScreen').style.display = 'none';
             
-            // Go to next level or back to level select
-            game.currentLevel++;
-            if (game.currentLevel > 1) {
-                // Completed all levels for this character, go back to level select
-                game.currentLevel = 1;
-                document.getElementById('levelSelect').style.display = 'flex';
+            // If there's a next level, advance to it
+            if (game.selectedDifficulty < 3) {
+                game.selectedDifficulty++;
+                console.log(`Advancing to level ${game.selectedDifficulty}`);
+                // Load next level directly
+                currentCelebrationSprites = loadCelebrationSprite(game.selectedDifficulty);
+                initializeGame();
             } else {
-                // Continue to next level with same character
-                resetGame();
+                // Completed all levels, restart from level 1
+                console.log('All levels completed, restarting from level 1');
+                game.selectedDifficulty = 1;
+                currentCelebrationSprites = loadCelebrationSprite(1);
+                initializeGame();
             }
         }
         
@@ -1200,43 +1843,9 @@ PIG 🐖`;
             requestAnimationFrame(gameLoop);
         }
         
-        // Draw level selection sprites
-        function drawLevelSprites() {
-            // Draw Level 1 sprite (last frame of elephant movement)
-            const canvas1 = document.getElementById('level1Sprite');
-            const ctx1 = canvas1.getContext('2d');
-            if (levelSprites[1].movement.complete) {
-                ctx1.drawImage(
-                    levelSprites[1].movement,
-                    800, 0, 160, 160, // Last frame (frame 6) from movement sprite sheet
-                    0, 0, 120, 120 // Scale down to fit button
-                );
-            }
-            
-            // Draw Level 2 sprite (last frame of enderman movement)
-            const canvas2 = document.getElementById('level2Sprite');
-            const ctx2 = canvas2.getContext('2d');
-            if (levelSprites[2].movement.complete) {
-                ctx2.drawImage(
-                    levelSprites[2].movement,
-                    800, 0, 160, 160, // Last frame (frame 6) from movement sprite sheet
-                    0, 0, 120, 120 // Scale down to fit button
-                );
-            }
-        }
         
-        // Start with level selection screen
-        document.getElementById('levelSelect').style.display = 'flex';
-        
-        // Initialize hearts display
-        updateScore(0);
-        
-        // Draw level sprites when images load
-        levelSprites[1].movement.onload = drawLevelSprites;
-        levelSprites[2].movement.onload = drawLevelSprites;
-        
-        // Game will be initialized after difficulty selection
-        // initializeGame() will be called from selectDifficulty()
+        // Show difficulty selection screen on game start
+        // The game will start after user selects difficulty via selectDifficulty() function
     </script>
 </body>
 </html>
