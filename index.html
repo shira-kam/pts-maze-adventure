@@ -540,7 +540,7 @@
                     <button class="debug-button" onclick="jumpToLevel(5)">Jump to Level 5</button>
                     <button class="debug-button" onclick="jumpToLevel(6)">Jump to Level 6</button>
                     <button class="debug-button" onclick="jumpToLevel(7)">Jump to Level 7</button>
-                    <button class="debug-button" onclick="jumpToLevel(8)">Jump to Level 8 (Math Test)</button>
+                    <button class="debug-button" onclick="jumpToLevel(8)">Jump to Level 8</button>
                 </div>
                 <p style="margin-top: 10px; font-size: 14px; color: #ccc;">Current Level: <span id="debugCurrentLevel">1</span></p>
             </div>
@@ -600,7 +600,7 @@
                         <button class="debug-button" onclick="debugStopCelebration(7)">Stop</button>
                     </div>
                     <div class="celebration-item">
-                        <h4>Level 8 - PT Celebration (Math Test)</h4>
+                        <h4>Level 8 - PT Celebration</h4>
                         <canvas class="celebration-preview" id="debugCelebration8" width="200" height="200"></canvas>
                         <br>
                         <button class="debug-button" onclick="debugPlayCelebration(8)">Play Animation</button>
@@ -919,27 +919,65 @@ PIG 🐖`;
             }
         }
         
+        // Celebration animation configuration for all levels
+        const celebrationConfig = {
+            1: { frames: 9, layout: 'horizontal' },
+            2: { frames: 62, layout: 'horizontal' },
+            3: { frames: 43, layout: 'horizontal' },
+            4: { frames: 62, layout: 'horizontal' },
+            5: { frames: 52, layout: 'horizontal' },
+            6: { frames: 29, layout: 'horizontal' },
+            7: { frames: 24, layout: 'horizontal' },
+            8: { frames: 29, layout: 'horizontal' }
+        };
+        
+        // Function to get celebration frame configuration for a level
+        function getCelebrationConfig(level) {
+            const config = celebrationConfig[level];
+            if (!config) {
+                console.error(`No celebration config found for level ${level}`);
+                return celebrationConfig[1]; // Fallback to level 1
+            }
+            return config;
+        }
+        
+        // Function to calculate frame dimensions and properties
+        function calculateFrameProperties(sprite, level) {
+            const config = getCelebrationConfig(level);
+            const actualSheetWidth = sprite.width;
+            const actualSheetHeight = sprite.height;
+            
+            let frameWidth, frameHeight, framesPerRow, totalFrames;
+            
+            if (config.layout === 'horizontal') {
+                framesPerRow = config.frames;
+                // Use Math.floor for level 3 to prevent drift, regular division for others
+                frameWidth = level === 3 ? Math.floor(actualSheetWidth / framesPerRow) : actualSheetWidth / framesPerRow;
+                frameHeight = actualSheetHeight;
+                totalFrames = config.frames;
+            } else {
+                // Future support for other layouts like grid if needed
+                throw new Error(`Unsupported layout: ${config.layout}`);
+            }
+            
+            return {
+                frameWidth,
+                frameHeight,
+                framesPerRow,
+                totalFrames
+            };
+        }
+        
         // Function to load celebration sprite based on difficulty
         function loadCelebrationSprite(difficulty) {
             const celebrationSprite = new Image();
             const cacheBuster = '?v=' + Date.now();
             
-            if (difficulty === 1) {
-                celebrationSprite.src = 'level-1/celebrate.png' + cacheBuster;
-            } else if (difficulty === 2) {
-                celebrationSprite.src = 'level-2/celebrate.png' + cacheBuster;
-            } else if (difficulty === 3) {
-                celebrationSprite.src = 'level-3/celebrate.png' + cacheBuster;
-            } else if (difficulty === 4) {
-                celebrationSprite.src = 'level-4/celebrate.png' + cacheBuster;
-            } else if (difficulty === 5) {
-                celebrationSprite.src = 'level-5/celebrate.png' + cacheBuster;
-            } else if (difficulty === 6) {
-                celebrationSprite.src = 'level-6/celebrate.png' + cacheBuster;
-            } else if (difficulty === 7) {
-                celebrationSprite.src = 'level-7/celebrate.png' + cacheBuster;
-            } else if (difficulty === 8) {
-                celebrationSprite.src = 'level-8/celebrate.png' + cacheBuster;
+            if (difficulty >= 1 && difficulty <= 8) {
+                celebrationSprite.src = `level-${difficulty}/celebrate.png` + cacheBuster;
+            } else {
+                console.error(`Invalid difficulty level: ${difficulty}`);
+                celebrationSprite.src = 'level-1/celebrate.png' + cacheBuster; // Fallback
             }
             
             return celebrationSprite;
@@ -1108,7 +1146,7 @@ PIG 🐖`;
         
         // Function to unlock next level
         function unlockNextLevel() {
-            if (game.selectedDifficulty < 7) {
+            if (game.selectedDifficulty < 8) {
                 game.maxUnlockedLevel = Math.max(game.maxUnlockedLevel, game.selectedDifficulty + 1);
                 localStorage.setItem('ptMazeMaxLevel', game.maxUnlockedLevel.toString());
             }
@@ -1210,23 +1248,7 @@ PIG 🐖`;
                 const sprite = new Image();
                 const cacheBuster = '?v=' + Date.now() + '_' + Math.random();
                 
-                if (level === 1) {
-                    sprite.src = 'level-1/celebrate.png' + cacheBuster;
-                } else if (level === 2) {
-                    sprite.src = 'level-2/celebrate.png' + cacheBuster;
-                } else if (level === 3) {
-                    sprite.src = 'level-3/celebrate.png' + cacheBuster;
-                } else if (level === 4) {
-                    sprite.src = 'level-4/celebrate.png' + cacheBuster;
-                } else if (level === 5) {
-                    sprite.src = 'level-5/celebrate.png' + cacheBuster;
-                } else if (level === 6) {
-                    sprite.src = 'level-6/celebrate.png' + cacheBuster;
-                } else if (level === 7) {
-                    sprite.src = 'level-7/celebrate.png' + cacheBuster;
-                } else if (level === 8) {
-                    sprite.src = 'level-8/celebrate.png' + cacheBuster;
-                }
+                sprite.src = `level-${level}/celebrate.png` + cacheBuster;
                 
                 sprite.onload = () => {
                     console.log(`Debug sprite loaded for level ${level}: ${sprite.width}x${sprite.height}`);
@@ -1270,73 +1292,9 @@ PIG 🐖`;
             if (sprite && sprite.complete) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // Get sprite configuration based on level
-                let frameWidth, frameHeight, framesPerRow, totalFrames;
-                
-                if (level === 1) {
-                    const actualSheetWidth = sprite.width;
-                    const actualSheetHeight = sprite.height;
-                    framesPerRow = 9;
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 9;
-                } else if (level === 2) {
-                    // Level 2: Single row of 62 frames - auto-calculate from actual sprite
-                    const actualSheetWidth = sprite.width;
-                    const actualSheetHeight = sprite.height;
-                    framesPerRow = 62;
-                    frameWidth = actualSheetWidth / framesPerRow; // Don't use Math.floor to avoid drift
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 62;
-                    console.log(`Level 2: Single row ${actualSheetWidth}x${actualSheetHeight}, frameW=${frameWidth}, frameH=${frameHeight}`);
-                } else if (level === 3) {
-                    const actualSheetWidth = sprite.width;
-                    const actualSheetHeight = sprite.height;
-                    framesPerRow = 43;
-                    frameWidth = Math.floor(actualSheetWidth / framesPerRow);
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 43;
-                } else if (level === 4) {
-                    // Level 4: 62 frames horizontal layout
-                    const actualSheetWidth = sprite.width;
-                    const actualSheetHeight = sprite.height;
-                    framesPerRow = 62;
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 62;
-                } else if (level === 5) {
-                    // Level 5: 52 frames horizontal layout
-                    const actualSheetWidth = sprite.width;
-                    const actualSheetHeight = sprite.height;
-                    framesPerRow = 52;
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 52;
-                } else if (level === 6) {
-                    // Level 6: 29 frames horizontal layout
-                    const actualSheetWidth = sprite.width;
-                    const actualSheetHeight = sprite.height;
-                    framesPerRow = 29;
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 29;
-                } else if (level === 7) {
-                    // Level 7: 24 frames horizontal layout
-                    const actualSheetWidth = sprite.width;
-                    const actualSheetHeight = sprite.height;
-                    framesPerRow = 24;
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 24;
-                } else if (level === 8) {
-                    // Level 8: 29 frames horizontal layout (same as level 6)
-                    const actualSheetWidth = sprite.width;
-                    const actualSheetHeight = sprite.height;
-                    framesPerRow = 29;
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 29;
-                }
+                // Calculate frame properties using configuration-based approach
+                const frameProps = calculateFrameProperties(sprite, level);
+                const { frameWidth, frameHeight, framesPerRow, totalFrames } = frameProps;
                 
                 // Calculate frame position
                 const row = Math.floor(debugState.animationFrames[level] / framesPerRow);
@@ -1396,8 +1354,8 @@ PIG 🐖`;
                 loadDistractorsFromFile()
             ];
             
-            // Add digraph data loading for Levels 3, 4, 5, 6, and 7
-            if (game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) {
+            // Add digraph data loading for Levels 3, 4, 5, 6, 7, and 8
+            if (game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7 || game.selectedDifficulty === 8) {
                 loadPromises.push(loadDigraphData());
             }
             
@@ -1414,8 +1372,8 @@ PIG 🐖`;
             game.wordEmojiPairs = wordList;
             game.distractors = distractors;
             
-            // Store digraph data if Levels 3, 4, 5, 6, or 7
-            if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) && digraphData) {
+            // Store digraph data if Levels 3, 4, 5, 6, 7, or 8
+            if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7 || game.selectedDifficulty === 8) && digraphData) {
                 game.digraphEmojis = digraphData.digraphEmojis;
                 game.digraphSounds = digraphData.digraphSounds;
                 game.emojiNames = digraphData.emojiNames;
@@ -2176,7 +2134,7 @@ PIG 🐖`;
                     
                     // Store the problem details on the door
                     door.mathAnswer = answer;
-                    door.mathStartPosition = num1; // Start PT at position A (first number)
+                    door.mathStartPosition = 0; // Start PT at position 0 so user can add all three numbers
                     door.foxPosition = door.mathStartPosition;
                     
                     // Generate multiple choice answers (correct + 2 incorrect)
@@ -3018,9 +2976,11 @@ PIG 🐖`;
             for (let i = 0; i <= 12; i++) {
                 const cell = document.createElement('div');
                 cell.id = `grid-cell-${i}`;
+                const backgroundColor = i === 0 ? 'black' : 'white'; // Color 0 block black
                 cell.style.cssText = `
                     aspect-ratio: 1;
                     border: 1px solid #ccc;
+                    background-color: ${backgroundColor};
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -3056,6 +3016,7 @@ PIG 🐖`;
                 const label = document.createElement('div');
                 label.id = `grid-label-${i}`;
                 label.textContent = i;
+                // Keep all labels green for visibility
                 label.style.cssText = `
                     font-size: 14px;
                     font-weight: bold;
@@ -3110,9 +3071,14 @@ PIG 🐖`;
                 const gridLabel = document.getElementById(`grid-label-${i}`);
                 
                 if (gridCell && gridLabel) {
-                    // Reset to default
-                    gridCell.style.backgroundColor = '';
-                    gridLabel.style.color = '#2E8B57';
+                    // Reset to default - but preserve black for 0 in Level 8
+                    if (i === 0 && game.selectedDifficulty === 8) {
+                        gridCell.style.backgroundColor = 'black'; // Keep 0 black in Level 8
+                        gridLabel.style.color = 'black'; // Make 0 label black too
+                    } else {
+                        gridCell.style.backgroundColor = '';
+                        gridLabel.style.color = '#2E8B57';
+                    }
                 }
             }
             
@@ -3123,9 +3089,14 @@ PIG 🐖`;
                 
                 if (gridCell && gridLabel) {
                     if (i === startPos) {
-                        // Start position is ALWAYS green, regardless of current position
-                        gridCell.style.backgroundColor = '#32CD32';
-                        gridLabel.style.color = '#32CD32';
+                        // Start position coloring - but preserve black for 0 in Level 8
+                        if (i === 0 && game.selectedDifficulty === 8) {
+                            gridCell.style.backgroundColor = 'black'; // Keep 0 black in Level 8
+                            gridLabel.style.color = 'black'; // Keep 0 label black too
+                        } else {
+                            gridCell.style.backgroundColor = '#32CD32'; // Green for other levels
+                            gridLabel.style.color = '#32CD32';
+                        }
                     } else if (i === position) {
                         // Current position (only if different from start)
                         if (position < startPos) {
@@ -3381,7 +3352,7 @@ PIG 🐖`;
             
             // Update button text based on whether there's a next level
             const playAgainBtn = document.getElementById('playAgainBtn');
-            if (game.selectedDifficulty < 7) {
+            if (game.selectedDifficulty < 8) {
                 playAgainBtn.textContent = 'Next Level';
             } else {
                 playAgainBtn.textContent = 'Show Final Score';
@@ -3401,76 +3372,9 @@ PIG 🐖`;
                 // Clear canvas
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // Determine sprite format based on character and difficulty
-                let frameWidth, frameHeight, framesPerRow, totalFrames;
-                
-                if (game.selectedDifficulty === 2) {
-                    // Level 2: Single row of 62 frames - auto-calculate from actual sprite
-                    const actualSheetWidth = currentCelebrationSprites.width;
-                    const actualSheetHeight = currentCelebrationSprites.height;
-                    framesPerRow = 62;
-                    frameWidth = actualSheetWidth / framesPerRow; // Don't use Math.floor to avoid drift
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 62;
-                } else if (game.selectedDifficulty === 3) {
-                    // Level 3 sprites: 43 frames horizontal, calculate from actual sprite dimensions
-                    const actualSheetWidth = currentCelebrationSprites.width; // 32768
-                    const actualSheetHeight = currentCelebrationSprites.height; // 894
-                    framesPerRow = 43;
-                    
-                    frameWidth = Math.floor(actualSheetWidth / framesPerRow); // 32768 / 43 = 762
-                    frameHeight = actualSheetHeight; // 894
-                    totalFrames = 43;
-                } else if (game.selectedDifficulty === 4) {
-                    // Level 4: 62 frames horizontal layout
-                    const actualSheetWidth = currentCelebrationSprites.width;
-                    const actualSheetHeight = currentCelebrationSprites.height;
-                    framesPerRow = 62;
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 62;
-                } else if (game.selectedDifficulty === 5) {
-                    // Level 5: 52 frames horizontal layout
-                    const actualSheetWidth = currentCelebrationSprites.width;
-                    const actualSheetHeight = currentCelebrationSprites.height;
-                    framesPerRow = 52;
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 52;
-                } else if (game.selectedDifficulty === 6) {
-                    // Level 6: 29 frames horizontal layout
-                    const actualSheetWidth = currentCelebrationSprites.width;
-                    const actualSheetHeight = currentCelebrationSprites.height;
-                    framesPerRow = 29;
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 29;
-                } else if (game.selectedDifficulty === 7) {
-                    // Level 7: 24 frames horizontal layout
-                    const actualSheetWidth = currentCelebrationSprites.width;
-                    const actualSheetHeight = currentCelebrationSprites.height;
-                    framesPerRow = 24;
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 24;
-                } else if (game.selectedDifficulty === 8) {
-                    // Level 8: 29 frames horizontal layout (same as level 6)
-                    const actualSheetWidth = currentCelebrationSprites.width;
-                    const actualSheetHeight = currentCelebrationSprites.height;
-                    framesPerRow = 29;
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 29;
-                } else {
-                    // Level 1 sprites: New format (9 frames horizontal)
-                    const actualSheetWidth = currentCelebrationSprites.width;
-                    const actualSheetHeight = currentCelebrationSprites.height;
-                    framesPerRow = 9;
-                    
-                    frameWidth = actualSheetWidth / framesPerRow;
-                    frameHeight = actualSheetHeight;
-                    totalFrames = 9;
-                }
+                // Calculate frame properties using configuration-based approach
+                const frameProps = calculateFrameProperties(currentCelebrationSprites, game.selectedDifficulty);
+                const { frameWidth, frameHeight, framesPerRow, totalFrames } = frameProps;
                 
                 // Calculate frame position
                 const row = Math.floor(game.celebrationFrame / framesPerRow);
@@ -3549,7 +3453,7 @@ PIG 🐖`;
             document.getElementById('celebrationScreen').style.display = 'none';
             
             // If there's a next level, advance to it
-            if (game.selectedDifficulty < 7) {
+            if (game.selectedDifficulty < 8) {
                 game.selectedDifficulty++;
                 console.log(`Advancing to level ${game.selectedDifficulty}`);
                 // Load next level directly
@@ -3568,7 +3472,7 @@ PIG 🐖`;
             container.innerHTML = '';
             
             // Add each level score
-            for (let level = 1; level <= 7; level++) {
+            for (let level = 1; level <= 8; level++) {
                 const score = game.levelScores[level] || 0;
                 const levelItem = document.createElement('div');
                 levelItem.className = 'level-score-item';
@@ -3641,7 +3545,7 @@ PIG 🐖`;
             const container = document.getElementById('levelScoresContainer');
             container.innerHTML = '';
             
-            for (let level = 1; level <= 7; level++) {
+            for (let level = 1; level <= 8; level++) {
                 const score = game.levelScores[level];
                 const levelItem = document.createElement('div');
                 levelItem.className = 'level-score-item';
