@@ -127,7 +127,7 @@
         }
         
         #celebrationSprite {
-            margin-bottom: 30px;
+            margin-top: 20px;
         }
         
         #playAgainBtn {
@@ -138,7 +138,7 @@
             font-size: 20px;
             border-radius: 25px;
             cursor: pointer;
-            margin-top: 20px;
+            margin-bottom: 20px;
             font-family: inherit;
             font-weight: bold;
         }
@@ -367,6 +367,123 @@
             transform: translateY(-2px);
         }
         
+        #seeScoreBtn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 25px 50px;
+            font-size: 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            min-width: 250px;
+        }
+        
+        #seeScoreBtn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        #finalScoreScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #87CEEB, #98FB98);
+            z-index: 3500;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #finalScoreContent {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            max-width: 600px;
+            min-width: 500px;
+        }
+        
+        #finalScoreTitle {
+            font-size: 36px;
+            color: #2E8B57;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .level-score-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            margin: 5px 0;
+            background: #f0f8ff;
+            border-radius: 10px;
+            border-left: 5px solid #4CAF50;
+        }
+        
+        .level-wall-block {
+            width: 30px;
+            height: 30px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            border-radius: 3px;
+            margin-right: 10px;
+        }
+        
+        .level-score-item.special {
+            background: #fffacd;
+            border-left-color: #FFD700;
+        }
+        
+        .level-score-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2E8B57;
+        }
+        
+        .level-score-hearts {
+            font-size: 16px;
+        }
+        
+        #totalScoreSection {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e6f3ff;
+            border-radius: 15px;
+            border: 3px solid #4CAF50;
+        }
+        
+        #totalScoreText {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2E8B57;
+            margin-bottom: 10px;
+        }
+        
+        #finalScoreBtn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-family: inherit;
+            font-weight: bold;
+        }
+        
+        #finalScoreBtn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
         
     </style>
 </head>
@@ -392,8 +509,8 @@
     
     <div id="celebrationScreen">
         <div id="celebrationContent">
-            <canvas id="celebrationSprite" width="800" height="900"></canvas>
             <button id="playAgainBtn" onclick="playAgain()">Play Again</button>
+            <canvas id="celebrationSprite" width="800" height="900"></canvas>
         </div>
     </div>
     
@@ -411,6 +528,22 @@
         <button id="debugCloseBtn" onclick="closeDebugMode()">✕ Close Debug</button>
         <div id="debugContent">
             <div id="debugTitle">🐛 DEBUG MODE 🐛</div>
+            
+            <div class="debug-section">
+                <h3>🎮 Level Selection</h3>
+                <p>Jump to any level for testing:</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                    <button class="debug-button" onclick="jumpToLevel(1)">Jump to Level 1</button>
+                    <button class="debug-button" onclick="jumpToLevel(2)">Jump to Level 2</button>
+                    <button class="debug-button" onclick="jumpToLevel(3)">Jump to Level 3</button>
+                    <button class="debug-button" onclick="jumpToLevel(4)">Jump to Level 4</button>
+                    <button class="debug-button" onclick="jumpToLevel(5)">Jump to Level 5</button>
+                    <button class="debug-button" onclick="jumpToLevel(6)">Jump to Level 6</button>
+                    <button class="debug-button" onclick="jumpToLevel(7)">Jump to Level 7</button>
+                    <button class="debug-button" onclick="jumpToLevel(8)">Jump to Level 8 (Math Test)</button>
+                </div>
+                <p style="margin-top: 10px; font-size: 14px; color: #ccc;">Current Level: <span id="debugCurrentLevel">1</span></p>
+            </div>
             
             <div class="debug-section">
                 <h3>🎉 Celebration Animations</h3>
@@ -438,6 +571,41 @@
                         <button class="debug-button" onclick="debugPlayCelebration(3)">Play Animation</button>
                         <button class="debug-button" onclick="debugStopCelebration(3)">Stop</button>
                     </div>
+                    <div class="celebration-item">
+                        <h4>Level 4 - PT Celebration</h4>
+                        <canvas class="celebration-preview" id="debugCelebration4" width="200" height="200"></canvas>
+                        <br>
+                        <button class="debug-button" onclick="debugPlayCelebration(4)">Play Animation</button>
+                        <button class="debug-button" onclick="debugStopCelebration(4)">Stop</button>
+                    </div>
+                    <div class="celebration-item">
+                        <h4>Level 5 - PT Celebration</h4>
+                        <canvas class="celebration-preview" id="debugCelebration5" width="200" height="200"></canvas>
+                        <br>
+                        <button class="debug-button" onclick="debugPlayCelebration(5)">Play Animation</button>
+                        <button class="debug-button" onclick="debugStopCelebration(5)">Stop</button>
+                    </div>
+                    <div class="celebration-item">
+                        <h4>Level 6 - PT Celebration</h4>
+                        <canvas class="celebration-preview" id="debugCelebration6" width="200" height="200"></canvas>
+                        <br>
+                        <button class="debug-button" onclick="debugPlayCelebration(6)">Play Animation</button>
+                        <button class="debug-button" onclick="debugStopCelebration(6)">Stop</button>
+                    </div>
+                    <div class="celebration-item">
+                        <h4>Level 7 - PT Celebration</h4>
+                        <canvas class="celebration-preview" id="debugCelebration7" width="200" height="200"></canvas>
+                        <br>
+                        <button class="debug-button" onclick="debugPlayCelebration(7)">Play Animation</button>
+                        <button class="debug-button" onclick="debugStopCelebration(7)">Stop</button>
+                    </div>
+                    <div class="celebration-item">
+                        <h4>Level 8 - PT Celebration (Math Test)</h4>
+                        <canvas class="celebration-preview" id="debugCelebration8" width="200" height="200"></canvas>
+                        <br>
+                        <button class="debug-button" onclick="debugPlayCelebration(8)">Play Animation</button>
+                        <button class="debug-button" onclick="debugStopCelebration(8)">Stop</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -447,7 +615,24 @@
         <div id="gameOverContent">
             <h1>GAME OVER</h1>
             <canvas id="gameOverSprite" width="436" height="436"></canvas>
-            <button id="gameOverBtn" onclick="restartGame()">Try Again</button>
+            <button id="seeScoreBtn" onclick="showGameOverScore()">See Score</button>
+        </div>
+    </div>
+    
+    <div id="finalScoreScreen">
+        <div id="finalScoreContent">
+            <div id="finalScoreTitle">🎉 Congratulations! 🎉</div>
+            
+            <div id="levelScoresContainer">
+                <!-- Level scores will be populated here -->
+            </div>
+            
+            <div id="totalScoreSection">
+                <div id="totalScoreText">Total Score: 0 ♥️</div>
+                <p style="font-size: 16px; color: #666; margin: 5px 0;">Lives remaining across all levels</p>
+            </div>
+            
+            <button id="finalScoreBtn" onclick="restartFromFinalScore()">Play Again</button>
         </div>
     </div>
     
@@ -553,6 +738,10 @@
                             // Add path under watering hole for walkability
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
+                        case 'h':
+                            // Heart collectible - add to paths and track as heart
+                            paths.push({ x, y, width: 40, height: 40, type: 'heart', collected: false });
+                            break;
                         // Empty cells and walls are ignored
                     }
                 }
@@ -656,6 +845,80 @@ PIG 🐖`;
         ptSprites.movement.src = 'PT-sprite.svg';
         // Celebration sprites will be loaded dynamically based on difficulty
         
+        // Digraph data for Level 3
+        let digraphEmojis = {};
+        let digraphSounds = {};
+        let emojiNames = {};
+        
+        // Load emoji names for word pronunciation
+        async function loadEmojiNames() {
+            try {
+                const response = await fetch('emoji-names.txt' + '?v=' + Date.now());
+                const emojiText = await response.text();
+                
+                const lines = emojiText.trim().split('\n');
+                lines.forEach(line => {
+                    const parts = line.trim().split(',');
+                    if (parts.length >= 2) {
+                        const emoji = parts[0];
+                        const name = parts[1];
+                        emojiNames[emoji] = name;
+                    }
+                });
+                
+                console.log('Loaded emoji names:', emojiNames);
+                return emojiNames;
+            } catch (error) {
+                console.error('Error loading emoji names:', error);
+                return {};
+            }
+        }
+        
+        // Load digraph data files for Level 3
+        async function loadDigraphData() {
+            try {
+                const [emojiResponse, soundResponse, namesResponse] = await Promise.all([
+                    fetch('digraph-emojis.txt' + '?v=' + Date.now()),
+                    fetch('digraph-sounds.txt' + '?v=' + Date.now()),
+                    loadEmojiNames()
+                ]);
+                
+                const emojiText = await emojiResponse.text();
+                const soundText = await soundResponse.text();
+                
+                // Parse digraph-emojis.txt
+                const emojiLines = emojiText.trim().split('\n');
+                emojiLines.forEach(line => {
+                    const parts = line.trim().split(',');
+                    if (parts.length >= 4) {
+                        const digraph = parts[0];
+                        const emojis = parts.slice(1);
+                        digraphEmojis[digraph] = emojis;
+                    }
+                });
+                
+                // Parse digraph-sounds.txt
+                const soundLines = soundText.trim().split('\n');
+                soundLines.forEach(line => {
+                    const parts = line.trim().split(',');
+                    if (parts.length >= 2) {
+                        const digraph = parts[0];
+                        const sound = parts[1];
+                        digraphSounds[digraph] = sound;
+                    }
+                });
+                
+                // Store emoji names
+                emojiNames = namesResponse;
+                
+                console.log('Loaded digraph data:', { digraphEmojis, digraphSounds, emojiNames });
+                return { digraphEmojis, digraphSounds, emojiNames };
+            } catch (error) {
+                console.error('Error loading digraph data:', error);
+                return { digraphEmojis: {}, digraphSounds: {}, emojiNames: {} };
+            }
+        }
+        
         // Function to load celebration sprite based on difficulty
         function loadCelebrationSprite(difficulty) {
             const celebrationSprite = new Image();
@@ -667,6 +930,16 @@ PIG 🐖`;
                 celebrationSprite.src = 'level-2/celebrate.png' + cacheBuster;
             } else if (difficulty === 3) {
                 celebrationSprite.src = 'level-3/celebrate.png' + cacheBuster;
+            } else if (difficulty === 4) {
+                celebrationSprite.src = 'level-4/celebrate.png' + cacheBuster;
+            } else if (difficulty === 5) {
+                celebrationSprite.src = 'level-5/celebrate.png' + cacheBuster;
+            } else if (difficulty === 6) {
+                celebrationSprite.src = 'level-6/celebrate.png' + cacheBuster;
+            } else if (difficulty === 7) {
+                celebrationSprite.src = 'level-7/celebrate.png' + cacheBuster;
+            } else if (difficulty === 8) {
+                celebrationSprite.src = 'level-8/celebrate.png' + cacheBuster;
             }
             
             return celebrationSprite;
@@ -683,6 +956,7 @@ PIG 🐖`;
             math: new Image(),
             reading: new Image(),
             endpoint: new Image(),
+            heart: new Image(),    // Heart collectible texture
             reading1: new Image(), // Will fallback to reading texture
             reading2: new Image(), // Will fallback to reading texture
             sorting: new Image(),  // Will fallback to math texture
@@ -709,6 +983,11 @@ PIG 🐖`;
             textures.math.src = basePath + 'math.png' + cacheBuster;
             textures.reading.src = basePath + 'reading.png' + cacheBuster;
             textures.endpoint.src = basePath + 'endpoint.png' + cacheBuster;
+            
+            // Load heart texture for level 6, 7, and 8
+            if (level === 6 || level === 7 || level === 8) {
+                textures.heart.src = basePath + 'heart.png' + cacheBuster;
+            }
             
             // For door types without specific textures, use existing ones
             textures.reading1 = textures.reading; // Use reading texture for letter matching
@@ -775,12 +1054,61 @@ PIG 🐖`;
             gameOverActive: false,
             gameOverFrame: 0,
             gameOverTimer: 0,
-            paths: [] // Will be populated from CSV
+            paths: [], // Will be populated from CSV
+            digraphEmojis: {}, // Will be populated from digraph-emojis.txt for Level 3
+            digraphSounds: {}, // Will be populated from digraph-sounds.txt for Level 3
+            emojiNames: {}, // Will be populated from emoji-names.txt for Level 3
+            usedDigraphs: [], // Track digraphs used in current level to prevent repetition
+            levelScores: {}, // Track final score for each completed level
+            deathLevel: null, // Track which level the user died on
+            gameSession: { // Track current game session
+                startTime: null,
+                levelsCompleted: 0,
+                totalScore: 0
+            }
         };
+        
+        // Text-to-speech function for digraph sounds
+        function speakDigraph(soundText) {
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(soundText);
+                utterance.rate = 0.8; // Slightly slower for clarity
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                window.speechSynthesis.speak(utterance);
+                console.log('Speaking digraph sound:', soundText);
+            } else {
+                console.warn('Speech synthesis not supported in this browser');
+                alert(`Sound: ${soundText}`);
+            }
+        }
+        
+        // Text-to-speech function for emoji word names
+        function speakEmojiWord(emoji) {
+            if ('speechSynthesis' in window && game.emojiNames && game.emojiNames[emoji]) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                const wordName = game.emojiNames[emoji];
+                const utterance = new SpeechSynthesisUtterance(wordName);
+                utterance.rate = 0.8; // Slightly slower for clarity
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                window.speechSynthesis.speak(utterance);
+                console.log('Speaking emoji word:', wordName);
+            } else {
+                console.warn('Speech synthesis not supported or emoji name not found for:', emoji);
+            }
+        }
         
         // Function to unlock next level
         function unlockNextLevel() {
-            if (game.selectedDifficulty < 3) {
+            if (game.selectedDifficulty < 7) {
                 game.maxUnlockedLevel = Math.max(game.maxUnlockedLevel, game.selectedDifficulty + 1);
                 localStorage.setItem('ptMazeMaxLevel', game.maxUnlockedLevel.toString());
             }
@@ -798,10 +1126,19 @@ PIG 🐖`;
             game.difficultyMode = difficulty;
             console.log(`Selected difficulty: ${difficulty}`);
             
+            // Initialize game session
+            game.levelScores = {};
+            game.deathLevel = null;
+            game.gameSession = {
+                startTime: Date.now(),
+                levelsCompleted: 0,
+                totalScore: 0
+            };
+            
             // Hide difficulty selection screen
             document.getElementById('difficultyScreen').style.display = 'none';
             
-            // Start the game with selected difficulty
+            // Start the game with level 1
             game.selectedDifficulty = 1;
             currentCelebrationSprites = loadCelebrationSprite(1);
             initializeGame();
@@ -822,11 +1159,42 @@ PIG 🐖`;
                 console.log('🐛 Debug mode enabled');
                 document.getElementById('debugScreen').style.display = 'block';
                 loadDebugCelebrationSprites();
+                updateDebugCurrentLevel();
             } else {
                 console.log('🐛 Debug mode disabled');
                 document.getElementById('debugScreen').style.display = 'none';
                 stopAllDebugAnimations();
             }
+        }
+        
+        // Update debug current level display
+        function updateDebugCurrentLevel() {
+            const debugCurrentLevel = document.getElementById('debugCurrentLevel');
+            if (debugCurrentLevel) {
+                debugCurrentLevel.textContent = game.selectedDifficulty;
+            }
+        }
+        
+        // Jump to specific level function for debug mode
+        function jumpToLevel(level) {
+            if (level < 1 || level > 8) {
+                console.error('Invalid level:', level);
+                return;
+            }
+            
+            console.log(`🐛 Jumping to level ${level} from debug mode`);
+            
+            // Update game state
+            game.selectedDifficulty = level;
+            
+            // Load celebration sprite for this level
+            currentCelebrationSprites = loadCelebrationSprite(level);
+            
+            // Close debug mode
+            closeDebugMode();
+            
+            // Initialize the new level
+            initializeGame();
         }
         
         // Close debug mode
@@ -838,7 +1206,7 @@ PIG 🐖`;
         
         // Load all celebration sprites for debug mode
         function loadDebugCelebrationSprites() {
-            for (let level = 1; level <= 3; level++) {
+            for (let level = 1; level <= 8; level++) {
                 const sprite = new Image();
                 const cacheBuster = '?v=' + Date.now() + '_' + Math.random();
                 
@@ -848,6 +1216,16 @@ PIG 🐖`;
                     sprite.src = 'level-2/celebrate.png' + cacheBuster;
                 } else if (level === 3) {
                     sprite.src = 'level-3/celebrate.png' + cacheBuster;
+                } else if (level === 4) {
+                    sprite.src = 'level-4/celebrate.png' + cacheBuster;
+                } else if (level === 5) {
+                    sprite.src = 'level-5/celebrate.png' + cacheBuster;
+                } else if (level === 6) {
+                    sprite.src = 'level-6/celebrate.png' + cacheBuster;
+                } else if (level === 7) {
+                    sprite.src = 'level-7/celebrate.png' + cacheBuster;
+                } else if (level === 8) {
+                    sprite.src = 'level-8/celebrate.png' + cacheBuster;
                 }
                 
                 sprite.onload = () => {
@@ -876,7 +1254,7 @@ PIG 🐖`;
         
         // Stop all debug animations
         function stopAllDebugAnimations() {
-            for (let level = 1; level <= 3; level++) {
+            for (let level = 1; level <= 8; level++) {
                 debugState.isAnimating[level] = false;
             }
         }
@@ -918,6 +1296,46 @@ PIG 🐖`;
                     frameWidth = Math.floor(actualSheetWidth / framesPerRow);
                     frameHeight = actualSheetHeight;
                     totalFrames = 43;
+                } else if (level === 4) {
+                    // Level 4: 62 frames horizontal layout
+                    const actualSheetWidth = sprite.width;
+                    const actualSheetHeight = sprite.height;
+                    framesPerRow = 62;
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 62;
+                } else if (level === 5) {
+                    // Level 5: 52 frames horizontal layout
+                    const actualSheetWidth = sprite.width;
+                    const actualSheetHeight = sprite.height;
+                    framesPerRow = 52;
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 52;
+                } else if (level === 6) {
+                    // Level 6: 29 frames horizontal layout
+                    const actualSheetWidth = sprite.width;
+                    const actualSheetHeight = sprite.height;
+                    framesPerRow = 29;
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 29;
+                } else if (level === 7) {
+                    // Level 7: 24 frames horizontal layout
+                    const actualSheetWidth = sprite.width;
+                    const actualSheetHeight = sprite.height;
+                    framesPerRow = 24;
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 24;
+                } else if (level === 8) {
+                    // Level 8: 29 frames horizontal layout (same as level 6)
+                    const actualSheetWidth = sprite.width;
+                    const actualSheetHeight = sprite.height;
+                    framesPerRow = 29;
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 29;
                 }
                 
                 // Calculate frame position
@@ -961,15 +1379,30 @@ PIG 🐖`;
         async function initializeGame() {
             console.log(`Initializing game for level ${game.selectedDifficulty}`);
             
+            // Reset division problem tracking when starting/restarting level 8
+            if (game.selectedDifficulty === 8) {
+                game.hasUsedIdentityDivision = false;
+                game.usedDivisionProblems = new Set();
+                console.log('Reset division problem tracking for level 8');
+            }
+            
             // Load textures for this level
             loadTextures(game.selectedDifficulty);
             
-            // Load maze data, word list, and distractors in parallel
-            const [mazeData, wordList, distractors] = await Promise.all([
+            // Load maze data, word list, distractors, and digraph data (for Level 3) in parallel
+            const loadPromises = [
                 loadMazeFromCSV(),
                 loadWordListFromFile(),
                 loadDistractorsFromFile()
-            ]);
+            ];
+            
+            // Add digraph data loading for Levels 3, 4, 5, 6, and 7
+            if (game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) {
+                loadPromises.push(loadDigraphData());
+            }
+            
+            const results = await Promise.all(loadPromises);
+            const [mazeData, wordList, distractors, digraphData] = results;
             
             console.log(`Loaded maze data:`, mazeData);
             console.log(`Loaded word list:`, wordList);
@@ -980,6 +1413,14 @@ PIG 🐖`;
             game.watering_hole = mazeData.watering_hole;
             game.wordEmojiPairs = wordList;
             game.distractors = distractors;
+            
+            // Store digraph data if Levels 3, 4, 5, 6, or 7
+            if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) && digraphData) {
+                game.digraphEmojis = digraphData.digraphEmojis;
+                game.digraphSounds = digraphData.digraphSounds;
+                game.emojiNames = digraphData.emojiNames;
+                console.log(`Loaded digraph data for Level ${game.selectedDifficulty}:`, digraphData);
+            }
             
             // Reset game state with new data
             resetGame();
@@ -994,9 +1435,10 @@ PIG 🐖`;
         function updateScore(points) {
             game.score += points;
             
-            // Update hearts display
+            // Update hearts display with number to the left
             const heartsDisplay = '♥️'.repeat(Math.max(0, game.score));
-            document.getElementById('score').textContent = heartsDisplay;
+            const livesText = `${Math.max(0, game.score)} ${heartsDisplay}`;
+            document.getElementById('score').textContent = livesText;
             
             if (game.score <= 0) {
                 // Immediately dismiss any open puzzle dialog
@@ -1010,6 +1452,8 @@ PIG 🐖`;
         
         function gameOver() {
             console.log('Game over triggered');
+            // Track which level the user died on
+            game.deathLevel = game.selectedDifficulty;
             game.gameOverActive = true;
             game.gameOverFrame = 0;
             game.gameOverTimer = 0;
@@ -1033,10 +1477,10 @@ PIG 🐖`;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             if (gameOverSprite.complete) {
-                // 17 frames, each 436x436 pixels
+                // 13 frames, each 436x436 pixels
                 const frameWidth = 436;
                 const frameHeight = 436;
-                const totalFrames = 17;
+                const totalFrames = 13;
                 
                 // Calculate frame position (horizontal layout)
                 const frameX = game.gameOverFrame * frameWidth;
@@ -1092,6 +1536,375 @@ PIG 🐖`;
             );
         }
         
+        function checkHeartCollection(x, y) {
+            // Find any heart at this position
+            const heartPath = game.paths.find(path => 
+                path.type === 'heart' && 
+                !path.collected &&
+                x === path.x && y === path.y
+            );
+            
+            if (heartPath) {
+                // Mark heart as collected
+                heartPath.collected = true;
+                
+                // Add one life/point
+                updateScore(1);
+                
+                console.log('Heart collected! +1 life');
+                
+                // Optional: Play a collection sound or show visual feedback
+                // You could add a brief animation or sound here
+            }
+        }
+        
+        function setupDivisionDragDrop(door) {
+            const dots = document.querySelectorAll('.dot');
+            const baskets = document.querySelectorAll('.basket');
+            
+            // Initialize selection state
+            door.selectedDot = null;
+            
+            // Setup drag events for dots
+            dots.forEach(dot => {
+                dot.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', e.target.dataset.dotId);
+                    e.target.style.opacity = '0.5';
+                });
+                
+                dot.addEventListener('dragend', (e) => {
+                    e.target.style.opacity = '1';
+                });
+            });
+            
+            // Setup drop events for baskets
+            baskets.forEach(basket => {
+                basket.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    basket.style.backgroundColor = '#FF69B4';
+                });
+                
+                basket.addEventListener('dragleave', (e) => {
+                    basket.style.backgroundColor = '#FFB6C1';
+                });
+                
+                basket.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    basket.style.backgroundColor = '#FFB6C1';
+                    
+                    const dotId = e.dataTransfer.getData('text/plain');
+                    const dot = document.querySelector(`[data-dot-id="${dotId}"]`);
+                    const basketId = basket.dataset.basketId;
+                    
+                    if (dot && basketId !== undefined) {
+                        moveDotToBasket(dot, basketId, door);
+                    }
+                });
+            });
+            
+            // Setup drop zone for dots area (to remove from baskets)
+            const dotsArea = document.getElementById('dotsContainer');
+            dotsArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+            
+            dotsArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const dotId = e.dataTransfer.getData('text/plain');
+                const dot = document.querySelector(`[data-dot-id="${dotId}"]`);
+                
+                if (dot) {
+                    moveDotToArea(dot, door);
+                }
+            });
+            
+            // Check if submit button should be enabled
+            updateSubmitButton(door);
+        }
+        
+        function moveDotToBasket(dot, basketId, door) {
+            // Find which basket this dot came from (if any)
+            const currentBasket = dot.closest('.basket');
+            if (currentBasket) {
+                const currentBasketId = currentBasket.dataset.basketId;
+                door.divisionData.dotsInBaskets[currentBasketId]--;
+                const currentCountElement = currentBasket.querySelector('.basket-count');
+                currentCountElement.textContent = door.divisionData.dotsInBaskets[currentBasketId];
+            }
+            
+            // Move dot to new basket
+            const basket = document.querySelector(`[data-basket-id="${basketId}"]`);
+            const basketDots = basket.querySelector('.basket-dots');
+            basketDots.appendChild(dot);
+            
+            // Update basket count
+            door.divisionData.dotsInBaskets[basketId]++;
+            const countElement = basket.querySelector('.basket-count');
+            countElement.textContent = door.divisionData.dotsInBaskets[basketId];
+            
+            // Make dot smaller when in basket and remove focus state
+            dot.style.width = '12px';
+            dot.style.height = '12px';
+            dot.style.fontSize = '8px';
+            dot.style.border = '2px solid transparent';
+            dot.style.boxShadow = 'none';
+            dot.style.transform = 'scale(1)';
+            
+            // Clear selected dot state
+            door.selectedDot = null;
+            
+            // Update submit button
+            updateSubmitButton(door);
+        }
+        
+        function moveDotToArea(dot, door) {
+            // Find which basket this dot came from
+            const basket = dot.closest('.basket');
+            if (basket) {
+                const basketId = basket.dataset.basketId;
+                door.divisionData.dotsInBaskets[basketId]--;
+                const countElement = basket.querySelector('.basket-count');
+                countElement.textContent = door.divisionData.dotsInBaskets[basketId];
+            }
+            
+            // Move dot back to dots area
+            const dotsArea = document.getElementById('dotsContainer');
+            dotsArea.appendChild(dot);
+            
+            // Restore original size
+            dot.style.width = '20px';
+            dot.style.height = '20px';
+            dot.style.fontSize = '';
+            dot.style.border = '2px solid transparent';
+            
+            // Update submit button
+            updateSubmitButton(door);
+        }
+        
+        function selectDot(dotId) {
+            const dot = document.querySelector(`[data-dot-id="${dotId}"]`);
+            if (!dot) return;
+            
+            // Get the door object (we need to find it from the current puzzle)
+            const doors = game.doors;
+            const currentDoor = doors.find(d => d.divisionData && !d.divisionData.isComplete);
+            if (!currentDoor) return;
+            
+            // Check if there's already a selected dot and this clicked dot is in a basket
+            if (currentDoor.selectedDot !== null && currentDoor.selectedDot !== dotId) {
+                const clickedDotBasket = dot.closest('.basket');
+                if (clickedDotBasket) {
+                    // Move the selected dot to this basket instead of changing selection
+                    const basketId = clickedDotBasket.dataset.basketId;
+                    const selectedDot = document.querySelector(`[data-dot-id="${currentDoor.selectedDot}"]`);
+                    if (selectedDot) {
+                        moveDotToBasket(selectedDot, basketId, currentDoor);
+                        return; // Exit early, don't change selection
+                    }
+                }
+            }
+            
+            // Clear previous selection
+            document.querySelectorAll('.dot').forEach(d => {
+                d.style.border = '2px solid transparent';
+                d.style.boxShadow = 'none';
+                d.style.transform = 'scale(1)';
+            });
+            
+            // Select this dot (whether in basket or main area) with enhanced focus state
+            dot.style.border = '3px solid #0066FF';
+            dot.style.boxShadow = '0 0 8px #0066FF';
+            dot.style.transform = 'scale(1.1)';
+            currentDoor.selectedDot = dotId;
+        }
+        
+        function selectBasket(basketId) {
+            // Get the door object
+            const doors = game.doors;
+            const currentDoor = doors.find(d => d.divisionData && !d.divisionData.isComplete);
+            if (!currentDoor) return;
+            
+            // If no dot is selected, auto-select the first available dot in the main area
+            if (currentDoor.selectedDot === null) {
+                const dotsInMainArea = document.querySelectorAll('#dotsContainer .dot');
+                if (dotsInMainArea.length > 0) {
+                    const firstDot = dotsInMainArea[0];
+                    const dotId = firstDot.getAttribute('data-dot-id');
+                    selectDot(parseInt(dotId));
+                    console.log(`Auto-selected dot ${dotId} for basket click`);
+                }
+            }
+            
+            // Move selected dot to basket
+            const dot = document.querySelector(`[data-dot-id="${currentDoor.selectedDot}"]`);
+            if (dot) {
+                moveDotToBasket(dot, basketId, currentDoor);
+            }
+        }
+        
+        function selectDotsArea() {
+            // Get the door object
+            const doors = game.doors;
+            const currentDoor = doors.find(d => d.divisionData && !d.divisionData.isComplete);
+            if (!currentDoor || currentDoor.selectedDot === null) return;
+            
+            // Move selected dot back to main area
+            const dot = document.querySelector(`[data-dot-id="${currentDoor.selectedDot}"]`);
+            if (dot) {
+                moveDotToArea(dot, currentDoor);
+            }
+        }
+        
+        function updateSubmitButton(door) {
+            const submitButton = document.getElementById('submitDivision');
+            if (!submitButton) return;
+            
+            // Check if all dots are in baskets
+            const totalDotsInBaskets = door.divisionData.dotsInBaskets.reduce((sum, count) => sum + count, 0);
+            const allDotsPlaced = totalDotsInBaskets === door.divisionData.dividend;
+            
+            if (allDotsPlaced) {
+                submitButton.style.opacity = '1';
+                submitButton.style.pointerEvents = 'auto';
+            } else {
+                submitButton.style.opacity = '0.5';
+                submitButton.style.pointerEvents = 'none';
+            }
+        }
+        
+        function speakDivisionProblem(dividend, divisor) {
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                // Convert numbers to words for better pronunciation
+                const numberWords = {
+                    1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five',
+                    6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten',
+                    11: 'eleven', 12: 'twelve', 13: 'thirteen', 14: 'fourteen', 15: 'fifteen',
+                    16: 'sixteen', 17: 'seventeen', 18: 'eighteen', 19: 'nineteen'
+                };
+                
+                const dividendWord = numberWords[dividend] || dividend.toString();
+                const divisorWord = numberWords[divisor] || divisor.toString();
+                
+                const utterance = new SpeechSynthesisUtterance(`${dividendWord} divided by ${divisorWord}`);
+                utterance.rate = 0.8; // Speak a bit slower
+                utterance.volume = 0.8;
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.log('Speech synthesis not supported');
+            }
+        }
+        
+        function submitDivisionAnswer() {
+            // Find the current division door
+            const doors = game.doors;
+            const currentDoor = doors.find(d => d.divisionData && !d.divisionData.isComplete);
+            if (!currentDoor) return;
+            
+            checkDivisionAnswer('reading', currentDoor);
+        }
+        
+        function checkDivisionAnswer(type, door) {
+            const data = door.divisionData;
+            const result = document.getElementById('puzzleResult');
+            
+            // Check if all baskets have equal number of dots
+            const dotsPerBasket = data.dotsInBaskets[0];
+            const allEqual = data.dotsInBaskets.every(count => count === dotsPerBasket);
+            
+            // Initialize attempt counters if they don't exist
+            if (!door.currentProblemAttempts) door.currentProblemAttempts = 0;
+            door.currentProblemAttempts++;
+            
+            if (allEqual && dotsPerBasket === data.answer) {
+                // Correct answer!
+                result.innerHTML = '👍';
+                result.style.color = 'green';
+                result.style.fontSize = '48px';
+                
+                // Mark door as open
+                door.open = true;
+                
+                // Update title to show correct answer
+                const title = document.getElementById('puzzleTitle');
+                title.innerHTML = `<span style="color: #8A2BE2; font-weight: bold;">${data.dividend}</span> <span style="color: #0066FF;">÷</span> <span style="color: #DC143C; font-weight: bold;">${data.divisor}</span> = <span style="color: #4CAF50; font-weight: bold;">${data.answer}</span>`;
+                
+                // Give +1 point for correct answer
+                updateScore(1);
+                
+                // Reset attempt counters
+                door.currentProblemAttempts = 0;
+                
+                // Change door color to match open path
+                door.color = '#B8F2B8';
+                
+                // Mark as complete and close after a delay
+                data.isComplete = true;
+                
+                // Speak the answer confirmation with pause
+                if ('speechSynthesis' in window) {
+                    // First say "Correct"
+                    const correctUtterance = new SpeechSynthesisUtterance("Correct.");
+                    correctUtterance.rate = 0.8;
+                    correctUtterance.pitch = 1.1;
+                    window.speechSynthesis.speak(correctUtterance);
+                    
+                    // Then after a pause, say the explanation
+                    setTimeout(() => {
+                        const explanationText = `${data.dividend} divided by ${data.divisor} equals ${data.answer}`;
+                        const explanationUtterance = new SpeechSynthesisUtterance(explanationText);
+                        explanationUtterance.rate = 0.8;
+                        explanationUtterance.pitch = 1.1;
+                        window.speechSynthesis.speak(explanationUtterance);
+                        console.log(`Speaking division confirmation: Correct. [pause] ${explanationText}`);
+                    }, 800);
+                }
+                
+                setTimeout(() => {
+                    document.getElementById('puzzleModal').style.display = 'none';
+                    result.innerHTML = '';
+                    result.style.fontSize = '';
+                    game.puzzleActive = false;
+                }, 1500);
+            } else {
+                // Wrong answer
+                result.innerHTML = '👎';
+                result.style.color = 'red';
+                result.style.fontSize = '48px';
+                
+                // Deduct points based on difficulty mode
+                let pointsToDeduct = 0;
+                
+                if (game.difficultyMode === 'easy') {
+                    pointsToDeduct = -1; // Always lose 1 point in easy mode
+                } else if (game.difficultyMode === 'medium') {
+                    // In medium mode: first wrong answer = -1, second wrong answer = -2
+                    pointsToDeduct = door.currentProblemAttempts === 1 ? -1 : -2;
+                } else {
+                    pointsToDeduct = -2; // Hard mode: always lose 2 points
+                }
+                
+                updateScore(pointsToDeduct);
+                
+                // Track failed attempts (for potential game over)
+                if (!door.failedAttempts) door.failedAttempts = 0;
+                door.failedAttempts++;
+                
+                // Clear result after showing thumbs down
+                setTimeout(() => {
+                    result.innerHTML = '';
+                    result.style.fontSize = '';
+                    
+                    // Keep dots where they are for another attempt
+                    const title = document.getElementById('puzzleTitle');
+                    title.innerHTML = `<span style="color: #8A2BE2; font-weight: bold;">${data.dividend}</span> <span style="color: #0066FF;">÷</span> <span style="color: #DC143C; font-weight: bold;">${data.divisor}</span> = ?`;
+                }, 1500);
+            }
+        }
+        
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
@@ -1111,13 +1924,29 @@ PIG 🐖`;
             
             // Draw open paths using texture (same maze layout with thicker border)
             game.paths.forEach(path => {
-                if (textures.loaded && textures.open.complete) {
-                    // Direct positioning with 40px border padding
-                    ctx.drawImage(textures.open, path.x + 40, path.y + 40, 40, 40);
-                } else {
-                    // Fallback to solid color
-                    ctx.fillStyle = '#B8F2B8';
-                    ctx.fillRect(path.x + 40, path.y + 40, 40, 40);
+                if (path.type === 'heart' && !path.collected) {
+                    // Draw heart collectible
+                    if (textures.loaded && textures.heart.complete) {
+                        ctx.drawImage(textures.heart, path.x + 40, path.y + 40, 40, 40);
+                    } else {
+                        // Fallback: draw open path with heart emoji
+                        ctx.fillStyle = '#B8F2B8';
+                        ctx.fillRect(path.x + 40, path.y + 40, 40, 40);
+                        ctx.fillStyle = '#FF0000';
+                        ctx.font = '24px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('❤️', path.x + 60, path.y + 65);
+                    }
+                } else if (path.type !== 'heart' || path.collected) {
+                    // Draw regular open path
+                    if (textures.loaded && textures.open.complete) {
+                        // Direct positioning with 40px border padding
+                        ctx.drawImage(textures.open, path.x + 40, path.y + 40, 40, 40);
+                    } else {
+                        // Fallback to solid color
+                        ctx.fillStyle = '#B8F2B8';
+                        ctx.fillRect(path.x + 40, path.y + 40, 40, 40);
+                    }
                 }
             });
             
@@ -1279,6 +2108,9 @@ PIG 🐖`;
                     game.player.x = newX;
                     game.player.y = newY;
                     
+                    // Check for heart collection
+                    checkHeartCollection(newX, newY);
+                    
                     // Update direction and start animation
                     if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
                         game.player.direction = 'left';
@@ -1327,133 +2159,609 @@ PIG 🐖`;
             modal.style.display = 'block';
             
             if (type === 'math') {
-                const isAddition = Math.random() < 0.5;
-                let num1, num2, answer;
-                const maxAnswer = 20; // Max answer for math problems
-                
-                if (isAddition) {
-                    // For addition, ensure sum doesn't exceed maxAnswer
-                    const maxNum1 = maxAnswer - 1;
-                    num1 = Math.floor(Math.random() * maxNum1) + 1; // 1 to (maxAnswer-1)
-                    num2 = Math.floor(Math.random() * (maxAnswer - num1)) + 1; // 1 to (maxAnswer-num1)
-                    answer = num1 + num2;
-                    title.textContent = `${num1} + ${num2} = ?`;
+                // Check if this is Level 8 - use multi-step addition
+                if (game.selectedDifficulty === 8) {
+                    // Level 8: Multi-step Addition A+B+C=D where A,B,C are 0-10 and D ≤ 12
+                    let num1, num2, num3, answer;
+                    
+                    // Generate multi-step addition problem with answer ≤ 12
+                    do {
+                        num1 = Math.floor(Math.random() * 11); // 0 to 10
+                        num2 = Math.floor(Math.random() * 11); // 0 to 10
+                        num3 = Math.floor(Math.random() * 11); // 0 to 10
+                        answer = num1 + num2 + num3;
+                    } while (answer > 12);
+                    
+                    title.innerHTML = `<span style="color: #32CD32; font-weight: bold;">${num1}</span> <span style="color: #FF8C00;">+</span> <span style="color: #32CD32; font-weight: bold;">${num2}</span> <span style="color: #FF8C00;">+</span> <span style="color: #32CD32; font-weight: bold;">${num3}</span> = ?`;
+                    
+                    // Store the problem details on the door
+                    door.mathAnswer = answer;
+                    door.mathStartPosition = num1; // Start PT at position A (first number)
+                    door.foxPosition = door.mathStartPosition;
+                    
+                    // Generate multiple choice answers (correct + 2 incorrect)
+                    const wrongAnswers = [];
+                    while (wrongAnswers.length < 2) {
+                        let wrongAnswer;
+                        if (Math.random() < 0.5) {
+                            wrongAnswer = answer + Math.floor(Math.random() * 3) + 1; // +1 to +3
+                        } else {
+                            wrongAnswer = answer - Math.floor(Math.random() * 3) - 1; // -1 to -3
+                        }
+                        if (wrongAnswer >= 0 && wrongAnswer <= 15 && wrongAnswer !== answer && !wrongAnswers.includes(wrongAnswer)) {
+                            wrongAnswers.push(wrongAnswer);
+                        }
+                    }
+                    
+                    const allAnswers = [answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+                    
+                    // Create interface with number line and multiple choice
+                    question.innerHTML = '';
+                    options.innerHTML = `
+                        <div class="numberline-container" style="margin: 20px auto; max-width: 600px;">
+                            <div class="number-grid" id="numberGrid" style="
+                                display: grid;
+                                grid-template-columns: repeat(13, 1fr);
+                                gap: 2px;
+                                border: 2px solid #666;
+                                margin-bottom: 10px;
+                                background: white;
+                                padding: 5px;
+                                border-radius: 10px;
+                            "></div>
+                            <div class="grid-labels" id="gridLabels" style="
+                                display: grid;
+                                grid-template-columns: repeat(13, 1fr);
+                                gap: 2px;
+                                text-align: center;
+                                font-size: 12px;
+                                font-weight: bold;
+                            "></div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <div id="answerButtons" style="display: flex; gap: 15px; justify-content: center;">
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Create answer buttons with proper door reference (like other levels)
+                    const answerContainer = document.getElementById('answerButtons');
+                    allAnswers.forEach(ans => {
+                        const button = document.createElement('button');
+                        button.className = 'puzzle-button';
+                        button.textContent = ans;
+                        button.style.cssText = 'min-width: 80px; min-height: 60px; font-size: 20px;';
+                        button.onclick = () => checkAnswer(ans === answer, 'math', door, button);
+                        answerContainer.appendChild(button);
+                    });
+                    
+                    // Initialize the number line (without keyboard handlers for level 8)
+                    initializeNumberLineLevel8(door);
+                    
+                    console.log(`Level 8 Multi-step Addition: ${num1} + ${num2} + ${num3} = ${answer}, PT starts at ${door.mathStartPosition}`);
+                    
+                    return; // Exit early for Level 8 math
+                }
+                // Check if this is Level 4, 5, 6, or 7 - use number line interface
+                else if (game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) {
+                    // Level 4, 5, 6, & 7: Number Line Math (answers 1-12, no zeros allowed)
+                    const isAddition = Math.random() < 0.5;
+                    let num1, num2, answer;
+                    const maxAnswer = 12; // Max answer for Levels 4, 5, 6, & 7
+                    
+                    if (isAddition) {
+                        // For addition, ensure sum doesn't exceed maxAnswer and no zeros
+                        do {
+                            num1 = Math.floor(Math.random() * maxAnswer) + 1; // 1 to maxAnswer
+                            num2 = Math.floor(Math.random() * (maxAnswer - num1)) + 1; // 1 to (maxAnswer-num1)
+                            answer = num1 + num2;
+                        } while (answer > maxAnswer || num1 === 0 || num2 === 0 || answer === 0);
+                        
+                        title.innerHTML = `<span style="color: #32CD32; font-weight: bold;">${num1}</span> <span style="color: #FF8C00;">+</span> ${num2} = ?`;
+                    } else {
+                        // For subtraction, ensure result is between 1-maxAnswer and no zeros
+                        do {
+                            num1 = Math.floor(Math.random() * maxAnswer) + 1; // 1 to maxAnswer
+                            num2 = Math.floor(Math.random() * num1) + 1; // 1 to num1
+                            answer = num1 - num2;
+                        } while (answer === 0 || num1 === 0 || num2 === 0);
+                        
+                        title.innerHTML = `<span style="color: #32CD32; font-weight: bold;">${num1}</span> <span style="color: #4169E1;">-</span> ${num2} = ?`;
+                    }
+                    
+                    // Clear any previous number line data and store new data
+                    delete door.ptCanvases;
+                    delete door.mathAnswer;
+                    delete door.mathStartPosition;
+                    delete door.foxPosition;
+                    
+                    // Store data for checking
+                    door.mathAnswer = answer;
+                    door.mathStartPosition = num1;
+                    door.foxPosition = num1;
+                    
+                    console.log(`NEW PUZZLE: ${num1} ${isAddition ? '+' : '-'} ${num2} = ${answer}, start position set to ${door.mathStartPosition}`);
+                    
+                    // Create number line interface
+                    question.innerHTML = '';
+                    options.innerHTML = `
+                        <div class="numberline-container" style="margin: 20px auto; max-width: 600px;">
+                            <div class="number-grid" id="numberGrid" style="
+                                display: grid;
+                                grid-template-columns: repeat(13, 1fr);
+                                gap: 2px;
+                                border: 2px solid #666;
+                                margin-bottom: 10px;
+                                background: white;
+                                padding: 5px;
+                                border-radius: 10px;
+                            "></div>
+                            <div class="grid-labels" id="gridLabels" style="
+                                display: grid;
+                                grid-template-columns: repeat(13, 1fr);
+                                gap: 2px;
+                                text-align: center;
+                                margin-bottom: 20px;
+                            "></div>
+                            <div style="margin: 20px 0;">
+                                <button id="submitNumberLine" style="
+                                    background: #4CAF50;
+                                    color: white;
+                                    border: none;
+                                    padding: 15px 30px;
+                                    font-size: 20px;
+                                    border-radius: 25px;
+                                    cursor: pointer;
+                                    font-family: inherit;
+                                    font-weight: bold;
+                                ">Submit Answer</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Initialize number line
+                    initializeNumberLine(door);
                 } else {
-                    // For subtraction, ensure result is between 1-maxAnswer
-                    num1 = Math.floor(Math.random() * maxAnswer) + 1;
-                    num2 = Math.floor(Math.random() * Math.min(num1, maxAnswer)) + 1;
-                    answer = num1 - num2;
-                    title.textContent = `${num1} - ${num2} = ?`;
-                }
-                
-                question.textContent = '';
-                
-                // Generate wrong answers between 1-maxAnswer
-                const wrongAnswers = [];
-                while (wrongAnswers.length < 2) {
-                    const wrong = Math.floor(Math.random() * maxAnswer) + 1;
-                    if (wrong !== answer && !wrongAnswers.includes(wrong)) {
-                        wrongAnswers.push(wrong);
+                    // Levels 1-3: Regular multiple choice math (answers 1-12)
+                    const isAddition = Math.random() < 0.5;
+                    let num1, num2, answer;
+                    const maxAnswer = 12; // Max answer for Levels 1-3
+                    
+                    if (isAddition) {
+                        // For addition, ensure sum doesn't exceed maxAnswer
+                        const maxNum1 = maxAnswer - 1;
+                        num1 = Math.floor(Math.random() * maxNum1) + 1; // 1 to (maxAnswer-1)
+                        num2 = Math.floor(Math.random() * (maxAnswer - num1)) + 1; // 1 to (maxAnswer-num1)
+                        answer = num1 + num2;
+                        title.textContent = `${num1} + ${num2} = ?`;
+                    } else {
+                        // For subtraction, ensure result is between 1-maxAnswer
+                        num1 = Math.floor(Math.random() * maxAnswer) + 1;
+                        num2 = Math.floor(Math.random() * Math.min(num1, maxAnswer)) + 1;
+                        answer = num1 - num2;
+                        title.textContent = `${num1} - ${num2} = ?`;
                     }
+                    
+                    question.textContent = '';
+                    
+                    // Generate wrong answers between 1-maxAnswer
+                    const wrongAnswers = [];
+                    while (wrongAnswers.length < 2) {
+                        const wrong = Math.floor(Math.random() * maxAnswer) + 1;
+                        if (wrong !== answer && !wrongAnswers.includes(wrong)) {
+                            wrongAnswers.push(wrong);
+                        }
+                    }
+                    
+                    const allAnswers = [answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+                    
+                    options.innerHTML = '';
+                    allAnswers.forEach(ans => {
+                        const button = document.createElement('button');
+                        button.className = 'puzzle-button';
+                        button.textContent = ans;
+                        button.onclick = () => checkAnswer(ans === answer, type, door, button);
+                        options.appendChild(button);
+                    });
                 }
-                
-                const allAnswers = [answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
-                
-                options.innerHTML = '';
-                allAnswers.forEach(ans => {
-                    const button = document.createElement('button');
-                    button.className = 'puzzle-button';
-                    button.textContent = ans;
-                    button.onclick = () => checkAnswer(ans === answer, type, door, button);
-                    options.appendChild(button);
-                });
             } else if (type === 'reading') {
-                // Reading problems - word to emoji matching with same-first-letter strategy
-                const wordEmojiPairs = game.wordEmojiPairs;
-                
-                // Filter out already used words in this level
-                const availableWords = wordEmojiPairs.filter(pair => !game.usedWords.includes(pair.word));
-                
-                // If all words have been used, reset the used words list
-                const wordsToUse = availableWords.length > 0 ? availableWords : wordEmojiPairs;
-                if (availableWords.length === 0) {
-                    game.usedWords = [];
-                    console.log('All words used - resetting word tracking for this level');
-                }
-                
-                // Pick a random word-emoji pair from available words
-                const correctPair = wordsToUse[Math.floor(Math.random() * wordsToUse.length)];
-                
-                // Add this word to used words list
-                if (!game.usedWords.includes(correctPair.word)) {
-                    game.usedWords.push(correctPair.word);
-                }
-                
-                // Check if word list is loaded
-                if (!wordEmojiPairs || wordEmojiPairs.length === 0) {
-                    console.error('Word list not loaded yet!');
-                    return;
-                }
-                
-                const firstLetter = correctPair.word.charAt(0).toUpperCase();
-                const wrongEmojis = [];
-                
-                // Try to find words with same first letter
-                const sameLetterWords = wordEmojiPairs.filter(pair => 
-                    pair.word.charAt(0).toUpperCase() === firstLetter && 
-                    pair.word !== correctPair.word
-                );
-                
-                // Add wrong emojis from same-letter words
-                while (wrongEmojis.length < 2 && sameLetterWords.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * sameLetterWords.length);
-                    const wrongPair = sameLetterWords.splice(randomIndex, 1)[0];
-                    wrongEmojis.push(wrongPair.emoji);
-                }
-                
-                // If not enough same-letter words, use distractors
-                if (wrongEmojis.length < 2 && game.distractors[firstLetter]) {
-                    const distractorEmojis = [...game.distractors[firstLetter]];
-                    while (wrongEmojis.length < 2 && distractorEmojis.length > 0) {
-                        const randomIndex = Math.floor(Math.random() * distractorEmojis.length);
-                        const distractor = distractorEmojis.splice(randomIndex, 1)[0];
-                        wrongEmojis.push(distractor);
+                // Check if this is Level 8 - use division
+                if (game.selectedDifficulty === 8) {
+                    // Level 8: Interactive Division with dots and baskets
+                    let dividend, divisor, answer;
+                    
+                    // Generate division problem: A ÷ B = C where A ≤ 15
+                    // If C = 1, then A and B shouldn't exceed 8
+                    // Track problems to prevent duplicates
+                    if (game.hasUsedIdentityDivision === undefined) {
+                        game.hasUsedIdentityDivision = false;
                     }
+                    if (!game.usedDivisionProblems) {
+                        game.usedDivisionProblems = new Set();
+                    }
+                    
+                    let attempts = 0;
+                    let problemKey;
+                    let validProblem = false;
+                    
+                    while (!validProblem && attempts < 100) {
+                        answer = Math.floor(Math.random() * 10) + 1; // C: 1 to 10 (dots per basket)
+                        
+                        if (answer === 1) {
+                            // Special constraint: if C = 1, then A and B shouldn't exceed 8
+                            divisor = Math.floor(Math.random() * 7) + 2; // B: 2 to 8
+                            dividend = divisor * answer; // A: will be 2 to 8
+                        } else {
+                            divisor = Math.floor(Math.random() * 10) + 2; // B: 2 to 11
+                            dividend = divisor * answer; // A: ensure clean division
+                        }
+                        
+                        attempts++;
+                        
+                        // Check size constraints first
+                        if (dividend > 15 || divisor >= 20 || answer >= 20) {
+                            console.log(`Skipping problem due to size constraints: ${dividend}÷${divisor}=${answer}`);
+                            continue;
+                        }
+                        
+                        // Create unique key for this problem
+                        problemKey = `${dividend}÷${divisor}`;
+                        
+                        // Check if we've already used this exact problem
+                        if (game.usedDivisionProblems.has(problemKey)) {
+                            console.log(`Skipping duplicate problem: ${problemKey}`);
+                            continue;
+                        }
+                        
+                        // Check if this is A÷A type and we've already used one
+                        const isIdentityDivision = (dividend === divisor);
+                        if (isIdentityDivision && game.hasUsedIdentityDivision) {
+                            console.log(`Skipping identity division (already used): ${problemKey}`);
+                            continue;
+                        }
+                        
+                        // If we get here, we have a valid problem
+                        validProblem = true;
+                        
+                        // Mark identity division as used if this is one
+                        if (isIdentityDivision) {
+                            console.log(`Found identity division: ${dividend}÷${divisor}, flag was: ${game.hasUsedIdentityDivision}`);
+                            game.hasUsedIdentityDivision = true;
+                            console.log(`Marked identity division as used, flag now: ${game.hasUsedIdentityDivision}`);
+                        }
+                    }
+                    
+                    // Add this problem to the used set
+                    game.usedDivisionProblems.add(problemKey);
+                    console.log(`Generated division problem: ${problemKey}, total used: ${game.usedDivisionProblems.size}`);
+                    
+                    // Store problem data
+                    door.divisionData = {
+                        dividend: dividend,
+                        divisor: divisor,
+                        answer: answer,
+                        dotsInBaskets: new Array(divisor).fill(0), // Track dots in each basket
+                        isComplete: false
+                    };
+                    
+                    // Setup the division interface with dots and baskets
+                    title.innerHTML = `<span style="color: #8A2BE2; font-weight: bold;">${dividend}</span> <span style="color: #0066FF;">÷</span> <span style="color: #DC143C; font-weight: bold;">${divisor}</span> = ?`;
+                    
+                    // Create the interactive division interface
+                    question.innerHTML = '';
+                    options.innerHTML = `
+                        <div class="division-container" style="margin: 20px auto; max-width: 600px; text-align: center;">
+                            <div style="margin: 20px 0; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                                <button id="speakProblem" style="
+                                    background: #2196F3;
+                                    color: white;
+                                    border: none;
+                                    padding: 10px 15px;
+                                    font-size: 16px;
+                                    border-radius: 20px;
+                                    cursor: pointer;
+                                    font-family: inherit;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 5px;
+                                " onclick="speakDivisionProblem(${dividend}, ${divisor})">
+                                    🔊
+                                </button>
+                            </div>
+                            
+                            <div class="dots-area" id="dotsArea" style="
+                                margin: 20px 0;
+                                min-height: 100px;
+                                border: 2px dashed #ccc;
+                                border-radius: 10px;
+                                padding: 10px;
+                                background: #f9f9f9;
+                            ">
+                                <div id="dotsContainer" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 5px; min-height: 60px; cursor: pointer;" onclick="selectDotsArea()">
+                                    ${Array(dividend).fill().map((_, i) => 
+                                        `<div class="dot" data-dot-id="${i}" style="
+                                            width: 20px;
+                                            height: 20px;
+                                            background: #8A2BE2;
+                                            border-radius: 50%;
+                                            cursor: pointer;
+                                            user-select: none;
+                                            border: 2px solid transparent;
+                                            transition: all 0.2s ease;
+                                            box-shadow: none;
+                                            transform: scale(1);
+                                        " draggable="true" onclick="event.stopPropagation(); selectDot(${i})">🟣</div>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                            
+                            <div class="baskets-area" style="margin: 20px 0;">
+                                <div id="basketsContainer" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+                                    ${Array(divisor).fill().map((_, i) => 
+                                        `<div class="basket" data-basket-id="${i}" style="
+                                            width: 80px;
+                                            height: 80px;
+                                            border: 3px solid #DC143C;
+                                            border-radius: 10px;
+                                            background: #FFB6C1;
+                                            display: flex;
+                                            flex-direction: column;
+                                            align-items: center;
+                                            justify-content: center;
+                                            position: relative;
+                                            min-height: 80px;
+                                            cursor: pointer;
+                                            transition: all 0.2s ease;
+                                        " onclick="selectBasket(${i})">
+                                            <div class="basket-count" style="
+                                                position: absolute;
+                                                top: -10px;
+                                                right: -10px;
+                                                background: #228B22;
+                                                color: white;
+                                                border-radius: 50%;
+                                                width: 20px;
+                                                height: 20px;
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                font-size: 12px;
+                                                font-weight: bold;
+                                            ">0</div>
+                                            <div class="basket-dots" style="
+                                                display: flex;
+                                                flex-wrap: wrap;
+                                                gap: 2px;
+                                                justify-content: center;
+                                                align-items: center;
+                                                width: 100%;
+                                                height: 100%;
+                                                padding: 5px;
+                                                box-sizing: border-box;
+                                            "></div>
+                                        </div>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                            
+                            <div style="margin: 20px 0;">
+                                <button id="submitDivision" style="
+                                    background: #4CAF50;
+                                    color: white;
+                                    border: none;
+                                    padding: 15px 30px;
+                                    font-size: 18px;
+                                    border-radius: 25px;
+                                    cursor: pointer;
+                                    font-family: inherit;
+                                    opacity: 0.5;
+                                    pointer-events: none;
+                                " onclick="submitDivisionAnswer()">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Setup drag and drop functionality
+                    setupDivisionDragDrop(door);
+                    
+                    // Auto-select the first dot for easier interaction
+                    setTimeout(() => {
+                        const firstDot = document.querySelector('#dotsContainer .dot');
+                        if (firstDot) {
+                            const dotId = firstDot.getAttribute('data-dot-id');
+                            selectDot(parseInt(dotId));
+                            console.log(`Auto-selected first dot ${dotId} on puzzle load`);
+                        }
+                    }, 100);
+                    
+                    console.log(`Level 8 Division: ${dividend} ÷ ${divisor} = ${answer}`);
+                    
+                    return; // Exit early for Level 8 reading (division)
                 }
-                
-                // Final fallback to any random emojis if still not enough
-                if (wrongEmojis.length < 2) {
-                    const allEmojis = wordEmojiPairs.map(pair => pair.emoji);
-                    while (wrongEmojis.length < 2) {
-                        const randomEmoji = allEmojis[Math.floor(Math.random() * allEmojis.length)];
-                        if (randomEmoji !== correctPair.emoji && !wrongEmojis.includes(randomEmoji)) {
+                // Check if this is Level 3, 4, 5, 6, or 7 - use digraph game instead of regular reading
+                else if (game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) {
+                    // Level 3 Digraph Game
+                    if (!game.digraphEmojis || Object.keys(game.digraphEmojis).length === 0) {
+                        console.error('Digraph data not loaded yet!');
+                        return;
+                    }
+                    
+                    // Get available digraphs (exclude already used ones)
+                    const allDigraphs = Object.keys(game.digraphEmojis);
+                    const availableDigraphs = allDigraphs.filter(digraph => !game.usedDigraphs.includes(digraph));
+                    
+                    // If all digraphs have been used, reset the used list
+                    const digraphsToUse = availableDigraphs.length > 0 ? availableDigraphs : allDigraphs;
+                    if (availableDigraphs.length === 0) {
+                        game.usedDigraphs = [];
+                        console.log('All digraphs used - resetting digraph tracking for this level');
+                    }
+                    
+                    // Pick a random digraph
+                    const selectedDigraph = digraphsToUse[Math.floor(Math.random() * digraphsToUse.length)];
+                    
+                    // Add to used digraphs list
+                    if (!game.usedDigraphs.includes(selectedDigraph)) {
+                        game.usedDigraphs.push(selectedDigraph);
+                    }
+                    
+                    // Get emojis for this digraph - randomly pick one as correct answer
+                    const digraphEmojis = game.digraphEmojis[selectedDigraph];
+                    const correctEmoji = digraphEmojis[Math.floor(Math.random() * digraphEmojis.length)]; // Random emoji from this digraph
+                    
+                    // Get wrong emojis from OTHER digraphs (emojis that don't contain this sound)
+                    const wrongEmojis = [];
+                    let otherDigraphs = Object.keys(game.digraphEmojis).filter(d => d !== selectedDigraph);
+                    
+                    // Avoid confusing SK/SC pairs - they sound too similar
+                    if (selectedDigraph === 'SK') {
+                        otherDigraphs = otherDigraphs.filter(d => d !== 'SC');
+                    } else if (selectedDigraph === 'SC') {
+                        otherDigraphs = otherDigraphs.filter(d => d !== 'SK');
+                    }
+                    
+                    while (wrongEmojis.length < 2 && otherDigraphs.length > 0) {
+                        const randomDigraph = otherDigraphs[Math.floor(Math.random() * otherDigraphs.length)];
+                        const randomEmojiArray = game.digraphEmojis[randomDigraph];
+                        const randomEmoji = randomEmojiArray[Math.floor(Math.random() * randomEmojiArray.length)];
+                        
+                        // Make sure this emoji doesn't contain our target sound and isn't already used
+                        if (!wrongEmojis.includes(randomEmoji) && randomEmoji !== correctEmoji) {
                             wrongEmojis.push(randomEmoji);
                         }
                     }
+                    
+                    // Display the digraph letters
+                    title.innerHTML = `<div style="font-size: 48px; font-weight: bold; color: #2E8B57; margin-bottom: 15px;">${selectedDigraph}</div>`;
+                    
+                    // Add speaker button in question area
+                    const soundToSpeak = game.digraphSounds[selectedDigraph] || selectedDigraph.toLowerCase();
+                    question.innerHTML = `
+                        <button onclick="speakDigraph('${soundToSpeak}')" style="
+                            background: white; 
+                            color: black; 
+                            border: 3px solid #4CAF50; 
+                            padding: 15px 25px; 
+                            font-size: 24px; 
+                            border-radius: 50%; 
+                            cursor: pointer; 
+                            margin-bottom: 20px;
+                            width: 70px;
+                            height: 70px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin: 0 auto 20px auto;
+                        ">🔊</button>
+                    `;
+                    
+                    // Shuffle all answer options
+                    const allAnswers = [correctEmoji, ...wrongEmojis.slice(0, 2)].sort(() => Math.random() - 0.5);
+                    
+                    options.innerHTML = '';
+                    allAnswers.forEach(emoji => {
+                        const button = document.createElement('button');
+                        button.className = 'puzzle-button';
+                        button.textContent = emoji;
+                        button.style.fontSize = '48px';
+                        button.style.background = 'white';
+                        button.style.color = 'black';
+                        button.style.border = '3px solid #4CAF50';
+                        button.style.minWidth = '120px';
+                        button.style.minHeight = '100px';
+                        button.onclick = () => checkAnswer(emoji === correctEmoji, type, door, button, emoji);
+                        options.appendChild(button);
+                    });
+                } else {
+                    // Regular reading game for Levels 1 and 2
+                    const wordEmojiPairs = game.wordEmojiPairs;
+                    
+                    // Filter out already used words in this level
+                    const availableWords = wordEmojiPairs.filter(pair => !game.usedWords.includes(pair.word));
+                    
+                    // If all words have been used, reset the used words list
+                    const wordsToUse = availableWords.length > 0 ? availableWords : wordEmojiPairs;
+                    if (availableWords.length === 0) {
+                        game.usedWords = [];
+                        console.log('All words used - resetting word tracking for this level');
+                    }
+                    
+                    // Pick a random word-emoji pair from available words
+                    const correctPair = wordsToUse[Math.floor(Math.random() * wordsToUse.length)];
+                    
+                    // Add this word to used words list
+                    if (!game.usedWords.includes(correctPair.word)) {
+                        game.usedWords.push(correctPair.word);
+                    }
+                    
+                    // Check if word list is loaded
+                    if (!wordEmojiPairs || wordEmojiPairs.length === 0) {
+                        console.error('Word list not loaded yet!');
+                        return;
+                    }
+                    
+                    const firstLetter = correctPair.word.charAt(0).toUpperCase();
+                    const wrongEmojis = [];
+                    
+                    // Try to find words with same first letter
+                    const sameLetterWords = wordEmojiPairs.filter(pair => 
+                        pair.word.charAt(0).toUpperCase() === firstLetter && 
+                        pair.word !== correctPair.word
+                    );
+                    
+                    // Add wrong emojis from same-letter words
+                    while (wrongEmojis.length < 2 && sameLetterWords.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * sameLetterWords.length);
+                        const wrongPair = sameLetterWords.splice(randomIndex, 1)[0];
+                        wrongEmojis.push(wrongPair.emoji);
+                    }
+                    
+                    // If not enough same-letter words, use distractors
+                    if (wrongEmojis.length < 2 && game.distractors[firstLetter]) {
+                        const distractorEmojis = [...game.distractors[firstLetter]];
+                        while (wrongEmojis.length < 2 && distractorEmojis.length > 0) {
+                            const randomIndex = Math.floor(Math.random() * distractorEmojis.length);
+                            const distractor = distractorEmojis.splice(randomIndex, 1)[0];
+                            wrongEmojis.push(distractor);
+                        }
+                    }
+                    
+                    // Final fallback to any random emojis if still not enough
+                    if (wrongEmojis.length < 2) {
+                        const allEmojis = wordEmojiPairs.map(pair => pair.emoji);
+                        while (wrongEmojis.length < 2) {
+                            const randomEmoji = allEmojis[Math.floor(Math.random() * allEmojis.length)];
+                            if (randomEmoji !== correctPair.emoji && !wrongEmojis.includes(randomEmoji)) {
+                                wrongEmojis.push(randomEmoji);
+                            }
+                        }
+                    }
+                    
+                    title.textContent = correctPair.word;
+                    question.textContent = '';
+                    
+                    const allAnswers = [correctPair.emoji, ...wrongEmojis].sort(() => Math.random() - 0.5);
+                    
+                    options.innerHTML = '';
+                    allAnswers.forEach(emoji => {
+                        const button = document.createElement('button');
+                        button.className = 'puzzle-button';
+                        button.textContent = emoji;
+                        button.style.fontSize = '40px'; // Make emojis bigger
+                        button.style.background = 'white'; // White background for emoji buttons
+                        button.style.color = 'black'; // Black text for better contrast
+                        button.style.border = '3px solid #4CAF50'; // Green border
+                        button.onclick = () => checkAnswer(emoji === correctPair.emoji, type, door, button);
+                        options.appendChild(button);
+                    });
                 }
-                
-                title.textContent = correctPair.word;
-                question.textContent = '';
-                
-                const allAnswers = [correctPair.emoji, ...wrongEmojis].sort(() => Math.random() - 0.5);
-                
-                options.innerHTML = '';
-                allAnswers.forEach(emoji => {
-                    const button = document.createElement('button');
-                    button.className = 'puzzle-button';
-                    button.textContent = emoji;
-                    button.style.fontSize = '40px'; // Make emojis bigger
-                    button.style.background = 'white'; // White background for emoji buttons
-                    button.style.color = 'black'; // Black text for better contrast
-                    button.style.border = '3px solid #4CAF50'; // Green border
-                    button.onclick = () => checkAnswer(emoji === correctPair.emoji, type, door, button);
-                    options.appendChild(button);
-                });
             } else if (type === 'reading1') {
                 // Math problems (same as main math problems)
                 const isAddition = Math.random() < 0.5;
                 let num1, num2, answer;
-                const maxAnswer = 20; // Max answer for math problems
+                const maxAnswer = 12; // Max answer for math problems
                 
                 if (isAddition) {
                     // For addition, ensure sum doesn't exceed maxAnswer
@@ -1594,7 +2902,375 @@ PIG 🐖`;
             }
         }
         
-        function checkAnswer(correct, type, door, buttonElement) {
+        function initializeNumberLine(door) {
+            const numberGrid = document.getElementById('numberGrid');
+            const gridLabels = document.getElementById('gridLabels');
+            
+            if (!numberGrid || !gridLabels) return;
+            
+            // Ensure we have valid starting data
+            if (door.mathStartPosition === undefined || door.mathAnswer === undefined) {
+                console.error('Door missing math data:', door);
+                return;
+            }
+            
+            // Clear any previous number line state
+            door.ptCanvases = {}; // Store PT canvases for each cell
+            
+            // Create grid cells (0 to 12)
+            numberGrid.innerHTML = '';
+            for (let i = 0; i <= 12; i++) {
+                const cell = document.createElement('div');
+                cell.id = `grid-cell-${i}`;
+                cell.style.cssText = `
+                    aspect-ratio: 1;
+                    border: 1px solid #ccc;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    min-height: 35px;
+                    transition: background-color 0.3s ease;
+                    cursor: pointer;
+                `;
+                cell.onclick = () => movePTToPosition(i, door);
+                
+                // Create PT canvas for this cell
+                const ptCanvas = document.createElement('canvas');
+                ptCanvas.width = 30;
+                ptCanvas.height = 30;
+                ptCanvas.id = `pt-canvas-${i}`;
+                ptCanvas.style.cssText = `
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    pointer-events: none;
+                    z-index: 10;
+                `;
+                cell.appendChild(ptCanvas);
+                door.ptCanvases[i] = ptCanvas;
+                
+                numberGrid.appendChild(cell);
+            }
+            
+            // Create grid labels (0 to 12)
+            gridLabels.innerHTML = '';
+            for (let i = 0; i <= 12; i++) {
+                const label = document.createElement('div');
+                label.id = `grid-label-${i}`;
+                label.textContent = i;
+                label.style.cssText = `
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #2E8B57;
+                    padding: 5px 0;
+                    transition: color 0.3s ease;
+                    cursor: pointer;
+                `;
+                label.onclick = () => movePTToPosition(i, door);
+                gridLabels.appendChild(label);
+            }
+            
+            // Position PT at starting position
+            console.log(`Initializing number line: start position = ${door.mathStartPosition}, answer = ${door.mathAnswer}`);
+            movePTToPosition(door.mathStartPosition, door);
+            
+            // Remove any existing keyboard listeners
+            if (game.currentKeyHandler) {
+                document.removeEventListener('keydown', game.currentKeyHandler);
+                console.log('Removed previous keyboard handler');
+            }
+            
+            // Add keyboard event listener with door reference
+            const keyHandler = (e) => numberLineKeyHandler(e, door);
+            document.addEventListener('keydown', keyHandler);
+            
+            // Store the handler globally and on door
+            game.currentKeyHandler = keyHandler;
+            door.keyHandler = keyHandler;
+            console.log('Added new number line keyboard handler');
+            
+            // Add submit button handler
+            const submitBtn = document.getElementById('submitNumberLine');
+            if (submitBtn) {
+                submitBtn.onclick = () => checkNumberLineAnswer(door);
+            }
+        }
+        
+        function initializeNumberLineLevel8(door) {
+            const numberGrid = document.getElementById('numberGrid');
+            const gridLabels = document.getElementById('gridLabels');
+            
+            if (!numberGrid || !gridLabels) return;
+            
+            // Ensure we have valid starting data
+            if (door.mathStartPosition === undefined || door.mathAnswer === undefined) {
+                console.error('Door missing math data:', door);
+                return;
+            }
+            
+            // Clear any previous number line state
+            door.ptCanvases = {}; // Store PT canvases for each cell
+            
+            // Create grid cells (0 to 12)
+            numberGrid.innerHTML = '';
+            for (let i = 0; i <= 12; i++) {
+                const cell = document.createElement('div');
+                cell.id = `grid-cell-${i}`;
+                cell.style.cssText = `
+                    aspect-ratio: 1;
+                    border: 1px solid #ccc;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    min-height: 35px;
+                    transition: background-color 0.3s ease;
+                    cursor: pointer;
+                `;
+                cell.onclick = () => movePTToPosition(i, door);
+                
+                // Create PT canvas for this cell
+                const ptCanvas = document.createElement('canvas');
+                ptCanvas.width = 30;
+                ptCanvas.height = 30;
+                ptCanvas.id = `pt-canvas-${i}`;
+                ptCanvas.style.cssText = `
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    pointer-events: none;
+                    z-index: 10;
+                `;
+                cell.appendChild(ptCanvas);
+                door.ptCanvases[i] = ptCanvas;
+                
+                numberGrid.appendChild(cell);
+            }
+            
+            // Create grid labels (0 to 12)
+            gridLabels.innerHTML = '';
+            for (let i = 0; i <= 12; i++) {
+                const label = document.createElement('div');
+                label.id = `grid-label-${i}`;
+                label.textContent = i;
+                label.style.cssText = `
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #2E8B57;
+                    padding: 5px 0;
+                    transition: color 0.3s ease;
+                    cursor: pointer;
+                `;
+                label.onclick = () => movePTToPosition(i, door);
+                gridLabels.appendChild(label);
+            }
+            
+            // Position PT at starting position
+            console.log(`Initializing Level 8 number line: start position = ${door.mathStartPosition}, answer = ${door.mathAnswer}`);
+            movePTToPosition(door.mathStartPosition, door);
+            
+            // Add keyboard event listener for Level 8 (but no submit functionality)
+            const keyHandler = (e) => numberLineKeyHandler(e, door);
+            
+            // Remove any existing keyboard listeners first
+            if (game.currentKeyHandler) {
+                document.removeEventListener('keydown', game.currentKeyHandler);
+                console.log('Removed previous keyboard handler');
+            }
+            
+            document.addEventListener('keydown', keyHandler);
+            game.currentKeyHandler = keyHandler;
+            door.keyHandler = keyHandler;
+            console.log('Added new Level 8 keyboard handler');
+        }
+        
+        function movePTToPosition(position, door) {
+            if (position < 0 || position > 12 || !door.ptCanvases) return;
+            
+            console.log(`Moving PT from ${door.foxPosition} to position ${position}, start position is ${door.mathStartPosition}, answer is ${door.mathAnswer}`);
+            
+            // Ensure starting position is never changed
+            const startPos = door.mathStartPosition;
+            door.foxPosition = position;
+            
+            // Clear all PT canvases first
+            for (let i = 0; i <= 12; i++) {
+                if (door.ptCanvases[i]) {
+                    const ctx = door.ptCanvases[i].getContext('2d');
+                    ctx.clearRect(0, 0, 30, 30);
+                }
+            }
+            
+            // Update grid cell colors - reset all first, then apply colors
+            for (let i = 0; i <= 12; i++) {
+                const gridCell = document.getElementById(`grid-cell-${i}`);
+                const gridLabel = document.getElementById(`grid-label-${i}`);
+                
+                if (gridCell && gridLabel) {
+                    // Reset to default
+                    gridCell.style.backgroundColor = '';
+                    gridLabel.style.color = '#2E8B57';
+                }
+            }
+            
+            // Apply colors based on position relationship
+            for (let i = 0; i <= 12; i++) {
+                const gridCell = document.getElementById(`grid-cell-${i}`);
+                const gridLabel = document.getElementById(`grid-label-${i}`);
+                
+                if (gridCell && gridLabel) {
+                    if (i === startPos) {
+                        // Start position is ALWAYS green, regardless of current position
+                        gridCell.style.backgroundColor = '#32CD32';
+                        gridLabel.style.color = '#32CD32';
+                    } else if (i === position) {
+                        // Current position (only if different from start)
+                        if (position < startPos) {
+                            gridCell.style.backgroundColor = '#4169E1';
+                            gridLabel.style.color = '#4169E1';
+                        } else if (position > startPos) {
+                            gridCell.style.backgroundColor = '#FF8C00';
+                            gridLabel.style.color = '#FF8C00';
+                        }
+                        // If position === startPos, it stays green from above
+                    } else {
+                        // Check if cell is between start and current position
+                        const minPos = Math.min(startPos, position);
+                        const maxPos = Math.max(startPos, position);
+                        if (i > minPos && i < maxPos) {
+                            // Between start and current
+                            if (position > startPos) {
+                                // Moving right - orange trail
+                                gridCell.style.backgroundColor = '#FF8C00';
+                                gridLabel.style.color = '#FF8C00';
+                            } else {
+                                // Moving left - blue trail
+                                gridCell.style.backgroundColor = '#4169E1';
+                                gridLabel.style.color = '#4169E1';
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // ALWAYS draw PT sprite in the current position cell, regardless of color
+            if (door.ptCanvases[position]) {
+                const ctx = door.ptCanvases[position].getContext('2d');
+                
+                // Draw PT using the movement sprite (up/down frames)
+                if (currentMovementSprites && currentMovementSprites.complete) {
+                    // Use frame 5 (up/down facing) - frameX = 640
+                    const frameX = 640; // Frame 5 (up/down sprite)
+                    ctx.drawImage(
+                        currentMovementSprites,
+                        frameX, 0, 160, 160, // Source: frame 5 (up/down facing)
+                        0, 0, 30, 30   // Destination: fill the canvas
+                    );
+                } else {
+                    // Fallback circle if sprite not loaded - make it more visible
+                    ctx.fillStyle = '#FF0000'; // Red circle for debugging
+                    ctx.beginPath();
+                    ctx.arc(15, 15, 12, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                console.log(`PT drawn at position ${position} using up/down sprite`);
+            }
+        }
+        
+        function numberLineKeyHandler(e, door) {
+            // Only handle if we're in a number line puzzle
+            if (!game.puzzleActive || (game.selectedDifficulty !== 4 && game.selectedDifficulty !== 5 && game.selectedDifficulty !== 6 && game.selectedDifficulty !== 7 && game.selectedDifficulty !== 8)) return;
+            
+            const modal = document.getElementById('puzzleModal');
+            if (modal.style.display !== 'block') return;
+            
+            // Use the door passed directly to avoid confusion
+            if (!door || door.mathAnswer === undefined) {
+                console.log('Invalid door passed to key handler');
+                return;
+            }
+            
+            console.log(`Key pressed: ${e.key}, door start: ${door.mathStartPosition}, current pos: ${door.foxPosition}, answer: ${door.mathAnswer}`);
+            console.log('Door object in keyHandler:', door.type, door.row, door.col, 'Level:', game.selectedDifficulty);
+            
+            if (e.key === 'ArrowLeft' && door.foxPosition > 0) {
+                movePTToPosition(door.foxPosition - 1, door);
+            } else if (e.key === 'ArrowRight' && door.foxPosition < 12) {
+                movePTToPosition(door.foxPosition + 1, door);
+            } else if (e.key === 'Enter') {
+                checkNumberLineAnswer(door);
+            }
+        }
+        
+        function checkNumberLineAnswer(door) {
+            const correct = door.foxPosition === door.mathAnswer;
+            const result = document.getElementById('puzzleResult');
+            
+            if (correct) {
+                // Remove keyboard listener on success
+                if (door.keyHandler) {
+                    document.removeEventListener('keydown', door.keyHandler);
+                    delete door.keyHandler;
+                }
+                
+                // Replace question mark with correct answer in title
+                const title = document.getElementById('puzzleTitle');
+                if (title) {
+                    title.innerHTML = title.innerHTML.replace('?', door.mathAnswer);
+                }
+                
+                result.innerHTML = '👍';
+                result.style.color = 'green';
+                result.style.fontSize = '48px';
+                
+                door.open = true;
+                door.color = '#B8F2B8';
+                updateScore(1);
+                
+                // Reset attempt counters
+                door.currentProblemAttempts = 0;
+                door.failedAttempts = 0;
+                
+                setTimeout(() => {
+                    document.getElementById('puzzleModal').style.display = 'none';
+                    result.innerHTML = '';
+                    result.style.fontSize = '';
+                    game.puzzleActive = false;
+                }, 800);
+            } else {
+                result.innerHTML = '👎';
+                result.style.color = 'red';
+                result.style.fontSize = '48px';
+                
+                // Deduct points based on difficulty mode
+                let pointsToDeduct = 0;
+                if (game.difficultyMode === 'easy') {
+                    pointsToDeduct = -1;
+                } else if (game.difficultyMode === 'medium') {
+                    pointsToDeduct = door.currentProblemAttempts === 1 ? -1 : -2;
+                } else {
+                    pointsToDeduct = -2;
+                }
+                
+                updateScore(pointsToDeduct);
+                
+                // Track failed attempts
+                if (!door.currentProblemAttempts) door.currentProblemAttempts = 0;
+                door.currentProblemAttempts++;
+                
+                // Just show thumbs down and allow unlimited retries until game over
+                setTimeout(() => {
+                    result.innerHTML = '';
+                    result.style.fontSize = '';
+                }, 1500);
+            }
+        }
+        
+        function checkAnswer(correct, type, door, buttonElement, selectedEmoji = null) {
             const result = document.getElementById('puzzleResult');
             
             // Track attempts for this problem
@@ -1606,6 +3282,13 @@ PIG 🐖`;
                 result.style.color = 'green';
                 result.style.fontSize = '48px'; // Make thumbs up bigger
                 door.open = true;
+                
+                // For Levels 3, 4, 5, 6, 7 digraph puzzles, speak the emoji word name
+                if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) && type === 'reading' && selectedEmoji) {
+                    setTimeout(() => {
+                        speakEmojiWord(selectedEmoji);
+                    }, 300); // Slight delay after showing thumbs up
+                }
                 
                 // Give +1 point for correct answer (net effect: 1 - number_of_wrong_attempts)
                 if (type === 'math') updateScore(1);
@@ -1630,6 +3313,13 @@ PIG 🐖`;
             } else {
                 result.innerHTML = '👎';
                 result.style.color = 'red';
+                
+                // For Levels 3, 4, 5, 6, 7 digraph puzzles, speak the emoji word name even for wrong answers
+                if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) && type === 'reading' && selectedEmoji) {
+                    setTimeout(() => {
+                        speakEmojiWord(selectedEmoji);
+                    }, 300); // Slight delay after showing thumbs down
+                }
                 
                 // Deduct points based on difficulty mode
                 let pointsToDeduct = 0;
@@ -1675,6 +3365,13 @@ PIG 🐖`;
         }
         
         function showCelebration() {
+            // Record score for this level
+            game.levelScores[game.selectedDifficulty] = game.score;
+            game.gameSession.levelsCompleted++;
+            game.gameSession.totalScore += game.score;
+            
+            console.log(`Level ${game.selectedDifficulty} completed with ${game.score} lives remaining`);
+            
             // Unlock next level
             unlockNextLevel();
             
@@ -1684,10 +3381,10 @@ PIG 🐖`;
             
             // Update button text based on whether there's a next level
             const playAgainBtn = document.getElementById('playAgainBtn');
-            if (game.selectedDifficulty < 3) {
+            if (game.selectedDifficulty < 7) {
                 playAgainBtn.textContent = 'Next Level';
             } else {
-                playAgainBtn.textContent = 'Play Again';
+                playAgainBtn.textContent = 'Show Final Score';
             }
             
             document.getElementById('celebrationScreen').style.display = 'flex';
@@ -1724,6 +3421,46 @@ PIG 🐖`;
                     frameWidth = Math.floor(actualSheetWidth / framesPerRow); // 32768 / 43 = 762
                     frameHeight = actualSheetHeight; // 894
                     totalFrames = 43;
+                } else if (game.selectedDifficulty === 4) {
+                    // Level 4: 62 frames horizontal layout
+                    const actualSheetWidth = currentCelebrationSprites.width;
+                    const actualSheetHeight = currentCelebrationSprites.height;
+                    framesPerRow = 62;
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 62;
+                } else if (game.selectedDifficulty === 5) {
+                    // Level 5: 52 frames horizontal layout
+                    const actualSheetWidth = currentCelebrationSprites.width;
+                    const actualSheetHeight = currentCelebrationSprites.height;
+                    framesPerRow = 52;
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 52;
+                } else if (game.selectedDifficulty === 6) {
+                    // Level 6: 29 frames horizontal layout
+                    const actualSheetWidth = currentCelebrationSprites.width;
+                    const actualSheetHeight = currentCelebrationSprites.height;
+                    framesPerRow = 29;
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 29;
+                } else if (game.selectedDifficulty === 7) {
+                    // Level 7: 24 frames horizontal layout
+                    const actualSheetWidth = currentCelebrationSprites.width;
+                    const actualSheetHeight = currentCelebrationSprites.height;
+                    framesPerRow = 24;
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 24;
+                } else if (game.selectedDifficulty === 8) {
+                    // Level 8: 29 frames horizontal layout (same as level 6)
+                    const actualSheetWidth = currentCelebrationSprites.width;
+                    const actualSheetHeight = currentCelebrationSprites.height;
+                    framesPerRow = 29;
+                    frameWidth = actualSheetWidth / framesPerRow;
+                    frameHeight = actualSheetHeight;
+                    totalFrames = 29;
                 } else {
                     // Level 1 sprites: New format (9 frames horizontal)
                     const actualSheetWidth = currentCelebrationSprites.width;
@@ -1794,8 +3531,9 @@ PIG 🐖`;
             };
             document.getElementById('level').textContent = `Level: ${game.selectedDifficulty} (${difficultyEmoji[game.difficultyMode]})`;
             
-            // Reset used words for this level to prevent repetition
+            // Reset used words and digraphs for this level to prevent repetition
             game.usedWords = [];
+            game.usedDigraphs = [];
             
             // Reset all doors
             game.doors.forEach(door => {
@@ -1811,19 +3549,160 @@ PIG 🐖`;
             document.getElementById('celebrationScreen').style.display = 'none';
             
             // If there's a next level, advance to it
-            if (game.selectedDifficulty < 3) {
+            if (game.selectedDifficulty < 7) {
                 game.selectedDifficulty++;
                 console.log(`Advancing to level ${game.selectedDifficulty}`);
                 // Load next level directly
                 currentCelebrationSprites = loadCelebrationSprite(game.selectedDifficulty);
                 initializeGame();
             } else {
-                // Completed all levels, restart from level 1
-                console.log('All levels completed, restarting from level 1');
-                game.selectedDifficulty = 1;
-                currentCelebrationSprites = loadCelebrationSprite(1);
-                initializeGame();
+                // Completed all levels, show final score
+                console.log('All levels completed, showing final score');
+                showFinalScore();
             }
+        }
+        
+        function showFinalScore() {
+            // Populate the final score screen
+            const container = document.getElementById('levelScoresContainer');
+            container.innerHTML = '';
+            
+            // Add each level score
+            for (let level = 1; level <= 7; level++) {
+                const score = game.levelScores[level] || 0;
+                const levelItem = document.createElement('div');
+                levelItem.className = 'level-score-item';
+                
+                // Highlight perfect scores or special achievements
+                if (score >= 5) {
+                    levelItem.classList.add('special');
+                }
+                
+                levelItem.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <div class="level-wall-block" style="background-image: url('level-${level}/wall.png');"></div>
+                        <div class="level-score-number">Level ${level}</div>
+                    </div>
+                    <div class="level-score-hearts">${score} ♥️</div>
+                `;
+                
+                container.appendChild(levelItem);
+            }
+            
+            // Add total score row
+            const totalScore = Object.values(game.levelScores).reduce((sum, score) => sum + score, 0);
+            const totalItem = document.createElement('div');
+            totalItem.className = 'level-score-item';
+            totalItem.style.borderTop = '2px solid #4CAF50';
+            totalItem.style.marginTop = '10px';
+            totalItem.style.fontWeight = 'bold';
+            
+            totalItem.innerHTML = `
+                <div style="display: flex; align-items: center;">
+                    <div class="level-score-number">Total</div>
+                </div>
+                <div class="level-score-hearts">${totalScore} ♥️</div>
+            `;
+            
+            container.appendChild(totalItem);
+            
+            // Hide total score section (we're showing it inline now)
+            document.getElementById('totalScoreSection').style.display = 'none';
+            
+            // Show the final score screen
+            document.getElementById('finalScoreScreen').style.display = 'flex';
+        }
+        
+        function restartFromFinalScore() {
+            // Hide final score screen
+            document.getElementById('finalScoreScreen').style.display = 'none';
+            
+            // Reset game session data
+            game.levelScores = {};
+            game.deathLevel = null;
+            game.gameSession = {
+                startTime: Date.now(),
+                levelsCompleted: 0,
+                totalScore: 0
+            };
+            
+            // Show difficulty selection to start over
+            document.getElementById('difficultyScreen').style.display = 'flex';
+        }
+        
+        function showGameOverScore() {
+            // Hide game over screen
+            document.getElementById('gameOverScreen').style.display = 'none';
+            
+            // Update the title
+            document.getElementById('finalScoreTitle').textContent = 'Your Scores';
+            
+            // Create table for all levels
+            const container = document.getElementById('levelScoresContainer');
+            container.innerHTML = '';
+            
+            for (let level = 1; level <= 7; level++) {
+                const score = game.levelScores[level];
+                const levelItem = document.createElement('div');
+                levelItem.className = 'level-score-item';
+                
+                let scoreDisplay;
+                if (score !== undefined) {
+                    scoreDisplay = `${score} ♥️`;
+                } else if (level === game.deathLevel) {
+                    scoreDisplay = '☠️';
+                } else {
+                    scoreDisplay = '-';
+                }
+                
+                levelItem.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <div class="level-wall-block" style="background-image: url('level-${level}/wall.png');"></div>
+                        <div class="level-score-number">Level ${level}</div>
+                    </div>
+                    <div class="level-score-hearts">${scoreDisplay}</div>
+                `;
+                
+                container.appendChild(levelItem);
+            }
+            
+            // Add total score row
+            const totalScore = Object.values(game.levelScores).reduce((sum, score) => sum + score, 0);
+            const totalItem = document.createElement('div');
+            totalItem.className = 'level-score-item';
+            totalItem.style.borderTop = '2px solid #4CAF50';
+            totalItem.style.marginTop = '10px';
+            totalItem.style.fontWeight = 'bold';
+            
+            totalItem.innerHTML = `
+                <div style="display: flex; align-items: center;">
+                    <div class="level-score-number">Total</div>
+                </div>
+                <div class="level-score-hearts">${totalScore} ♥️</div>
+            `;
+            
+            container.appendChild(totalItem);
+            
+            // Hide total score section
+            document.getElementById('totalScoreSection').style.display = 'none';
+            
+            // Change the button to "Try Again"
+            const finalScoreBtn = document.getElementById('finalScoreBtn');
+            finalScoreBtn.textContent = 'Try Again';
+            finalScoreBtn.onclick = () => {
+                // Hide final score screen and restart game
+                document.getElementById('finalScoreScreen').style.display = 'none';
+                restartGame();
+                
+                // Restore original title and button for future use
+                document.getElementById('finalScoreTitle').textContent = '🎉 Congratulations! 🎉';
+                document.getElementById('totalScoreSection').style.display = 'block';
+                finalScoreBtn.textContent = 'Play Again';
+                finalScoreBtn.onclick = restartFromFinalScore;
+            };
+            
+            // Show the final score screen
+            document.getElementById('finalScoreScreen').style.display = 'flex';
         }
         
         // Game loop
