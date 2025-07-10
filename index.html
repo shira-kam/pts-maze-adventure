@@ -546,6 +546,15 @@
             </div>
             
             <div class="debug-section">
+                <h3>🧪 Test Versions</h3>
+                <p>Test alternative starting positions for number line levels:</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                    <button class="debug-button" onclick="jumpToTestLevel(4)">Test Level 4 (Start at 0)</button>
+                </div>
+                <p style="margin-top: 10px; font-size: 14px; color: #ccc;">Test versions start PT at 0 with black 0 square</p>
+            </div>
+            
+            <div class="debug-section">
                 <h3>🎉 Celebration Animations</h3>
                 <p>View all celebration sprites from each level:</p>
                 <button class="debug-button" onclick="loadDebugCelebrationSprites()" style="margin-bottom: 15px;">🔄 Reload All Sprites</button>
@@ -1084,6 +1093,7 @@ PIG 🐖`;
             usedWords: [], // Track words used in current level to prevent repetition
             difficultyMode: 'hard', // easy, medium, hard
             debugMode: false, // Debug mode toggle
+            testMode: false, // Test mode for alternative starting positions
             tileSize: 40,
             puzzleActive: false,
             celebrating: false,
@@ -1164,6 +1174,9 @@ PIG 🐖`;
             game.difficultyMode = difficulty;
             console.log(`Selected difficulty: ${difficulty}`);
             
+            // Reset test mode when starting normal gameplay
+            game.testMode = false;
+            
             // Initialize game session
             game.levelScores = {};
             game.deathLevel = null;
@@ -1232,6 +1245,29 @@ PIG 🐖`;
             closeDebugMode();
             
             // Initialize the new level
+            initializeGame();
+        }
+        
+        // Jump to test version of level (PT starts at 0, black 0 square)
+        function jumpToTestLevel(level) {
+            if (level < 1 || level > 8) {
+                console.error('Invalid test level:', level);
+                return;
+            }
+            
+            console.log(`🧪 Jumping to TEST version of level ${level} from debug mode`);
+            
+            // Update game state and mark as test mode
+            game.selectedDifficulty = level;
+            game.testMode = true; // Flag to indicate test mode
+            
+            // Load celebration sprite for this level
+            currentCelebrationSprites = loadCelebrationSprite(level);
+            
+            // Close debug mode
+            closeDebugMode();
+            
+            // Initialize the test level
             initializeGame();
         }
         
@@ -2215,7 +2251,8 @@ PIG 🐖`;
                             answer = num1 + num2;
                         } while (answer > maxAnswer || num1 === 0 || num2 === 0 || answer === 0);
                         
-                        title.innerHTML = `<span style="color: #32CD32; font-weight: bold;">${num1}</span> <span style="color: #FF8C00;">+</span> ${num2} = ?`;
+                        const startNumberColor = game.testMode ? 'black' : '#32CD32';
+                        title.innerHTML = `<span style="color: ${startNumberColor}; font-weight: bold;">${num1}</span> <span style="color: #FF8C00;">+</span> ${num2} = ?`;
                     } else {
                         // For subtraction, ensure result is between 1-maxAnswer and no zeros
                         do {
@@ -2224,7 +2261,8 @@ PIG 🐖`;
                             answer = num1 - num2;
                         } while (answer === 0 || num1 === 0 || num2 === 0);
                         
-                        title.innerHTML = `<span style="color: #32CD32; font-weight: bold;">${num1}</span> <span style="color: #4169E1;">-</span> ${num2} = ?`;
+                        const startNumberColor = game.testMode ? 'black' : '#32CD32';
+                        title.innerHTML = `<span style="color: ${startNumberColor}; font-weight: bold;">${num1}</span> <span style="color: #4169E1;">-</span> ${num2} = ?`;
                     }
                     
                     // Clear any previous number line data and store new data
@@ -2235,8 +2273,9 @@ PIG 🐖`;
                     
                     // Store data for checking
                     door.mathAnswer = answer;
-                    door.mathStartPosition = num1;
-                    door.foxPosition = num1;
+                    // For test mode, start PT at 0; otherwise start at num1
+                    door.mathStartPosition = game.testMode ? 0 : num1;
+                    door.foxPosition = door.mathStartPosition;
                     
                     console.log(`NEW PUZZLE: ${num1} ${isAddition ? '+' : '-'} ${num2} = ${answer}, start position set to ${door.mathStartPosition}`);
                     
@@ -2880,6 +2919,10 @@ PIG 🐖`;
             for (let i = 0; i <= 12; i++) {
                 const cell = document.createElement('div');
                 cell.id = `grid-cell-${i}`;
+                const cellBackgroundColor = (game.testMode && i === 0) ? 'black' : 'white';
+                if (i === 0) {
+                    console.log(`Test mode: ${game.testMode}, Cell 0 background: ${cellBackgroundColor}`);
+                }
                 cell.style.cssText = `
                     aspect-ratio: 1;
                     border: 1px solid #ccc;
@@ -2888,6 +2931,7 @@ PIG 🐖`;
                     justify-content: center;
                     position: relative;
                     min-height: 35px;
+                    background-color: ${cellBackgroundColor};
                     transition: background-color 0.3s ease;
                     cursor: pointer;
                 `;
@@ -2918,10 +2962,11 @@ PIG 🐖`;
                 const label = document.createElement('div');
                 label.id = `grid-label-${i}`;
                 label.textContent = i;
+                const labelColor = (game.testMode && i === 0) ? 'black' : '#2E8B57';
                 label.style.cssText = `
                     font-size: 14px;
                     font-weight: bold;
-                    color: #2E8B57;
+                    color: ${labelColor};
                     padding: 5px 0;
                     transition: color 0.3s ease;
                     cursor: pointer;
@@ -3071,9 +3116,9 @@ PIG 🐖`;
                 const gridLabel = document.getElementById(`grid-label-${i}`);
                 
                 if (gridCell && gridLabel) {
-                    // Reset to default - but preserve black for 0 in Level 8
-                    if (i === 0 && game.selectedDifficulty === 8) {
-                        gridCell.style.backgroundColor = 'black'; // Keep 0 black in Level 8
+                    // Reset to default - but preserve black for 0 in Level 8 or test mode
+                    if (i === 0 && (game.selectedDifficulty === 8 || game.testMode)) {
+                        gridCell.style.backgroundColor = 'black'; // Keep 0 black in Level 8 or test mode
                         gridLabel.style.color = 'black'; // Make 0 label black too
                     } else {
                         gridCell.style.backgroundColor = '';
@@ -3089,9 +3134,9 @@ PIG 🐖`;
                 
                 if (gridCell && gridLabel) {
                     if (i === startPos) {
-                        // Start position coloring - but preserve black for 0 in Level 8
-                        if (i === 0 && game.selectedDifficulty === 8) {
-                            gridCell.style.backgroundColor = 'black'; // Keep 0 black in Level 8
+                        // Start position coloring - but preserve black for 0 in Level 8 or test mode
+                        if (i === 0 && (game.selectedDifficulty === 8 || game.testMode)) {
+                            gridCell.style.backgroundColor = 'black'; // Keep 0 black in Level 8 or test mode
                             gridLabel.style.color = 'black'; // Keep 0 label black too
                         } else {
                             gridCell.style.backgroundColor = '#32CD32'; // Green for other levels
@@ -3417,6 +3462,10 @@ PIG 🐖`;
             game.player.x = 0;
             game.player.y = 0;
             game.player.direction = 'right';
+            // Only reset testMode if it's not already set to true (preserve test mode)
+            if (!game.testMode) {
+                game.testMode = false;
+            }
             
             // Set starting hearts based on difficulty mode
             if (game.difficultyMode === 'easy' || game.difficultyMode === 'medium') {
