@@ -26,6 +26,21 @@
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            min-height: 600px;
+            transition: background 0.3s ease;
+        }
+        
+        #gameContainer.rocket-boost {
+            background: linear-gradient(135deg, #FF4500, #FF8C00, #FFD700);
+        }
+        
+        #gameContainer.rocket-boost.blinking {
+            animation: rocketBlink 0.5s infinite alternate;
+        }
+        
+        @keyframes rocketBlink {
+            0% { background: linear-gradient(135deg, #FF4500, #FF8C00, #FFD700); }
+            100% { background: white; }
         }
         
         #gameCanvas {
@@ -63,7 +78,7 @@
         
         #puzzleContent {
             position: absolute;
-            top: 35%;
+            top: 45%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
@@ -71,13 +86,17 @@
             border-radius: 20px;
             text-align: center;
             min-width: 500px;
-            max-width: 700px;
+            max-width: 900px;
+            width: 1000px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            max-height: 85vh;
+            overflow-y: auto;
         }
         
         #puzzleTitle {
             font-size: 28px;
             margin-bottom: 20px;
+            text-align: center;
         }
         
         #puzzleQuestion {
@@ -541,6 +560,8 @@
                     <button class="debug-button" onclick="jumpToLevel(6)">Jump to Level 6</button>
                     <button class="debug-button" onclick="jumpToLevel(7)">Jump to Level 7</button>
                     <button class="debug-button" onclick="jumpToLevel(8)">Jump to Level 8</button>
+                    <button class="debug-button" onclick="jumpToLevel(9)">Jump to Level 9</button>
+                    <button class="debug-button" onclick="jumpToLevel(10)">Jump to Level 10 (Debug)</button>
                 </div>
                 <p style="margin-top: 10px; font-size: 14px; color: #ccc;">Current Level: <span id="debugCurrentLevel">1</span></p>
             </div>
@@ -615,6 +636,22 @@
                         <button class="debug-button" onclick="debugPlayCelebration(8)">Play Animation</button>
                         <button class="debug-button" onclick="debugStopCelebration(8)">Stop</button>
                     </div>
+                    
+                    <div class="celebration-item">
+                        <h4>Level 9 - PT Celebration</h4>
+                        <canvas class="celebration-preview" id="debugCelebration9" width="200" height="200"></canvas>
+                        <br>
+                        <button class="debug-button" onclick="debugPlayCelebration(9)">Play Animation</button>
+                        <button class="debug-button" onclick="debugStopCelebration(9)">Stop</button>
+                    </div>
+                    
+                    <div class="celebration-item">
+                        <h4>Level 10 - PT Celebration (Debug Only)</h4>
+                        <canvas class="celebration-preview" id="debugCelebration10" width="200" height="200"></canvas>
+                        <br>
+                        <button class="debug-button" onclick="debugPlayCelebration(10)">Play Animation</button>
+                        <button class="debug-button" onclick="debugStopCelebration(10)">Stop</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -653,7 +690,9 @@
         // CSV Parser for dynamic maze loading
         async function loadMazeFromCSV() {
             try {
-                const csvPath = `level-${game.selectedDifficulty}/grid.csv`;
+                // Level 10 uses level 9's maze (debug duplicate)
+                const mazeLevel = game.selectedDifficulty === 10 ? 9 : game.selectedDifficulty;
+                const csvPath = `level-${mazeLevel}/grid.csv`;
                 console.log(`Attempting to load ${csvPath}...`);
                 console.log('Selected difficulty:', game.selectedDifficulty);
                 const response = await fetch(csvPath + '?v=' + Date.now());
@@ -699,6 +738,7 @@
             const lines = csvText.trim().split('\n');
             const doors = [];
             const paths = [];
+            const bonusItems = [];
             let watering_hole = null;
             
             // Skip header row (line 0)
@@ -751,18 +791,25 @@
                             // Heart collectible - add to paths and track as heart
                             paths.push({ x, y, width: 40, height: 40, type: 'heart', collected: false });
                             break;
+                        case 'b':
+                            // Bonus collectible (level 9) - add to paths and track as bonus
+                            bonusItems.push({ x, y, width: 40, height: 40, collected: false });
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
                         // Empty cells and walls are ignored
                     }
                 }
             }
             
-            return { doors, paths, watering_hole };
+            return { doors, paths, watering_hole, bonusItems };
         }
         
         // Word list parser for dynamic loading
         async function loadWordListFromFile() {
             try {
-                const wordListPath = `level-${game.selectedDifficulty}/Word-List.txt`;
+                // Level 10 uses level 9's word list (debug duplicate)
+                const wordListLevel = game.selectedDifficulty === 10 ? 9 : game.selectedDifficulty;
+                const wordListPath = `level-${wordListLevel}/Word-List.txt`;
                 console.log(`Attempting to load ${wordListPath}...`);
                 const response = await fetch(wordListPath + '?v=' + Date.now());
                 const wordListText = await response.text();
@@ -847,11 +894,13 @@ PIG 🐖`;
         // Load sprite sheets for PT
         const ptSprites = {
             movement: new Image(),
-            celebration: {}
+            celebration: {},
+            bonus: new Image()
         };
         
         // Load PT sprites
         ptSprites.movement.src = 'PT-sprite.svg';
+        ptSprites.bonus.src = 'level-9/PT-Bonus-Sprite.svg';
         // Celebration sprites will be loaded dynamically based on difficulty
         
         // Digraph data for Level 3
@@ -937,7 +986,9 @@ PIG 🐖`;
             5: { frames: 52, layout: 'horizontal' },
             6: { frames: 29, layout: 'horizontal' },
             7: { frames: 24, layout: 'horizontal' },
-            8: { frames: 29, layout: 'horizontal' }
+            8: { frames: 29, layout: 'horizontal' },
+            9: { frames: 27, layout: 'horizontal' },
+            10: { frames: 27, layout: 'horizontal' }
         };
         
         // Function to get celebration frame configuration for a level
@@ -982,7 +1033,7 @@ PIG 🐖`;
             const celebrationSprite = new Image();
             const cacheBuster = '?v=' + Date.now();
             
-            if (difficulty >= 1 && difficulty <= 8) {
+            if (difficulty >= 1 && difficulty <= 9) {
                 celebrationSprite.src = `level-${difficulty}/celebrate.png` + cacheBuster;
             } else {
                 console.error(`Invalid difficulty level: ${difficulty}`);
@@ -1004,6 +1055,7 @@ PIG 🐖`;
             reading: new Image(),
             endpoint: new Image(),
             heart: new Image(),    // Heart collectible texture
+            bonus: new Image(),    // Bonus collectible texture (level 9)
             reading1: new Image(), // Will fallback to reading texture
             reading2: new Image(), // Will fallback to reading texture
             sorting: new Image(),  // Will fallback to math texture
@@ -1031,9 +1083,14 @@ PIG 🐖`;
             textures.reading.src = basePath + 'reading.png' + cacheBuster;
             textures.endpoint.src = basePath + 'endpoint.png' + cacheBuster;
             
-            // Load heart texture for level 6, 7, and 8
-            if (level === 6 || level === 7 || level === 8) {
+            // Load heart texture for level 6, 7, 8, 9, and 10
+            if (level === 6 || level === 7 || level === 8 || level === 9 || level === 10) {
                 textures.heart.src = basePath + 'heart.png' + cacheBuster;
+            }
+            
+            // Load bonus texture for level 9 and 10
+            if (level === 9 || level === 10) {
+                textures.bonus.src = basePath + 'bonus.png' + cacheBuster;
             }
             
             // For door types without specific textures, use existing ones
@@ -1087,6 +1144,10 @@ PIG 🐖`;
             },
             maze: [],
             doors: [], // Will be populated from CSV
+            bonusItems: [], // Bonus collectibles (level 9)
+            hasBonus: false, // Whether PT has collected the bonus
+            rocketCountdown: 0, // Countdown timer for rocket boost (in seconds)
+            rocketBoostData: null, // Stores rocket boost movement data when puzzle is active
             watering_hole: null, // Will be populated from CSV
             wordEmojiPairs: [], // Will be populated from Word-List.txt
             distractors: {}, // Will be populated from distractors.txt
@@ -1228,7 +1289,7 @@ PIG 🐖`;
         
         // Jump to specific level function for debug mode
         function jumpToLevel(level) {
-            if (level < 1 || level > 8) {
+            if (level < 1 || level > 10) {
                 console.error('Invalid level:', level);
                 return;
             }
@@ -1250,7 +1311,7 @@ PIG 🐖`;
         
         // Jump to test version of level (PT starts at 0, black 0 square)
         function jumpToTestLevel(level) {
-            if (level < 1 || level > 8) {
+            if (level < 1 || level > 10) {
                 console.error('Invalid test level:', level);
                 return;
             }
@@ -1280,11 +1341,13 @@ PIG 🐖`;
         
         // Load all celebration sprites for debug mode
         function loadDebugCelebrationSprites() {
-            for (let level = 1; level <= 8; level++) {
+            for (let level = 1; level <= 10; level++) {
                 const sprite = new Image();
                 const cacheBuster = '?v=' + Date.now() + '_' + Math.random();
                 
-                sprite.src = `level-${level}/celebrate.png` + cacheBuster;
+                // Level 10 uses level 9's celebration sprite (debug duplicate)
+                const spriteLevel = level === 10 ? 9 : level;
+                sprite.src = `level-${spriteLevel}/celebrate.png` + cacheBuster;
                 
                 sprite.onload = () => {
                     console.log(`Debug sprite loaded for level ${level}: ${sprite.width}x${sprite.height}`);
@@ -1312,7 +1375,7 @@ PIG 🐖`;
         
         // Stop all debug animations
         function stopAllDebugAnimations() {
-            for (let level = 1; level <= 8; level++) {
+            for (let level = 1; level <= 10; level++) {
                 debugState.isAnimating[level] = false;
             }
         }
@@ -1373,11 +1436,21 @@ PIG 🐖`;
         async function initializeGame() {
             console.log(`Initializing game for level ${game.selectedDifficulty}`);
             
-            // Reset division problem tracking when starting/restarting level 8
-            if (game.selectedDifficulty === 8) {
-                game.hasUsedIdentityDivision = false;
+            // Reset division problem tracking when starting/restarting level 8, 9, or 10
+            if (game.selectedDifficulty === 8 || game.selectedDifficulty === 9 || game.selectedDifficulty === 10) {
+                game.hasUsedAnswerOne = false;
+                game.hasUsedDivideByOne = false;
                 game.usedDivisionProblems = new Set();
-                console.log('Reset division problem tracking for level 8');
+                console.log(`Reset division problem tracking for level ${game.selectedDifficulty}`);
+            }
+            
+            // Reset bonus state when starting level 9 or 10
+            if (game.selectedDifficulty === 9 || game.selectedDifficulty === 10) {
+                game.hasBonus = false;
+                game.rocketCountdown = 0;
+                currentMovementSprites = ptSprites.movement;
+                updateRocketDisplay(); // Hide countdown display
+                console.log('Reset bonus state for level 9');
             }
             
             // Load textures for this level
@@ -1405,6 +1478,7 @@ PIG 🐖`;
             game.doors = mazeData.doors;
             game.paths = mazeData.paths;
             game.watering_hole = mazeData.watering_hole;
+            game.bonusItems = mazeData.bonusItems;
             game.wordEmojiPairs = wordList;
             game.distractors = distractors;
             
@@ -1429,9 +1503,8 @@ PIG 🐖`;
         function updateScore(points) {
             game.score += points;
             
-            // Update hearts display with number to the left
-            const heartsDisplay = '♥️'.repeat(Math.max(0, game.score));
-            const livesText = `${Math.max(0, game.score)} ${heartsDisplay}`;
+            // Update hearts display with single heart and count
+            const livesText = `${Math.max(0, game.score)} ♥️`;
             document.getElementById('score').textContent = livesText;
             
             if (game.score <= 0) {
@@ -1439,6 +1512,8 @@ PIG 🐖`;
                 if (game.puzzleActive) {
                     document.getElementById('puzzleModal').style.display = 'none';
                     game.puzzleActive = false;
+                    // Clear any multiplication door reference
+                    game.currentMultiplicationDoor = null;
                 }
                 gameOver();
             }
@@ -1552,6 +1627,133 @@ PIG 🐖`;
             }
         }
         
+        function checkBonusCollection(x, y) {
+            // Find any bonus at this position
+            const bonusItem = game.bonusItems.find(bonus => 
+                !bonus.collected &&
+                x === bonus.x && y === bonus.y
+            );
+            
+            if (bonusItem) {
+                // Mark bonus as collected
+                bonusItem.collected = true;
+                
+                // Set bonus flag and switch to bonus sprite
+                game.hasBonus = true;
+                currentMovementSprites = ptSprites.bonus;
+                
+                // Start 90-second rocket countdown
+                game.rocketCountdown = 90;
+                startRocketCountdown();
+                
+                console.log('Bonus collected! PT now has rocket boost for 90 seconds');
+            }
+        }
+        
+        function startRocketCountdown() {
+            // Update countdown display immediately
+            updateRocketDisplay();
+            
+            // Start countdown timer
+            const countdownInterval = setInterval(() => {
+                // Only countdown if no puzzle is active (pause during puzzles)
+                if (!game.puzzleActive) {
+                    game.rocketCountdown--;
+                    updateRocketDisplay();
+                    
+                    if (game.rocketCountdown <= 0) {
+                        // Rocket boost expired
+                        clearInterval(countdownInterval);
+                        game.hasBonus = false;
+                        currentMovementSprites = ptSprites.movement;
+                        updateRocketDisplay(); // Hide the display
+                        console.log('Rocket boost expired! PT back to normal movement');
+                    }
+                }
+            }, 1000);
+        }
+        
+        function updateRocketDisplay() {
+            let rocketDisplay = document.getElementById('rocketDisplay');
+            const gameContainer = document.getElementById('gameContainer');
+            
+            if (!rocketDisplay) {
+                // Create rocket display element
+                rocketDisplay = document.createElement('div');
+                rocketDisplay.id = 'rocketDisplay';
+                rocketDisplay.style.cssText = `
+                    text-align: center;
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #FFFFFF;
+                    margin-bottom: 10px;
+                    padding: 5px;
+                    background: rgba(0, 0, 0, 0.3);
+                    border-radius: 10px;
+                    display: none;
+                `;
+                gameContainer.prepend(rocketDisplay);
+            }
+            
+            if (game.rocketCountdown > 0) {
+                rocketDisplay.textContent = `🚀 Rocket Boost: ${game.rocketCountdown}s`;
+                rocketDisplay.style.display = 'block';
+                
+                // Add rocket boost background
+                gameContainer.classList.add('rocket-boost');
+                
+                // Add blinking effect in last 5 seconds
+                if (game.rocketCountdown <= 5) {
+                    gameContainer.classList.add('blinking');
+                } else {
+                    gameContainer.classList.remove('blinking');
+                }
+            } else {
+                rocketDisplay.style.display = 'none';
+                // Remove all rocket boost effects
+                gameContainer.classList.remove('rocket-boost', 'blinking');
+            }
+        }
+        
+        function getBlockingDoor(x, y) {
+            return game.doors.find(door => 
+                !door.open && 
+                x === door.x && y === door.y
+            );
+        }
+        
+        function completeRocketBoostMovement() {
+            if (!game.rocketBoostData) return;
+            
+            const data = game.rocketBoostData;
+            
+            // Open all doors in the path and collect all hearts/bonuses
+            for (let i = 0; i < data.maxSpaces; i++) {
+                const space = data.spaces[i];
+                
+                // Open any doors at this position
+                const door = getBlockingDoor(space.x, space.y);
+                if (door && !door.open) {
+                    door.open = true;
+                    door.color = '#B8F2B8'; // Change to green
+                }
+                
+                // Collect hearts and bonuses
+                checkHeartCollection(space.x, space.y);
+                checkBonusCollection(space.x, space.y);
+            }
+            
+            // Move PT to the furthest valid position (3rd space if possible)
+            const finalSpace = data.spaces[data.maxSpaces - 1];
+            game.player.x = finalSpace.x;
+            game.player.y = finalSpace.y;
+            
+            // Clear rocket boost data
+            game.rocketBoostData = null;
+            
+            console.log(`Rocket boost completed: moved ${data.maxSpaces} spaces`);
+        }
+        
         function setupDivisionDragDrop(door) {
             const dots = document.querySelectorAll('.dot');
             const baskets = document.querySelectorAll('.basket');
@@ -1636,10 +1838,10 @@ PIG 🐖`;
             const countElement = basket.querySelector('.basket-count');
             countElement.textContent = door.divisionData.dotsInBaskets[basketId];
             
-            // Make dot smaller when in basket and remove focus state
-            dot.style.width = '12px';
-            dot.style.height = '12px';
-            dot.style.fontSize = '8px';
+            // Keep dot same size when in basket and remove focus state
+            dot.style.width = '30px';
+            dot.style.height = '30px';
+            dot.style.fontSize = '22px';
             dot.style.border = '2px solid transparent';
             dot.style.boxShadow = 'none';
             dot.style.transform = 'scale(1)';
@@ -1666,9 +1868,9 @@ PIG 🐖`;
             dotsArea.appendChild(dot);
             
             // Restore original size
-            dot.style.width = '20px';
-            dot.style.height = '20px';
-            dot.style.fontSize = '';
+            dot.style.width = '30px';
+            dot.style.height = '30px';
+            dot.style.fontSize = '22px';
             dot.style.border = '2px solid transparent';
             
             // Update submit button
@@ -1822,9 +2024,10 @@ PIG 🐖`;
                 // Mark door as open
                 door.open = true;
                 
-                // Update title to show correct answer
-                const title = document.getElementById('puzzleTitle');
-                title.innerHTML = `<span style="color: #8A2BE2; font-weight: bold;">${data.dividend}</span> <span style="color: #0066FF;">÷</span> <span style="color: #DC143C; font-weight: bold;">${data.divisor}</span> = <span style="color: #4CAF50; font-weight: bold;">${data.answer}</span>`;
+                // Complete rocket boost movement if active
+                completeRocketBoostMovement();
+                
+                // Keep title simple on success - don't show the answer
                 
                 // Give +1 point for correct answer
                 updateScore(1);
@@ -1838,30 +2041,15 @@ PIG 🐖`;
                 // Mark as complete and close after a delay
                 data.isComplete = true;
                 
-                // Speak the answer confirmation with pause
-                if ('speechSynthesis' in window) {
-                    // First say "Correct"
-                    const correctUtterance = new SpeechSynthesisUtterance("Correct.");
-                    correctUtterance.rate = 0.8;
-                    correctUtterance.pitch = 1.1;
-                    window.speechSynthesis.speak(correctUtterance);
-                    
-                    // Then after a pause, say the explanation
-                    setTimeout(() => {
-                        const explanationText = `${data.dividend} divided by ${data.divisor} equals ${data.answer}`;
-                        const explanationUtterance = new SpeechSynthesisUtterance(explanationText);
-                        explanationUtterance.rate = 0.8;
-                        explanationUtterance.pitch = 1.1;
-                        window.speechSynthesis.speak(explanationUtterance);
-                        console.log(`Speaking division confirmation: Correct. [pause] ${explanationText}`);
-                    }, 800);
-                }
+                // No speech feedback - keep it silent on success
                 
                 setTimeout(() => {
                     document.getElementById('puzzleModal').style.display = 'none';
                     result.innerHTML = '';
                     result.style.fontSize = '';
                     game.puzzleActive = false;
+                    // Clear any multiplication door reference
+                    game.currentMultiplicationDoor = null;
                 }, 1500);
             } else {
                 // Wrong answer
@@ -1943,6 +2131,25 @@ PIG 🐖`;
                     }
                 }
             });
+            
+            // Draw bonus items (level 9)
+            if (game.bonusItems) {
+                game.bonusItems.forEach(bonus => {
+                    if (!bonus.collected) {
+                        if (textures.loaded && textures.bonus.complete) {
+                            ctx.drawImage(textures.bonus, bonus.x + 40, bonus.y + 40, 40, 40);
+                        } else {
+                            // Fallback: draw open path with star emoji
+                            ctx.fillStyle = '#B8F2B8';
+                            ctx.fillRect(bonus.x + 40, bonus.y + 40, 40, 40);
+                            ctx.fillStyle = '#FFD700';
+                            ctx.font = '24px Arial';
+                            ctx.textAlign = 'center';
+                            ctx.fillText('⭐', bonus.x + 60, bonus.y + 65);
+                        }
+                    }
+                });
+            }
             
             // Draw doors using textures
             game.doors.forEach(door => {
@@ -2047,9 +2254,9 @@ PIG 🐖`;
             }
         });
         
-        // Global arrow key prevention (works even during puzzles)
+        // Global arrow key prevention to stop page scrolling
         document.addEventListener('keydown', (e) => {
-            // Handle both modern and legacy key codes
+            // Always prevent arrow keys from scrolling the page
             const key = e.key || e.code;
             const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Up', 'Down', 'Left', 'Right'];
             if (arrowKeys.includes(key)) {
@@ -2069,41 +2276,124 @@ PIG 🐖`;
             let newX = currentGridX;
             let newY = currentGridY;
             
+            // Calculate movement distance (triple if rocket boost active)
+            const moveDistance = game.hasBonus && game.rocketCountdown > 0 ? game.tileSize * 3 : game.tileSize;
+            
             switch(e.key) {
                 case 'ArrowUp':
                 case 'w':
                 case 'W':
-                    newY -= game.tileSize;
+                    newY -= moveDistance;
                     break;
                 case 'ArrowDown':
                 case 's':
                 case 'S':
-                    newY += game.tileSize;
+                    newY += moveDistance;
                     break;
                 case 'ArrowLeft':
                 case 'a':
                 case 'A':
-                    newX -= game.tileSize;
+                    newX -= moveDistance;
                     break;
                 case 'ArrowRight':
                 case 'd':
                 case 'D':
-                    newX += game.tileSize;
+                    newX += moveDistance;
                     break;
                 default:
                     return;
             }
             
-            // Check if new position is on a valid path
-            if (isOnPath(newX, newY)) {
-                // Check if a door is blocking the path
-                if (!isDoorBlocking(newX, newY)) {
-                    // Update player position
-                    game.player.x = newX;
-                    game.player.y = newY;
+            // Handle rocket boost movement (3 spaces) or normal movement (1 space)
+            if (game.hasBonus && game.rocketCountdown > 0 && moveDistance === game.tileSize * 3) {
+                // Rocket boost: handle 3-space movement with simplified logic
+                const deltaX = (newX - currentGridX) / 3;
+                const deltaY = (newY - currentGridY) / 3;
+                const space1X = currentGridX + deltaX;
+                const space1Y = currentGridY + deltaY;
+                const space2X = currentGridX + deltaX * 2;
+                const space2Y = currentGridY + deltaY * 2;
+                const space3X = newX;
+                const space3Y = newY;
+                
+                // Find how far PT can move before hitting a wall
+                let finalX = currentGridX;
+                let finalY = currentGridY;
+                let maxSpaces = 0;
+                
+                if (isOnPath(space1X, space1Y)) {
+                    finalX = space1X;
+                    finalY = space1Y;
+                    maxSpaces = 1;
                     
-                    // Check for heart collection
-                    checkHeartCollection(newX, newY);
+                    if (isOnPath(space2X, space2Y)) {
+                        finalX = space2X;
+                        finalY = space2Y;
+                        maxSpaces = 2;
+                        
+                        if (isOnPath(space3X, space3Y)) {
+                            finalX = space3X;
+                            finalY = space3Y;
+                            maxSpaces = 3;
+                        }
+                    }
+                }
+                
+                // Find the first puzzle in the path
+                let firstPuzzleDoor = null;
+                if (maxSpaces >= 1) {
+                    const door1 = getBlockingDoor(space1X, space1Y);
+                    if (door1 && !door1.open) {
+                        firstPuzzleDoor = door1;
+                    } else if (maxSpaces >= 2) {
+                        const door2 = getBlockingDoor(space2X, space2Y);
+                        if (door2 && !door2.open) {
+                            firstPuzzleDoor = door2;
+                        } else if (maxSpaces >= 3) {
+                            const door3 = getBlockingDoor(space3X, space3Y);
+                            if (door3 && !door3.open) {
+                                firstPuzzleDoor = door3;
+                            }
+                        }
+                    }
+                }
+                
+                // If there's a puzzle to solve, show it and store rocket boost data
+                if (firstPuzzleDoor) {
+                    // Store rocket boost movement data for completion
+                    game.rocketBoostData = {
+                        spaces: [
+                            {x: space1X, y: space1Y},
+                            {x: space2X, y: space2Y}, 
+                            {x: space3X, y: space3Y}
+                        ],
+                        maxSpaces: maxSpaces,
+                        currentX: currentGridX,
+                        currentY: currentGridY
+                    };
+                    
+                    showPuzzle(firstPuzzleDoor.type, firstPuzzleDoor);
+                    return; // Don't move yet, wait for puzzle completion
+                }
+                
+                // No puzzles - move PT to final position and collect everything along the way
+                if (maxSpaces > 0) {
+                    game.player.x = finalX;
+                    game.player.y = finalY;
+                    
+                    // Collect hearts/bonuses from all traversed spaces
+                    if (maxSpaces >= 1) {
+                        checkHeartCollection(space1X, space1Y);
+                        checkBonusCollection(space1X, space1Y);
+                    }
+                    if (maxSpaces >= 2) {
+                        checkHeartCollection(space2X, space2Y);
+                        checkBonusCollection(space2X, space2Y);
+                    }
+                    if (maxSpaces >= 3) {
+                        checkHeartCollection(space3X, space3Y);
+                        checkBonusCollection(space3X, space3Y);
+                    }
                     
                     // Update direction and start animation
                     if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
@@ -2119,14 +2409,44 @@ PIG 🐖`;
                     // Trigger walking animation
                     game.player.isMoving = true;
                     game.player.animFrame = (game.player.animFrame + 1) % 2; // Toggle between frames 0 and 1
-                } else {
-                    // Find which door is blocking and show puzzle
-                    const blockingDoor = game.doors.find(door => 
-                        !door.open && 
-                        newX === door.x && newY === door.y
-                    );
-                    if (blockingDoor && !game.puzzleActive) {
-                        showPuzzle(blockingDoor.type, blockingDoor);
+                }
+            } else {
+                // Normal movement (single space)
+                if (isOnPath(newX, newY)) {
+                    // Check if a door is blocking the path
+                    if (!isDoorBlocking(newX, newY)) {
+                        // Update player position
+                        game.player.x = newX;
+                        game.player.y = newY;
+                        
+                        // Check for heart collection
+                        checkHeartCollection(newX, newY);
+                        // Check for bonus collection
+                        checkBonusCollection(newX, newY);
+                        
+                        // Update direction and start animation
+                        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+                            game.player.direction = 'left';
+                        } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+                            game.player.direction = 'right';
+                        } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+                            game.player.direction = 'up';
+                        } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+                            game.player.direction = 'down';
+                        }
+                        
+                        // Trigger walking animation
+                        game.player.isMoving = true;
+                        game.player.animFrame = (game.player.animFrame + 1) % 2; // Toggle between frames 0 and 1
+                    } else {
+                        // Find which door is blocking and show puzzle
+                        const blockingDoor = game.doors.find(door => 
+                            !door.open && 
+                            newX === door.x && newY === door.y
+                        );
+                        if (blockingDoor && !game.puzzleActive) {
+                            showPuzzle(blockingDoor.type, blockingDoor);
+                        }
                     }
                 }
             }
@@ -2143,6 +2463,852 @@ PIG 🐖`;
             }
         });
         
+        // Flexible number line puzzle generator
+        function createNumberLinePuzzle(door, equationType = 'simple') {
+            let num1, num2, num3, answer;
+            let equation, title;
+            
+            // Generate equation based on type
+            switch(equationType) {
+                case 'simple': // A+B or A-B (levels 4-7)
+                    const isAddition = Math.random() < 0.5;
+                    if (isAddition) {
+                        // A + B = answer (1-12) - avoid 0s in addition
+                        do {
+                            num1 = Math.floor(Math.random() * 12) + 1; // 1-12
+                            num2 = Math.floor(Math.random() * 12) + 1; // 1-12
+                            answer = num1 + num2;
+                        } while (answer > 12);
+                        equation = `${num1} + ${num2}`;
+                        title = `${num1} + ${num2} = ?`;
+                    } else {
+                        // A - B = answer (0-12)
+                        do {
+                            num1 = Math.floor(Math.random() * 13); // 0-12
+                            num2 = Math.floor(Math.random() * (num1 + 1)); // 0 to num1
+                            answer = num1 - num2;
+                        } while (answer < 0 || answer > 12);
+                        equation = `${num1} - ${num2}`;
+                        title = `${num1} - ${num2} = ?`;
+                    }
+                    break;
+                    
+                case 'triple_add': // A+B+C (level 8-9)
+                    do {
+                        // Reduce 0s in addition - only allow one 0 maximum per problem
+                        num1 = Math.floor(Math.random() * 10) + 1; // 1-10 (smaller range for triple add)
+                        num2 = Math.floor(Math.random() * 10) + 1; // 1-10
+                        num3 = Math.random() < 0.7 ? Math.floor(Math.random() * 5) + 1 : 0; // 70% chance 1-5, 30% chance 0
+                        answer = num1 + num2 + num3;
+                    } while (answer > 12);
+                    equation = `${num1} + ${num2} + ${num3}`;
+                    title = `<span style="color: #32CD32; font-weight: bold;">${num1}</span> <span style="color: #FF8C00;">+</span> <span style="color: #32CD32; font-weight: bold;">${num2}</span> <span style="color: #FF8C00;">+</span> <span style="color: #32CD32; font-weight: bold;">${num3}</span> = ?`;
+                    break;
+                    
+                case 'mixed_add_sub': // A+B-C (future levels)
+                    do {
+                        num1 = Math.floor(Math.random() * 10) + 1; // 1-10 (avoid 0 in first term)
+                        num2 = Math.floor(Math.random() * 8) + 1; // 1-8 (avoid 0 in addition term)
+                        num3 = Math.floor(Math.random() * 8); // 0-7 (subtraction term can be 0)
+                        answer = num1 + num2 - num3;
+                    } while (answer < 0 || answer > 12);
+                    equation = `${num1} + ${num2} - ${num3}`;
+                    title = `${num1} + ${num2} - ${num3} = ?`;
+                    break;
+                    
+                case 'mixed_sub_add': // A-B+C (future levels)
+                    do {
+                        num1 = Math.floor(Math.random() * 10) + 3; // 3-12 (avoid 0 in first term, ensure subtraction possible)
+                        num2 = Math.floor(Math.random() * 6); // 0-5 (subtraction term can be 0)
+                        num3 = Math.floor(Math.random() * 8) + 1; // 1-8 (avoid 0 in addition term)
+                        answer = num1 - num2 + num3;
+                    } while (answer < 0 || answer > 12);
+                    equation = `${num1} - ${num2} + ${num3}`;
+                    title = `${num1} - ${num2} + ${num3} = ?`;
+                    break;
+                    
+                case 'multiplication': // A×B (level 10)
+                    do {
+                        // Keep multiplication simple: 1×1 to 4×3 (answers 1-12)
+                        num1 = Math.floor(Math.random() * 4) + 1; // 1-4
+                        num2 = Math.floor(Math.random() * 3) + 1; // 1-3
+                        answer = num1 * num2;
+                    } while (answer > 12);
+                    equation = `${num1} × ${num2}`;
+                    title = `<span style="color: #FF6B35; font-weight: bold;">${num1}</span> <span style="color: #32CD32;">×</span> <span style="color: #FF6B35; font-weight: bold;">${num2}</span> = ?`;
+                    break;
+                    
+            }
+            
+            // Store the problem details on the door
+            door.mathAnswer = answer;
+            door.mathStartPosition = 0; // Always start at 0
+            door.foxPosition = door.mathStartPosition;
+            
+            // Generate multiple choice answers with |W-R|<4 constraint
+            const wrongAnswers = [];
+            while (wrongAnswers.length < 2) {
+                let wrongAnswer;
+                if (Math.random() < 0.5) {
+                    wrongAnswer = answer + Math.floor(Math.random() * 3) + 1; // +1 to +3
+                } else {
+                    wrongAnswer = answer - Math.floor(Math.random() * 3) - 1; // -1 to -3
+                }
+                // Ensure wrong answer is in valid range (0-12) and not already used
+                if (wrongAnswer >= 0 && wrongAnswer <= 12 && wrongAnswer !== answer && !wrongAnswers.includes(wrongAnswer)) {
+                    wrongAnswers.push(wrongAnswer);
+                }
+            }
+            
+            // Create answer options array and shuffle
+            const allAnswers = [answer, ...wrongAnswers];
+            allAnswers.sort(() => Math.random() - 0.5);
+            
+            console.log(`Number Line Puzzle: ${equation} = ${answer}, PT starts at ${door.mathStartPosition}`);
+            
+            return {
+                title: title,
+                answer: answer,
+                allAnswers: allAnswers,
+                equation: equation
+            };
+        }
+        
+        // Helper function to determine baskets per row based on divisor
+        function getBasketsPerRow(divisor) {
+            if (divisor >= 1 && divisor <= 5) {
+                return divisor; // 1 row: all baskets on one line
+            } else if (divisor >= 6 && divisor <= 10) {
+                return Math.ceil(divisor / 2); // 2 rows: divide evenly between 2 rows
+            } else if (divisor >= 11 && divisor <= 15) {
+                return Math.ceil(divisor / 3); // 3 rows: divide evenly between 3 rows
+            } else {
+                return Math.ceil(divisor / 4); // 4+ rows for larger divisors
+            }
+        }
+        
+        // Reusable division puzzle generator
+        function createDivisionPuzzle(door) {
+            let dividend, divisor, answer;
+            
+            // Generate division problem: A ÷ B = C where A ≤ 15
+            // Answer = 1 can only appear once per level
+            // A ÷ 1 can only appear once per level
+            // Track problems to prevent duplicates
+            if (game.hasUsedAnswerOne === undefined) {
+                game.hasUsedAnswerOne = false;
+            }
+            if (game.hasUsedDivideByOne === undefined) {
+                game.hasUsedDivideByOne = false;
+            }
+            if (!game.usedDivisionProblems) {
+                game.usedDivisionProblems = new Set();
+            }
+            
+            let attempts = 0;
+            const maxAttempts = 100;
+            
+            do {
+                // Generate random division problem
+                dividend = Math.floor(Math.random() * 15) + 1; // 1 to 15
+                divisor = Math.floor(Math.random() * dividend) + 1; // 1 to dividend
+                answer = Math.floor(dividend / divisor);
+                
+                // Ensure clean division
+                if (dividend % divisor !== 0) {
+                    dividend = divisor * answer;
+                }
+                
+                attempts++;
+                if (attempts >= maxAttempts) {
+                    // Fallback to simple problem
+                    dividend = 6;
+                    divisor = 2;
+                    answer = 3;
+                    break;
+                }
+            } while (
+                dividend % divisor !== 0 || // Must be evenly divisible
+                answer === 0 || // No zero answers
+                answer > 10 || // Keep answers reasonable (max 10 dots per basket)
+                (answer === 1 && game.hasUsedAnswerOne) || // Answer = 1 only once per level
+                (divisor === 1 && game.hasUsedDivideByOne) || // A ÷ 1 only once per level
+                game.usedDivisionProblems.has(`${dividend}÷${divisor}`) // No repeats
+            );
+            
+            // Mark answer = 1 as used if this problem has answer = 1
+            if (answer === 1) {
+                game.hasUsedAnswerOne = true;
+                console.log(`Used answer=1 for problem: ${dividend}÷${divisor}=1`);
+            }
+            
+            // Mark A ÷ 1 as used if this problem divides by 1
+            if (divisor === 1) {
+                game.hasUsedDivideByOne = true;
+                console.log(`Used A÷1 for problem: ${dividend}÷1=${dividend}`);
+            }
+            
+            // Store this problem as used
+            game.usedDivisionProblems.add(`${dividend}÷${divisor}`);
+            
+            // Store the problem details on the door (same format as original)
+            door.divisionData = {
+                dividend: dividend,
+                divisor: divisor,
+                answer: answer,
+                dotsInBaskets: new Array(divisor).fill(0), // Track dots in each basket
+                isComplete: false
+            };
+            
+            // Create the division interface with bigger dots and baskets
+            const divisionHTML = `
+                <div class="division-container" style="margin: 10px auto; width: 900px; text-align: center; min-height: 400px; max-height: 700px; overflow-y: auto; padding: 20px; box-sizing: border-box;">
+                    <div style="margin: 20px 0; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                        <button id="speakProblem" style="
+                            background: #2196F3;
+                            color: white;
+                            border: none;
+                            padding: 10px 15px;
+                            font-size: 16px;
+                            border-radius: 20px;
+                            cursor: pointer;
+                            font-family: inherit;
+                            display: flex;
+                            align-items: center;
+                            gap: 5px;
+                        " onclick="speakDivisionProblem(${dividend}, ${divisor})">
+                            🔊
+                        </button>
+                    </div>
+                    
+                    <div class="dots-area" id="dotsArea" style="
+                        margin: 20px auto;
+                        min-height: 120px;
+                        height: 120px;
+                        max-width: 800px;
+                        border: 2px dashed #ccc;
+                        border-radius: 10px;
+                        padding: 15px;
+                        background: #f9f9f9;
+                        overflow-y: auto;
+                        box-sizing: border-box;
+                    ">
+                        <div id="dotsContainer" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; min-height: 80px; cursor: pointer;" onclick="selectDotsArea()">
+                            ${Array(dividend).fill().map((_, i) => 
+                                `<div class="dot" data-dot-id="${i}" style="
+                                    width: 30px;
+                                    height: 30px;
+                                    background: #8A2BE2;
+                                    border-radius: 50%;
+                                    cursor: pointer;
+                                    user-select: none;
+                                    border: 2px solid transparent;
+                                    transition: all 0.2s ease;
+                                    box-shadow: none;
+                                    transform: scale(1);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 22px;
+                                " draggable="true" onclick="event.stopPropagation(); selectDot(${i})">🟣</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="baskets-area" style="margin: 20px auto; min-height: 250px; max-height: 400px; overflow-y: auto; padding: 10px; max-width: 800px;">
+                        <div id="basketsContainer" style="display: grid; grid-template-columns: repeat(${getBasketsPerRow(divisor)}, 140px); gap: 20px; justify-content: center; align-items: start;">
+                            ${Array(divisor).fill().map((_, i) => 
+                                `<div class="basket" data-basket-id="${i}" style="
+                                    width: 140px;
+                                    height: 140px;
+                                    border: 4px solid #DC143C;
+                                    border-radius: 15px;
+                                    background: #FFB6C1;
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    justify-content: center;
+                                    position: relative;
+                                    min-height: 140px;
+                                    cursor: pointer;
+                                    transition: all 0.2s ease;
+                                " onclick="selectBasket(${i})">
+                                    <div class="basket-count" style="
+                                        position: absolute;
+                                        top: -12px;
+                                        right: -12px;
+                                        background: #228B22;
+                                        color: white;
+                                        border-radius: 50%;
+                                        width: 24px;
+                                        height: 24px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-size: 14px;
+                                        font-weight: bold;
+                                    ">0</div>
+                                    <div class="basket-dots" style="
+                                        display: flex;
+                                        flex-wrap: wrap;
+                                        gap: 4px;
+                                        justify-content: center;
+                                        align-items: center;
+                                        width: 100%;
+                                        height: 100%;
+                                        padding: 10px;
+                                        box-sizing: border-box;
+                                    "></div>
+                                </div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <button id="submitDivision" style="
+                            background: #4CAF50;
+                            color: white;
+                            border: none;
+                            padding: 15px 30px;
+                            font-size: 18px;
+                            border-radius: 25px;
+                            cursor: pointer;
+                            font-family: inherit;
+                            font-weight: bold;
+                        " onclick="submitDivisionAnswer()">Submit Answer</button>
+                    </div>
+                </div>
+            `;
+            
+            console.log(`Division Puzzle: ${dividend} ÷ ${divisor} = ${answer}`);
+            
+            return {
+                title: `${dividend} ÷ ${divisor} = ?`,
+                html: divisionHTML,
+                dividend: dividend,
+                divisor: divisor,
+                answer: answer
+            };
+        }
+        
+        // Interactive multiplication puzzle with synchronized squares
+        function showMultiplicationGroupsPuzzle(door) {
+            console.log('=== MULTIPLICATION PUZZLE INITIALIZATION ===');
+            console.log('showMultiplicationGroupsPuzzle called with door:', door);
+            console.log('Door before modification:', {
+                type: door.type,
+                multiplicationA: door.multiplicationA,
+                multiplicationB: door.multiplicationB,
+                mathAnswer: door.mathAnswer
+            });
+            
+            const modal = document.getElementById('puzzleModal');
+            const title = document.getElementById('puzzleTitle');
+            const question = document.getElementById('puzzleQuestion');
+            const options = document.getElementById('puzzleOptions');
+            
+            // Generate simple multiplication problem (A < 10, B < 10, A×B < 15)
+            let A, B;
+            do {
+                A = Math.floor(Math.random() * 6) + 2; // 2-7
+                B = Math.floor(Math.random() * 4) + 2; // 2-5
+            } while (A >= 10 || B >= 10 || A * B >= 15);
+            
+            const correctAnswer = A * B;
+            console.log(`Generated problem: ${A} × ${B} = ${correctAnswer}`);
+            
+            // Store puzzle data
+            door.multiplicationA = A;
+            door.multiplicationB = B;
+            door.mathAnswer = correctAnswer;
+            door.currentBoxes = 1;
+            door.currentDots = 0;
+            
+            // CRITICAL: Store reference to this specific door for submission
+            game.currentMultiplicationDoor = door;
+            
+            console.log('Door after setting values:', {
+                type: door.type,
+                multiplicationA: door.multiplicationA,
+                multiplicationB: door.multiplicationB,
+                mathAnswer: door.mathAnswer,
+                position: `(${door.x}, ${door.y})`
+            });
+            console.log('Stored door reference in game.currentMultiplicationDoor');
+            console.log('============================================');
+            
+            // Set up interface
+            title.innerHTML = `<span style="color: black; font-weight: bold; font-size: 32px;">${A} × ${B} = ?</span>`;
+            question.innerHTML = '';
+            
+            // Generate wrong answers within |W-R| < 4
+            const wrongAnswers = [];
+            
+            // Generate two unique wrong answers
+            while (wrongAnswers.length < 2) {
+                let wrongAnswer;
+                
+                // Try to find wrong answers within range
+                do {
+                    const offset = Math.floor(Math.random() * 6) - 3; // -3 to +3
+                    wrongAnswer = correctAnswer + offset;
+                } while (wrongAnswer === correctAnswer || wrongAnswer <= 0 || wrongAnswers.includes(wrongAnswer));
+                
+                // Ensure the wrong answer is within |W-R| < 4
+                if (Math.abs(wrongAnswer - correctAnswer) < 4 && wrongAnswer > 0) {
+                    wrongAnswers.push(wrongAnswer);
+                }
+            }
+            
+            // Create array of all answers and shuffle
+            const allAnswers = [correctAnswer, ...wrongAnswers];
+            for (let i = allAnswers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allAnswers[i], allAnswers[j]] = [allAnswers[j], allAnswers[i]];
+            }
+            
+            // Store the correct answer position for validation
+            door.correctAnswerPosition = allAnswers.indexOf(correctAnswer);
+            
+            options.innerHTML = `
+                <div id="multiplicationContainer" style="text-align: center; padding: 20px;">
+                    <!-- Red squares area (using exact division puzzle styling) -->
+                    <div id="squaresArea" style="margin: 20px 0; min-height: 160px; position: relative;">
+                        <div class="basket" data-square="0" style="
+                            width: 140px;
+                            height: 140px;
+                            border: 4px solid #DC143C;
+                            border-radius: 15px;
+                            background: #FFB6C1;
+                            display: inline-block;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            position: relative;
+                            min-height: 140px;
+                            cursor: pointer;
+                            transition: all 0.2s ease;
+                            margin: 10px;
+                            vertical-align: top;
+                        ">
+                            <div class="basket-dots" style="
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 4px;
+                                justify-content: center;
+                                align-items: center;
+                                height: 100%;
+                                width: 100%;
+                                padding: 8px;
+                                box-sizing: border-box;
+                            "></div>
+                        </div>
+                        <!-- Visual feedback area for squares -->
+                        <div id="visualFeedback" style="
+                            position: absolute; 
+                            top: -10px; 
+                            right: 10px; 
+                            font-size: 32px;
+                            z-index: 10;
+                        "></div>
+                    </div>
+                    
+                    <!-- Plus and Minus buttons -->
+                    <div style="margin: 20px 0;">
+                        <button onclick="removeRedSquare()" style="background: white; color: black; border: 3px solid black; padding: 15px 20px; border-radius: 50%; font-size: 24px; cursor: pointer; font-weight: bold; margin-right: 10px;">−</button>
+                        <button onclick="addRedSquare()" style="background: white; color: black; border: 3px solid black; padding: 15px 20px; border-radius: 50%; font-size: 24px; cursor: pointer; font-weight: bold;">+</button>
+                    </div>
+                    
+                    <!-- Multiple choice answers -->
+                    <div style="margin: 30px 0;">
+                        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                            ${allAnswers.map((answer, index) => `
+                                <button id="answerBtn${index}" onclick="checkMultiplicationAnswer(${index})" style="
+                                    background: #4CAF50;
+                                    color: white;
+                                    border: none;
+                                    padding: 15px 25px;
+                                    margin: 5px;
+                                    border-radius: 25px;
+                                    font-size: 20px;
+                                    cursor: pointer;
+                                    font-family: inherit;
+                                    min-width: 80px;
+                                    transition: all 0.2s ease;
+                                    position: relative;
+                                " onmouseover="this.style.background='#45a049'" onmouseout="this.style.background='#4CAF50'">${answer}</button>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Result area for thumbs up/down feedback -->
+                    <div id="puzzleResult" style="margin-top: 20px; text-align: center;"></div>
+                </div>
+            `;
+            
+            // Add click handler to initial square
+            setupSquareHandlers();
+        }
+        
+        // Set up click handlers for red squares
+        function setupSquareHandlers() {
+            const squares = document.querySelectorAll('.basket[data-square]');
+            squares.forEach(square => {
+                // Remove ALL existing event listeners by cloning and replacing the element
+                const newSquare = square.cloneNode(true);
+                square.parentNode.replaceChild(newSquare, square);
+                
+                // Add single click handler for square (adds 1 dot to all squares)
+                newSquare.addEventListener('click', (e) => {
+                    if (e.target === newSquare || e.target.classList.contains('basket-dots')) {
+                        addDotToAllSquares();
+                    }
+                });
+                
+                // Re-setup dot click handlers in this square
+                const dots = newSquare.querySelectorAll('.multiplication-dot');
+                dots.forEach(dot => {
+                    dot.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        removeDotFromAllSquares();
+                    });
+                });
+            });
+        }
+        
+        // Add a dot to all red squares (SYNCHRONIZED)
+        function addDotToAllSquares() {
+            const door = game.doors.find(d => d.type === 'math');
+            if (!door) return;
+            
+            door.currentDots++;
+            console.log(`Adding dot to all squares. New count: ${door.currentDots}`);
+            
+            const squares = document.querySelectorAll('.basket[data-square]');
+            console.log(`Found ${squares.length} squares to add dots to`);
+            
+            squares.forEach((square, index) => {
+                const dotsContainer = square.querySelector('.basket-dots');
+                
+                // Create new dot using exact division puzzle styling
+                const dot = document.createElement('div');
+                dot.className = 'dot multiplication-dot';
+                dot.style.cssText = `
+                    width: 30px;
+                    height: 30px;
+                    background: #8A2BE2;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    border: 2px solid transparent;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 22px;
+                    transition: all 0.2s ease;
+                `;
+                dot.innerHTML = '🟣';
+                
+                // Add click handler to remove dot from all squares
+                dot.onclick = (e) => {
+                    e.stopPropagation();
+                    removeDotFromAllSquares();
+                };
+                
+                dotsContainer.appendChild(dot);
+                console.log(`Square ${index} now has ${dotsContainer.children.length} dots`);
+            });
+        }
+        
+        // Remove a dot from all red squares (SYNCHRONIZED)
+        function removeDotFromAllSquares() {
+            const door = game.doors.find(d => d.type === 'math');
+            if (!door || door.currentDots <= 0) return;
+            
+            door.currentDots--;
+            console.log(`Removing dot from all squares. New count: ${door.currentDots}`);
+            
+            const squares = document.querySelectorAll('.basket[data-square]');
+            console.log(`Found ${squares.length} squares to remove dots from`);
+            
+            squares.forEach((square, index) => {
+                const dotsContainer = square.querySelector('.basket-dots');
+                const dots = dotsContainer.querySelectorAll('.multiplication-dot');
+                if (dots.length > 0) {
+                    // Remove the last dot
+                    dots[dots.length - 1].remove();
+                    console.log(`Square ${index} now has ${dotsContainer.querySelectorAll('.multiplication-dot').length} dots`);
+                }
+            });
+        }
+        
+        // Add a new red square (MUST come pre-filled with same dots as existing squares)
+        function addRedSquare() {
+            const door = game.doors.find(d => d.type === 'math');
+            if (!door) return;
+            
+            // Get current dot count from existing squares to ensure synchronization
+            const existingSquares = document.querySelectorAll('.basket[data-square]');
+            const currentDotCount = existingSquares.length > 0 ? 
+                existingSquares[0].querySelectorAll('.multiplication-dot').length : 0;
+            
+            // Update the door's current dots to match reality
+            door.currentDots = currentDotCount;
+            door.currentBoxes++;
+            
+            console.log(`Adding new square: currentDots=${door.currentDots}, currentBoxes=${door.currentBoxes}`);
+            
+            const squaresArea = document.getElementById('squaresArea');
+            const newSquare = document.createElement('div');
+            newSquare.className = 'basket';
+            newSquare.setAttribute('data-square', door.currentBoxes - 1);
+            newSquare.style.cssText = `
+                width: 140px;
+                height: 140px;
+                border: 4px solid #DC143C;
+                border-radius: 15px;
+                background: #FFB6C1;
+                display: inline-block;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+                min-height: 140px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                margin: 10px;
+                vertical-align: top;
+            `;
+            
+            // Add dots container
+            const dotsContainer = document.createElement('div');
+            dotsContainer.className = 'basket-dots';
+            dotsContainer.style.cssText = `
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+                width: 100%;
+                padding: 8px;
+                box-sizing: border-box;
+            `;
+            
+            // CRITICAL: Add existing dots to new square (must match other squares exactly)
+            for (let i = 0; i < door.currentDots; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot multiplication-dot';
+                dot.style.cssText = `
+                    width: 30px;
+                    height: 30px;
+                    background: #8A2BE2;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    border: 2px solid transparent;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 22px;
+                    transition: all 0.2s ease;
+                `;
+                dot.innerHTML = '🟣';
+                
+                dot.onclick = (e) => {
+                    e.stopPropagation();
+                    removeDotFromAllSquares();
+                };
+                
+                dotsContainer.appendChild(dot);
+            }
+            
+            newSquare.appendChild(dotsContainer);
+            squaresArea.appendChild(newSquare);
+            setupSquareHandlers(); // Refresh handlers
+            
+            console.log(`New square added with ${dotsContainer.children.length} dots`);
+        }
+        
+        // Remove a red square
+        function removeRedSquare() {
+            const door = game.doors.find(d => d.type === 'math');
+            if (!door || door.currentBoxes <= 1) return; // Always keep at least 1 square
+            
+            const squares = document.querySelectorAll('.basket[data-square]');
+            if (squares.length <= 1) return; // Safety check
+            
+            // Remove the last square
+            const lastSquare = squares[squares.length - 1];
+            lastSquare.remove();
+            
+            door.currentBoxes--;
+            console.log(`Removed square. Remaining squares: ${door.currentBoxes}`);
+            
+            // Re-setup handlers for remaining squares
+            setupSquareHandlers();
+        }
+        
+        // Check multiplication answer (both visual arrangement and selected answer)
+        function checkMultiplicationAnswer(selectedIndex) {
+            const door = game.currentMultiplicationDoor;
+            if (!door) {
+                console.error('No current multiplication door found!');
+                return;
+            }
+            
+            // First, check the visual arrangement
+            const squares = document.querySelectorAll('.basket[data-square]');
+            const userBoxes = squares.length;
+            
+            // Check dots in each square to ensure they're all the same
+            let userDotsPerBox = 0;
+            let allSquaresHaveSameDots = true;
+            
+            squares.forEach((square, index) => {
+                const dotsInThisSquare = square.querySelectorAll('.multiplication-dot').length;
+                if (index === 0) {
+                    userDotsPerBox = dotsInThisSquare;
+                } else if (dotsInThisSquare !== userDotsPerBox) {
+                    allSquaresHaveSameDots = false;
+                }
+            });
+            
+            const A = door.multiplicationA;
+            const B = door.multiplicationB;
+            
+            // Check if user created either A×B or B×A arrangement
+            const option1Check = (userBoxes === A && userDotsPerBox === B);
+            const option2Check = (userBoxes === B && userDotsPerBox === A);
+            const isCorrectArrangement = (option1Check || option2Check) && allSquaresHaveSameDots;
+            
+            // Check if selected answer is correct
+            const isCorrectAnswer = (selectedIndex === door.correctAnswerPosition);
+            
+            const result = document.getElementById('puzzleResult');
+            
+            // Clear all previous feedback
+            squares.forEach(square => {
+                const existing = square.querySelector('.square-feedback');
+                if (existing) existing.remove();
+            });
+            
+            // Clear button feedback
+            for (let i = 0; i < 3; i++) {
+                const btn = document.getElementById(`answerBtn${i}`);
+                if (btn) {
+                    const existing = btn.querySelector('.button-feedback');
+                    if (existing) existing.remove();
+                }
+            }
+            
+            // Add feedback based on what's wrong/right
+            if (!isCorrectArrangement) {
+                // Add thumbs down to each square
+                squares.forEach(square => {
+                    const feedback = document.createElement('div');
+                    feedback.className = 'square-feedback';
+                    feedback.innerHTML = '👎';
+                    feedback.style.cssText = `
+                        position: absolute;
+                        top: 5px;
+                        right: 5px;
+                        font-size: 24px;
+                        z-index: 20;
+                    `;
+                    square.appendChild(feedback);
+                });
+            } else {
+                // Add thumbs up to each square if arrangement is correct
+                squares.forEach(square => {
+                    const feedback = document.createElement('div');
+                    feedback.className = 'square-feedback';
+                    feedback.innerHTML = '👍';
+                    feedback.style.cssText = `
+                        position: absolute;
+                        top: 5px;
+                        right: 5px;
+                        font-size: 24px;
+                        z-index: 20;
+                    `;
+                    square.appendChild(feedback);
+                });
+            }
+            
+            // Add feedback to the selected button
+            const selectedBtn = document.getElementById(`answerBtn${selectedIndex}`);
+            if (selectedBtn) {
+                const feedback = document.createElement('div');
+                feedback.className = 'button-feedback';
+                feedback.innerHTML = isCorrectAnswer ? '👍' : '👎';
+                feedback.style.cssText = `
+                    position: absolute;
+                    top: -10px;
+                    right: -10px;
+                    font-size: 20px;
+                    z-index: 25;
+                `;
+                selectedBtn.appendChild(feedback);
+            }
+            
+            // Both must be correct to succeed
+            if (isCorrectArrangement && isCorrectAnswer) {
+                // Mark door as open
+                door.open = true;
+                door.color = '#B8F2B8';
+                
+                // Complete rocket boost movement if active
+                completeRocketBoostMovement();
+                
+                // Add 1 point
+                updateScore(1);
+                
+                // Close modal after brief delay
+                setTimeout(() => {
+                    document.getElementById('puzzleModal').style.display = 'none';
+                    game.puzzleActive = false;
+                    // Clear the multiplication door reference
+                    game.currentMultiplicationDoor = null;
+                }, 800);
+            } else {
+                // Deduct points based on difficulty
+                if (!door.currentProblemAttempts) door.currentProblemAttempts = 0;
+                door.currentProblemAttempts++;
+                
+                let pointsToDeduct = 0;
+                if (game.difficultyMode === 'easy') {
+                    pointsToDeduct = -1;
+                } else if (game.difficultyMode === 'medium') {
+                    pointsToDeduct = door.currentProblemAttempts === 1 ? -1 : -2;
+                } else {
+                    pointsToDeduct = door.currentProblemAttempts === 1 ? -1 : -3;
+                }
+                updateScore(pointsToDeduct);
+                
+                // Clear all feedback after 3 seconds
+                setTimeout(() => {
+                    squares.forEach(square => {
+                        const existing = square.querySelector('.square-feedback');
+                        if (existing) existing.remove();
+                    });
+                    
+                    for (let i = 0; i < 3; i++) {
+                        const btn = document.getElementById(`answerBtn${i}`);
+                        if (btn) {
+                            const existing = btn.querySelector('.button-feedback');
+                            if (existing) existing.remove();
+                        }
+                    }
+                }, 3000);
+                
+                // Generate new problem after 3 failures
+                if (door.currentProblemAttempts >= 3) {
+                    setTimeout(() => {
+                        door.currentProblemAttempts = 0;
+                        showMultiplicationGroupsPuzzle(door);
+                    }, 2500);
+                }
+            }
+        }
+        
         function showPuzzle(type, door) {
             const modal = document.getElementById('puzzleModal');
             const title = document.getElementById('puzzleTitle');
@@ -2153,44 +3319,32 @@ PIG 🐖`;
             modal.style.display = 'block';
             
             if (type === 'math') {
-                // Check if this is Level 8 - use multi-step addition
-                if (game.selectedDifficulty === 8) {
-                    // Level 8: Multi-step Addition A+B+C=D where A,B,C are 0-10 and D ≤ 12
-                    let num1, num2, num3, answer;
-                    
-                    // Generate multi-step addition problem with answer ≤ 12
-                    do {
-                        num1 = Math.floor(Math.random() * 11); // 0 to 10
-                        num2 = Math.floor(Math.random() * 11); // 0 to 10
-                        num3 = Math.floor(Math.random() * 11); // 0 to 10
-                        answer = num1 + num2 + num3;
-                    } while (answer > 12);
-                    
-                    title.innerHTML = `<span style="color: #32CD32; font-weight: bold;">${num1}</span> <span style="color: #FF8C00;">+</span> <span style="color: #32CD32; font-weight: bold;">${num2}</span> <span style="color: #FF8C00;">+</span> <span style="color: #32CD32; font-weight: bold;">${num3}</span> = ?`;
-                    
-                    // Store the problem details on the door
-                    door.mathAnswer = answer;
-                    door.mathStartPosition = 0; // Start PT at position 0 so user can add all three numbers
-                    door.foxPosition = door.mathStartPosition;
-                    
-                    // Generate multiple choice answers (correct + 2 incorrect)
-                    const wrongAnswers = [];
-                    while (wrongAnswers.length < 2) {
-                        let wrongAnswer;
-                        if (Math.random() < 0.5) {
-                            wrongAnswer = answer + Math.floor(Math.random() * 3) + 1; // +1 to +3
-                        } else {
-                            wrongAnswer = answer - Math.floor(Math.random() * 3) - 1; // -1 to -3
-                        }
-                        if (wrongAnswer >= 0 && wrongAnswer <= 15 && wrongAnswer !== answer && !wrongAnswers.includes(wrongAnswer)) {
-                            wrongAnswers.push(wrongAnswer);
-                        }
+                // Check if this is Level 10 - use interactive multiplication groups
+                if (game.selectedDifficulty === 10) {
+                    console.log('=== CALLING MULTIPLICATION PUZZLE ===');
+                    console.log('Level 10 detected, calling showMultiplicationGroupsPuzzle with door:', door);
+                    showMultiplicationGroupsPuzzle(door);
+                    return;
+                }
+                
+                // Check if this is Level 4 and up - use number line puzzles  
+                if (game.selectedDifficulty >= 4) {
+                    // Determine equation type based on level
+                    let equationType;
+                    if (game.selectedDifficulty === 8 || game.selectedDifficulty === 9) {
+                        equationType = 'triple_add'; // A+B+C for levels 8-9
+                    } else {
+                        equationType = 'simple'; // A+B or A-B for levels 4-7
                     }
                     
-                    const allAnswers = [answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+                    // Generate the puzzle using our reusable function
+                    const puzzle = createNumberLinePuzzle(door, equationType);
+                    
+                    // Set the title
+                    title.innerHTML = puzzle.title;
+                    question.innerHTML = '';
                     
                     // Create interface with number line and multiple choice
-                    question.innerHTML = '';
                     options.innerHTML = `
                         <div class="numberline-container" style="margin: 20px auto; max-width: 600px;">
                             <div class="number-grid" id="numberGrid" style="
@@ -2218,106 +3372,38 @@ PIG 🐖`;
                         </div>
                     `;
                     
-                    // Create answer buttons with proper door reference (like other levels)
+                    // Create answer buttons
                     const answerContainer = document.getElementById('answerButtons');
-                    allAnswers.forEach(ans => {
+                    puzzle.allAnswers.forEach(ans => {
                         const button = document.createElement('button');
-                        button.className = 'puzzle-button';
                         button.textContent = ans;
-                        button.style.cssText = 'min-width: 80px; min-height: 60px; font-size: 20px;';
-                        button.onclick = () => checkAnswer(ans === answer, 'math', door, button);
+                        button.style.cssText = `
+                            padding: 15px 25px;
+                            font-size: 18px;
+                            font-weight: bold;
+                            border: 2px solid #4CAF50;
+                            border-radius: 8px;
+                            background: white;
+                            color: #4CAF50;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        `;
+                        button.onmouseover = () => {
+                            button.style.background = '#4CAF50';
+                            button.style.color = 'white';
+                        };
+                        button.onmouseout = () => {
+                            button.style.background = 'white';
+                            button.style.color = '#4CAF50';
+                        };
+                        button.onclick = () => checkAnswer(ans === puzzle.answer, type, door, button);
                         answerContainer.appendChild(button);
                     });
                     
-                    // Initialize the number line (without keyboard handlers for level 8)
-                    initializeNumberLineLevel8(door);
-                    
-                    console.log(`Level 8 Multi-step Addition: ${num1} + ${num2} + ${num3} = ${answer}, PT starts at ${door.mathStartPosition}`);
-                    
-                    return; // Exit early for Level 8 math
-                }
-                // Check if this is Level 4, 5, 6, or 7 - use number line interface
-                else if (game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) {
-                    // Level 4, 5, 6, & 7: Number Line Math (answers 1-12, no zeros allowed)
-                    const isAddition = Math.random() < 0.5;
-                    let num1, num2, answer;
-                    const maxAnswer = 12; // Max answer for Levels 4, 5, 6, & 7
-                    
-                    if (isAddition) {
-                        // For addition, ensure sum doesn't exceed maxAnswer and no zeros
-                        do {
-                            num1 = Math.floor(Math.random() * maxAnswer) + 1; // 1 to maxAnswer
-                            num2 = Math.floor(Math.random() * (maxAnswer - num1)) + 1; // 1 to (maxAnswer-num1)
-                            answer = num1 + num2;
-                        } while (answer > maxAnswer || num1 === 0 || num2 === 0 || answer === 0);
-                        
-                        const startNumberColor = game.testMode ? 'black' : '#32CD32';
-                        title.innerHTML = `<span style="color: ${startNumberColor}; font-weight: bold;">${num1}</span> <span style="color: #FF8C00;">+</span> ${num2} = ?`;
-                    } else {
-                        // For subtraction, ensure result is between 1-maxAnswer and no zeros
-                        do {
-                            num1 = Math.floor(Math.random() * maxAnswer) + 1; // 1 to maxAnswer
-                            num2 = Math.floor(Math.random() * num1) + 1; // 1 to num1
-                            answer = num1 - num2;
-                        } while (answer === 0 || num1 === 0 || num2 === 0);
-                        
-                        const startNumberColor = game.testMode ? 'black' : '#32CD32';
-                        title.innerHTML = `<span style="color: ${startNumberColor}; font-weight: bold;">${num1}</span> <span style="color: #4169E1;">-</span> ${num2} = ?`;
-                    }
-                    
-                    // Clear any previous number line data and store new data
-                    delete door.ptCanvases;
-                    delete door.mathAnswer;
-                    delete door.mathStartPosition;
-                    delete door.foxPosition;
-                    
-                    // Store data for checking
-                    door.mathAnswer = answer;
-                    // For test mode, start PT at 0; otherwise start at num1
-                    door.mathStartPosition = game.testMode ? 0 : num1;
-                    door.foxPosition = door.mathStartPosition;
-                    
-                    console.log(`NEW PUZZLE: ${num1} ${isAddition ? '+' : '-'} ${num2} = ${answer}, start position set to ${door.mathStartPosition}`);
-                    
-                    // Create number line interface
-                    question.innerHTML = '';
-                    options.innerHTML = `
-                        <div class="numberline-container" style="margin: 20px auto; max-width: 600px;">
-                            <div class="number-grid" id="numberGrid" style="
-                                display: grid;
-                                grid-template-columns: repeat(13, 1fr);
-                                gap: 2px;
-                                border: 2px solid #666;
-                                margin-bottom: 10px;
-                                background: white;
-                                padding: 5px;
-                                border-radius: 10px;
-                            "></div>
-                            <div class="grid-labels" id="gridLabels" style="
-                                display: grid;
-                                grid-template-columns: repeat(13, 1fr);
-                                gap: 2px;
-                                text-align: center;
-                                margin-bottom: 20px;
-                            "></div>
-                            <div style="margin: 20px 0;">
-                                <button id="submitNumberLine" style="
-                                    background: #4CAF50;
-                                    color: white;
-                                    border: none;
-                                    padding: 15px 30px;
-                                    font-size: 20px;
-                                    border-radius: 25px;
-                                    cursor: pointer;
-                                    font-family: inherit;
-                                    font-weight: bold;
-                                ">Submit Answer</button>
-                            </div>
-                        </div>
-                    `;
-                    
-                    // Initialize number line
+                    // Initialize the number line with black cell 0 for all levels 4+
                     initializeNumberLine(door);
+                    
+                    return; // Exit early for all number line levels
                 } else {
                     // Levels 1-3: Regular multiple choice math (answers 1-12)
                     const isAddition = Math.random() < 0.5;
@@ -2362,206 +3448,31 @@ PIG 🐖`;
                     });
                 }
             } else if (type === 'reading') {
-                // Check if this is Level 8 - use division
-                if (game.selectedDifficulty === 8) {
-                    // Level 8: Interactive Division with dots and baskets
-                    let dividend, divisor, answer;
-                    
-                    // Generate division problem: A ÷ B = C where A ≤ 15
-                    // If C = 1, then A and B shouldn't exceed 8
-                    // Track problems to prevent duplicates
-                    if (game.hasUsedIdentityDivision === undefined) {
-                        game.hasUsedIdentityDivision = false;
-                    }
-                    if (!game.usedDivisionProblems) {
-                        game.usedDivisionProblems = new Set();
+                // Check if this is Level 8, 9, or 10 - use division
+                if (game.selectedDifficulty === 8 || game.selectedDifficulty === 9 || game.selectedDifficulty === 10) {
+                    // Clean up any existing keyboard handlers before starting division puzzle
+                    if (game.currentKeyHandler) {
+                        document.removeEventListener('keydown', game.currentKeyHandler);
+                        game.currentKeyHandler = null;
                     }
                     
-                    let attempts = 0;
-                    let problemKey;
-                    let validProblem = false;
-                    
-                    while (!validProblem && attempts < 100) {
-                        answer = Math.floor(Math.random() * 10) + 1; // C: 1 to 10 (dots per basket)
-                        
-                        if (answer === 1) {
-                            // Special constraint: if C = 1, then A and B shouldn't exceed 8
-                            divisor = Math.floor(Math.random() * 7) + 2; // B: 2 to 8
-                            dividend = divisor * answer; // A: will be 2 to 8
-                        } else {
-                            divisor = Math.floor(Math.random() * 10) + 2; // B: 2 to 11
-                            dividend = divisor * answer; // A: ensure clean division
-                        }
-                        
-                        attempts++;
-                        
-                        // Check size constraints first
-                        if (dividend > 15 || divisor >= 20 || answer >= 20) {
-                            console.log(`Skipping problem due to size constraints: ${dividend}÷${divisor}=${answer}`);
-                            continue;
-                        }
-                        
-                        // Create unique key for this problem
-                        problemKey = `${dividend}÷${divisor}`;
-                        
-                        // Check if we've already used this exact problem
-                        if (game.usedDivisionProblems.has(problemKey)) {
-                            console.log(`Skipping duplicate problem: ${problemKey}`);
-                            continue;
-                        }
-                        
-                        // Check if this is A÷A type and we've already used one
-                        const isIdentityDivision = (dividend === divisor);
-                        if (isIdentityDivision && game.hasUsedIdentityDivision) {
-                            console.log(`Skipping identity division (already used): ${problemKey}`);
-                            continue;
-                        }
-                        
-                        // If we get here, we have a valid problem
-                        validProblem = true;
-                        
-                        // Mark identity division as used if this is one
-                        if (isIdentityDivision) {
-                            console.log(`Found identity division: ${dividend}÷${divisor}, flag was: ${game.hasUsedIdentityDivision}`);
-                            game.hasUsedIdentityDivision = true;
-                            console.log(`Marked identity division as used, flag now: ${game.hasUsedIdentityDivision}`);
-                        }
-                    }
-                    
-                    // Add this problem to the used set
-                    game.usedDivisionProblems.add(problemKey);
-                    console.log(`Generated division problem: ${problemKey}, total used: ${game.usedDivisionProblems.size}`);
-                    
-                    // Store problem data
-                    door.divisionData = {
-                        dividend: dividend,
-                        divisor: divisor,
-                        answer: answer,
-                        dotsInBaskets: new Array(divisor).fill(0), // Track dots in each basket
-                        isComplete: false
-                    };
-                    
-                    // Setup the division interface with dots and baskets
-                    title.innerHTML = `<span style="color: #8A2BE2; font-weight: bold;">${dividend}</span> <span style="color: #0066FF;">÷</span> <span style="color: #DC143C; font-weight: bold;">${divisor}</span> = ?`;
-                    
-                    // Create the interactive division interface
+                    // Use the reusable division puzzle function
+                    const divisionPuzzle = createDivisionPuzzle(door);
+                    title.innerHTML = divisionPuzzle.title;
                     question.innerHTML = '';
-                    options.innerHTML = `
-                        <div class="division-container" style="margin: 20px auto; max-width: 600px; text-align: center;">
-                            <div style="margin: 20px 0; display: flex; justify-content: center; align-items: center; gap: 10px;">
-                                <button id="speakProblem" style="
-                                    background: #2196F3;
-                                    color: white;
-                                    border: none;
-                                    padding: 10px 15px;
-                                    font-size: 16px;
-                                    border-radius: 20px;
-                                    cursor: pointer;
-                                    font-family: inherit;
-                                    display: flex;
-                                    align-items: center;
-                                    gap: 5px;
-                                " onclick="speakDivisionProblem(${dividend}, ${divisor})">
-                                    🔊
-                                </button>
-                            </div>
-                            
-                            <div class="dots-area" id="dotsArea" style="
-                                margin: 20px 0;
-                                min-height: 100px;
-                                border: 2px dashed #ccc;
-                                border-radius: 10px;
-                                padding: 10px;
-                                background: #f9f9f9;
-                            ">
-                                <div id="dotsContainer" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 5px; min-height: 60px; cursor: pointer;" onclick="selectDotsArea()">
-                                    ${Array(dividend).fill().map((_, i) => 
-                                        `<div class="dot" data-dot-id="${i}" style="
-                                            width: 20px;
-                                            height: 20px;
-                                            background: #8A2BE2;
-                                            border-radius: 50%;
-                                            cursor: pointer;
-                                            user-select: none;
-                                            border: 2px solid transparent;
-                                            transition: all 0.2s ease;
-                                            box-shadow: none;
-                                            transform: scale(1);
-                                        " draggable="true" onclick="event.stopPropagation(); selectDot(${i})">🟣</div>`
-                                    ).join('')}
-                                </div>
-                            </div>
-                            
-                            <div class="baskets-area" style="margin: 20px 0;">
-                                <div id="basketsContainer" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-                                    ${Array(divisor).fill().map((_, i) => 
-                                        `<div class="basket" data-basket-id="${i}" style="
-                                            width: 80px;
-                                            height: 80px;
-                                            border: 3px solid #DC143C;
-                                            border-radius: 10px;
-                                            background: #FFB6C1;
-                                            display: flex;
-                                            flex-direction: column;
-                                            align-items: center;
-                                            justify-content: center;
-                                            position: relative;
-                                            min-height: 80px;
-                                            cursor: pointer;
-                                            transition: all 0.2s ease;
-                                        " onclick="selectBasket(${i})">
-                                            <div class="basket-count" style="
-                                                position: absolute;
-                                                top: -10px;
-                                                right: -10px;
-                                                background: #228B22;
-                                                color: white;
-                                                border-radius: 50%;
-                                                width: 20px;
-                                                height: 20px;
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                                font-size: 12px;
-                                                font-weight: bold;
-                                            ">0</div>
-                                            <div class="basket-dots" style="
-                                                display: flex;
-                                                flex-wrap: wrap;
-                                                gap: 2px;
-                                                justify-content: center;
-                                                align-items: center;
-                                                width: 100%;
-                                                height: 100%;
-                                                padding: 5px;
-                                                box-sizing: border-box;
-                                            "></div>
-                                        </div>`
-                                    ).join('')}
-                                </div>
-                            </div>
-                            
-                            <div style="margin: 20px 0;">
-                                <button id="submitDivision" style="
-                                    background: #4CAF50;
-                                    color: white;
-                                    border: none;
-                                    padding: 15px 30px;
-                                    font-size: 18px;
-                                    border-radius: 25px;
-                                    cursor: pointer;
-                                    font-family: inherit;
-                                    opacity: 0.5;
-                                    pointer-events: none;
-                                " onclick="submitDivisionAnswer()">
-                                    Submit
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                    options.innerHTML = divisionPuzzle.html;
                     
                     // Setup drag and drop functionality
                     setupDivisionDragDrop(door);
+                    
+                    // Add Enter key handler for division puzzle
+                    const divisionKeyHandler = (e) => {
+                        if (e.key === 'Enter') {
+                            submitDivisionAnswer();
+                        }
+                    };
+                    document.addEventListener('keydown', divisionKeyHandler);
+                    game.currentKeyHandler = divisionKeyHandler;
                     
                     // Auto-select the first dot for easier interaction
                     setTimeout(() => {
@@ -2573,9 +3484,7 @@ PIG 🐖`;
                         }
                     }, 100);
                     
-                    console.log(`Level 8 Division: ${dividend} ÷ ${divisor} = ${answer}`);
-                    
-                    return; // Exit early for Level 8 reading (division)
+                    return; // Exit early for Level 8/9 reading (division)
                 }
                 // Check if this is Level 3, 4, 5, 6, or 7 - use digraph game instead of regular reading
                 else if (game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) {
@@ -2919,9 +3828,13 @@ PIG 🐖`;
             for (let i = 0; i <= 12; i++) {
                 const cell = document.createElement('div');
                 cell.id = `grid-cell-${i}`;
-                const cellBackgroundColor = (game.testMode && i === 0) ? 'black' : 'white';
+                // Simplify: make cell 0 black for levels 4+ OR in test mode
+                let cellBackgroundColor = 'white';
+                if (i === 0 && (game.testMode || game.selectedDifficulty >= 4)) {
+                    cellBackgroundColor = 'black';
+                }
                 if (i === 0) {
-                    console.log(`Test mode: ${game.testMode}, Cell 0 background: ${cellBackgroundColor}`);
+                    console.log(`LEVEL ${game.selectedDifficulty}: Test mode: ${game.testMode}, Cell 0 background: ${cellBackgroundColor}, Condition: testMode=${game.testMode}, selectedDifficulty=${game.selectedDifficulty}`);
                 }
                 cell.style.cssText = `
                     aspect-ratio: 1;
@@ -2931,7 +3844,7 @@ PIG 🐖`;
                     justify-content: center;
                     position: relative;
                     min-height: 35px;
-                    background-color: ${cellBackgroundColor};
+                    background-color: ${cellBackgroundColor} !important;
                     transition: background-color 0.3s ease;
                     cursor: pointer;
                 `;
@@ -2962,7 +3875,11 @@ PIG 🐖`;
                 const label = document.createElement('div');
                 label.id = `grid-label-${i}`;
                 label.textContent = i;
-                const labelColor = (game.testMode && i === 0) ? 'black' : '#2E8B57';
+                // Simplify: make label 0 black for levels 4+ OR in test mode
+                let labelColor = '#2E8B57';
+                if (i === 0 && (game.testMode || game.selectedDifficulty >= 4)) {
+                    labelColor = 'black';
+                }
                 label.style.cssText = `
                     font-size: 14px;
                     font-weight: bold;
@@ -3116,9 +4033,9 @@ PIG 🐖`;
                 const gridLabel = document.getElementById(`grid-label-${i}`);
                 
                 if (gridCell && gridLabel) {
-                    // Reset to default - but preserve black for 0 in Level 8 or test mode
-                    if (i === 0 && (game.selectedDifficulty === 8 || game.testMode)) {
-                        gridCell.style.backgroundColor = 'black'; // Keep 0 black in Level 8 or test mode
+                    // Reset to default - but preserve black for 0 in Level 4+ or test mode
+                    if (i === 0 && (game.selectedDifficulty >= 4 || game.testMode)) {
+                        gridCell.style.backgroundColor = 'black'; // Keep 0 black in Level 4+ or test mode
                         gridLabel.style.color = 'black'; // Make 0 label black too
                     } else {
                         gridCell.style.backgroundColor = '';
@@ -3134,9 +4051,9 @@ PIG 🐖`;
                 
                 if (gridCell && gridLabel) {
                     if (i === startPos) {
-                        // Start position coloring - but preserve black for 0 in Level 8 or test mode
-                        if (i === 0 && (game.selectedDifficulty === 8 || game.testMode)) {
-                            gridCell.style.backgroundColor = 'black'; // Keep 0 black in Level 8 or test mode
+                        // Start position coloring - but preserve black for 0 in Level 4+ or test mode
+                        if (i === 0 && (game.selectedDifficulty >= 4 || game.testMode)) {
+                            gridCell.style.backgroundColor = 'black'; // Keep 0 black in Level 4+ or test mode
                             gridLabel.style.color = 'black'; // Keep 0 label black too
                         } else {
                             gridCell.style.backgroundColor = '#32CD32'; // Green for other levels
@@ -3199,7 +4116,7 @@ PIG 🐖`;
         
         function numberLineKeyHandler(e, door) {
             // Only handle if we're in a number line puzzle
-            if (!game.puzzleActive || (game.selectedDifficulty !== 4 && game.selectedDifficulty !== 5 && game.selectedDifficulty !== 6 && game.selectedDifficulty !== 7 && game.selectedDifficulty !== 8)) return;
+            if (!game.puzzleActive || game.selectedDifficulty < 4) return;
             
             const modal = document.getElementById('puzzleModal');
             if (modal.style.display !== 'block') return;
@@ -3245,6 +4162,10 @@ PIG 🐖`;
                 
                 door.open = true;
                 door.color = '#B8F2B8';
+                
+                // Complete rocket boost movement if active
+                completeRocketBoostMovement();
+                
                 updateScore(1);
                 
                 // Reset attempt counters
@@ -3256,6 +4177,8 @@ PIG 🐖`;
                     result.innerHTML = '';
                     result.style.fontSize = '';
                     game.puzzleActive = false;
+                    // Clear any multiplication door reference
+                    game.currentMultiplicationDoor = null;
                 }, 800);
             } else {
                 result.innerHTML = '👎';
@@ -3299,6 +4222,9 @@ PIG 🐖`;
                 result.style.fontSize = '48px'; // Make thumbs up bigger
                 door.open = true;
                 
+                // Complete rocket boost movement if active
+                completeRocketBoostMovement();
+                
                 // For Levels 3, 4, 5, 6, 7 digraph puzzles, speak the emoji word name
                 if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) && type === 'reading' && selectedEmoji) {
                     setTimeout(() => {
@@ -3325,6 +4251,8 @@ PIG 🐖`;
                     result.innerHTML = '';
                     result.style.fontSize = ''; // Reset font size
                     game.puzzleActive = false;
+                    // Clear any multiplication door reference
+                    game.currentMultiplicationDoor = null;
                 }, 800); // Faster disappear (800ms instead of 1500ms)
             } else {
                 result.innerHTML = '👎';
@@ -3521,7 +4449,7 @@ PIG 🐖`;
             container.innerHTML = '';
             
             // Add each level score
-            for (let level = 1; level <= 8; level++) {
+            for (let level = 1; level <= 9; level++) {
                 const score = game.levelScores[level] || 0;
                 const levelItem = document.createElement('div');
                 levelItem.className = 'level-score-item';
