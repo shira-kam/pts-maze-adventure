@@ -15,11 +15,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Game States and Flow
 1. **Difficulty Selection**: Easy/Medium (5 hearts) vs Hard (3 hearts)
-2. **Level Progression**: Automatic advancement through levels 1-8, then manual continuation
-3. **Puzzle Interactions**: Modal-based educational challenges
-4. **Special Mechanics**: Rocket boost, heart collection, bonus systems
-5. **Completion Screens**: Level celebrations, final scoring, game over animations
-6. **Debug Mode**: Comprehensive testing interface (Shift+Ctrl+D activation)
+2. **Level Selection**: Interactive grid showing all levels with texture previews
+3. **Level Progression**: Player-driven level selection after each completion
+4. **Puzzle Interactions**: Modal-based educational challenges
+5. **Special Mechanics**: Rocket boost, heart collection, bonus systems
+6. **Completion Screens**: Level celebrations, level selection, final scoring when all complete
+7. **Debug Mode**: Comprehensive testing interface (Shift+Ctrl+D activation)
 
 ## Level Structure and Progression
 
@@ -217,6 +218,15 @@ Each level features two distinct educational challenges accessed through door ty
 
 ## Advanced Game Features
 
+### Level Selection System
+- **Access**: Shown after difficulty selection and after each level completion
+- **Interface**: 5x2 grid displaying all 10 levels with texture previews
+- **Visual Format**: "Level X [wall][endpoint][wall]" with actual texture images
+- **Completion Tracking**: Completed levels show large checkmark overlay and are unclickable
+- **Navigation**: Back button to return to difficulty selection
+- **Progressive Unlocking**: Only incomplete levels remain selectable
+- **Final Score**: Only shown when all 10 levels are completed
+
 ### Rocket Boost System (Levels 9-10)
 - **Activation**: Collecting bonus items (`b` in maze) grants rocket power
 - **Mechanics**: Triple movement speed (120px vs 40px), countdown timer, visual effects
@@ -231,8 +241,9 @@ Each level features two distinct educational challenges accessed through door ty
 ### Scoring and Progression
 - **Base System**: Lives-based (hearts) with difficulty-dependent starting amounts
 - **Level Completion**: Tracks final score for each completed level
-- **Comprehensive Tracking**: Session data, completion times, death levels
-- **Final Scoring**: Visual summary with level-by-level breakdown
+- **Session Tracking**: Completed levels stored in Set, prevents re-selection
+- **Comprehensive Data**: Session data, completion times, death levels
+- **Final Scoring**: Visual summary with level-by-level breakdown shown only when all levels complete
 
 ## Technical Architecture
 

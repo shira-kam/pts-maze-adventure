@@ -503,6 +503,140 @@
             transform: translateY(-2px);
         }
         
+        #levelSelectionScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #87CEEB, #98FB98);
+            z-index: 4000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #levelSelectionContent {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            max-width: 900px;
+            min-width: 600px;
+        }
+        
+        #levelSelectionTitle {
+            font-size: 36px;
+            color: #2E8B57;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+        
+        #levelGrid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        .level-button {
+            background: white;
+            border: 3px solid #4CAF50;
+            border-radius: 15px;
+            padding: 20px 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: bold;
+            color: #2E8B57;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .level-button:hover {
+            background: #f0f8ff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .level-button.completed {
+            background: #e8f5e8;
+            border-color: #45a049;
+            opacity: 0.7;
+            cursor: not-allowed;
+            position: relative;
+        }
+        
+        .level-button.completed::before {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            color: #45a049;
+            font-weight: bold;
+            z-index: 1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .level-button.completed .level-button-number,
+        .level-button.completed .level-button-preview {
+            opacity: 0.4;
+        }
+        
+        .level-button.completed:hover {
+            background: #e8f5e8;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .level-button-number {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #2E8B57;
+        }
+        
+        .level-button-preview {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            margin-bottom: 5px;
+        }
+        
+        .level-texture-preview {
+            width: 16px;
+            height: 16px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            border-radius: 2px;
+        }
+        
+        #backToDifficultyBtn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        #backToDifficultyBtn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
         
     </style>
 </head>
@@ -540,6 +674,16 @@
             <button class="difficulty-button easy" onclick="selectDifficulty('easy')">Easy Peasy 🫛</button>
             <button class="difficulty-button medium" onclick="selectDifficulty('medium')">Neutral 😐</button>
             <button class="difficulty-button hard" onclick="selectDifficulty('hard')">Hard Mode 🙀</button>
+        </div>
+    </div>
+    
+    <div id="levelSelectionScreen">
+        <div id="levelSelectionContent">
+            <div id="levelSelectionTitle">Choose Your Level</div>
+            <div id="levelGrid">
+                <!-- Level buttons will be generated dynamically -->
+            </div>
+            <button id="backToDifficultyBtn" onclick="backToDifficulty()">← Back to Difficulty</button>
         </div>
     </div>
     
@@ -1229,16 +1373,108 @@ PIG 🐖`;
             game.gameSession = {
                 startTime: Date.now(),
                 levelsCompleted: 0,
-                totalScore: 0
+                totalScore: 0,
+                completedLevels: new Set()
             };
             
             // Hide difficulty selection screen
             document.getElementById('difficultyScreen').style.display = 'none';
             
-            // Start the game with level 1
-            game.selectedDifficulty = 1;
-            currentCelebrationSprites = loadCelebrationSprite(1);
+            // Show level selection screen instead of starting game directly
+            showLevelSelection();
+        }
+        
+        // Level selection functions
+        function showLevelSelection() {
+            generateLevelButtons();
+            document.getElementById('levelSelectionScreen').style.display = 'flex';
+        }
+        
+        function generateLevelButtons() {
+            const levelGrid = document.getElementById('levelGrid');
+            levelGrid.innerHTML = '';
+            
+            // Define texture mappings for each level
+            const levelTextures = {
+                1: { wall: 'level-1/wall.png', endpoint: 'level-1/endpoint.png' },
+                2: { wall: 'level-2/wall.png', endpoint: 'level-2/endpoint.png' },
+                3: { wall: 'level-3/wall.png', endpoint: 'level-3/endpoint.png' },
+                4: { wall: 'level-4/wall.png', endpoint: 'level-4/endpoint.png' },
+                5: { wall: 'level-5/wall.png', endpoint: 'level-5/endpoint.png' },
+                6: { wall: 'level-6/wall.png', endpoint: 'level-6/endpoint.png' },
+                7: { wall: 'level-7/wall.png', endpoint: 'level-7/endpoint.png' },
+                8: { wall: 'level-8/wall.png', endpoint: 'level-8/endpoint.png' },
+                9: { wall: 'level-9/wall.png', endpoint: 'level-9/endpoint.png' },
+                10: { wall: 'level-10/wall.png', endpoint: 'level-10/endpoint.png' }
+            };
+            
+            // Create buttons for levels 1-10
+            for (let level = 1; level <= 10; level++) {
+                const button = document.createElement('button');
+                button.className = 'level-button';
+                
+                // Check if level is completed
+                const isCompleted = game.gameSession.completedLevels.has(level);
+                if (isCompleted) {
+                    button.classList.add('completed');
+                    // Don't add click handler for completed levels
+                } else {
+                    button.onclick = () => selectLevel(level);
+                }
+                
+                // Create level number
+                const levelNumber = document.createElement('div');
+                levelNumber.className = 'level-button-number';
+                levelNumber.textContent = `Level ${level}`;
+                
+                // Create texture preview
+                const preview = document.createElement('div');
+                preview.className = 'level-button-preview';
+                
+                // Add wall texture
+                const wallTexture = document.createElement('div');
+                wallTexture.className = 'level-texture-preview';
+                wallTexture.style.backgroundImage = `url('${levelTextures[level].wall}')`;
+                
+                // Add endpoint texture  
+                const endpointTexture = document.createElement('div');
+                endpointTexture.className = 'level-texture-preview';
+                endpointTexture.style.backgroundImage = `url('${levelTextures[level].endpoint}')`;
+                
+                // Add wall again for [wall][endpoint][wall] pattern
+                const wallTexture2 = document.createElement('div');
+                wallTexture2.className = 'level-texture-preview';
+                wallTexture2.style.backgroundImage = `url('${levelTextures[level].wall}')`;
+                
+                preview.appendChild(wallTexture);
+                preview.appendChild(endpointTexture);
+                preview.appendChild(wallTexture2);
+                
+                button.appendChild(levelNumber);
+                button.appendChild(preview);
+                
+                levelGrid.appendChild(button);
+            }
+        }
+        
+        function selectLevel(level) {
+            console.log(`Selected level: ${level}`);
+            
+            // Hide level selection screen
+            document.getElementById('levelSelectionScreen').style.display = 'none';
+            
+            // Start the selected level
+            game.selectedDifficulty = level;
+            currentCelebrationSprites = loadCelebrationSprite(level);
             initializeGame();
+        }
+        
+        function backToDifficulty() {
+            // Hide level selection screen
+            document.getElementById('levelSelectionScreen').style.display = 'none';
+            
+            // Show difficulty selection screen
+            document.getElementById('difficultyScreen').style.display = 'flex';
         }
         
         // Debug mode variables
@@ -4147,6 +4383,9 @@ PIG 🐖`;
             game.gameSession.levelsCompleted++;
             game.gameSession.totalScore += game.score;
             
+            // Mark level as completed
+            game.gameSession.completedLevels.add(game.selectedDifficulty);
+            
             console.log(`Level ${game.selectedDifficulty} completed with ${game.score} lives remaining`);
             
             // Unlock next level
@@ -4156,12 +4395,12 @@ PIG 🐖`;
             game.celebrationFrame = 0;
             game.celebrationTimer = 0;
             
-            // Update button text based on whether there's a next level
+            // Update button text - now always shows "Choose Next Level" unless all levels completed
             const playAgainBtn = document.getElementById('playAgainBtn');
-            if (game.selectedDifficulty < 8) {
-                playAgainBtn.textContent = 'Next Level';
-            } else {
+            if (game.gameSession.completedLevels.size >= 10) {
                 playAgainBtn.textContent = 'Show Final Score';
+            } else {
+                playAgainBtn.textContent = 'Choose Next Level';
             }
             
             document.getElementById('celebrationScreen').style.display = 'flex';
@@ -4262,17 +4501,15 @@ PIG 🐖`;
             game.celebrating = false;
             document.getElementById('celebrationScreen').style.display = 'none';
             
-            // If there's a next level, advance to it
-            if (game.selectedDifficulty < 8) {
-                game.selectedDifficulty++;
-                console.log(`Advancing to level ${game.selectedDifficulty}`);
-                // Load next level directly
-                currentCelebrationSprites = loadCelebrationSprite(game.selectedDifficulty);
-                initializeGame();
-            } else {
-                // Completed all levels, show final score
+            // Check if all levels are completed
+            if (game.gameSession.completedLevels.size >= 10) {
+                // All levels completed, show final score
                 console.log('All levels completed, showing final score');
                 showFinalScore();
+            } else {
+                // Show level selection screen so player can choose next level
+                console.log('Showing level selection for next level choice');
+                showLevelSelection();
             }
         }
         
