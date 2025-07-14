@@ -4443,14 +4443,14 @@ PIG 🐖`;
             }
         }
         
-        function showFinalScore() {
-            // Populate the final score screen
+        // Common component for generating level score displays
+        function generateLevelScoreDisplay(maxLevel, deathLevel = null) {
             const container = document.getElementById('levelScoresContainer');
             container.innerHTML = '';
             
             // Add each level score
-            for (let level = 1; level <= 9; level++) {
-                const score = game.levelScores[level] || 0;
+            for (let level = 1; level <= maxLevel; level++) {
+                const score = game.levelScores[level];
                 const levelItem = document.createElement('div');
                 levelItem.className = 'level-score-item';
                 
@@ -4459,12 +4459,25 @@ PIG 🐖`;
                     levelItem.classList.add('special');
                 }
                 
+                // Determine score display based on context
+                let scoreDisplay;
+                if (score !== undefined) {
+                    scoreDisplay = `${score} ♥️`;
+                } else if (deathLevel && level === deathLevel) {
+                    scoreDisplay = '☠️';
+                } else if (deathLevel && level > deathLevel) {
+                    scoreDisplay = '-';
+                } else {
+                    scoreDisplay = score || 0;
+                    scoreDisplay = `${scoreDisplay} ♥️`;
+                }
+                
                 levelItem.innerHTML = `
                     <div style="display: flex; align-items: center;">
                         <div class="level-wall-block" style="background-image: url('level-${level}/wall.png');"></div>
                         <div class="level-score-number">Level ${level}</div>
                     </div>
-                    <div class="level-score-hearts">${score} ♥️</div>
+                    <div class="level-score-hearts">${scoreDisplay}</div>
                 `;
                 
                 container.appendChild(levelItem);
@@ -4486,6 +4499,11 @@ PIG 🐖`;
             `;
             
             container.appendChild(totalItem);
+        }
+        
+        function showFinalScore() {
+            // Use common component to generate level score display (levels 1-10)
+            generateLevelScoreDisplay(10);
             
             // Hide total score section (we're showing it inline now)
             document.getElementById('totalScoreSection').style.display = 'none';
@@ -4518,51 +4536,8 @@ PIG 🐖`;
             // Update the title
             document.getElementById('finalScoreTitle').textContent = 'Your Scores';
             
-            // Create table for all levels
-            const container = document.getElementById('levelScoresContainer');
-            container.innerHTML = '';
-            
-            for (let level = 1; level <= 8; level++) {
-                const score = game.levelScores[level];
-                const levelItem = document.createElement('div');
-                levelItem.className = 'level-score-item';
-                
-                let scoreDisplay;
-                if (score !== undefined) {
-                    scoreDisplay = `${score} ♥️`;
-                } else if (level === game.deathLevel) {
-                    scoreDisplay = '☠️';
-                } else {
-                    scoreDisplay = '-';
-                }
-                
-                levelItem.innerHTML = `
-                    <div style="display: flex; align-items: center;">
-                        <div class="level-wall-block" style="background-image: url('level-${level}/wall.png');"></div>
-                        <div class="level-score-number">Level ${level}</div>
-                    </div>
-                    <div class="level-score-hearts">${scoreDisplay}</div>
-                `;
-                
-                container.appendChild(levelItem);
-            }
-            
-            // Add total score row
-            const totalScore = Object.values(game.levelScores).reduce((sum, score) => sum + score, 0);
-            const totalItem = document.createElement('div');
-            totalItem.className = 'level-score-item';
-            totalItem.style.borderTop = '2px solid #4CAF50';
-            totalItem.style.marginTop = '10px';
-            totalItem.style.fontWeight = 'bold';
-            
-            totalItem.innerHTML = `
-                <div style="display: flex; align-items: center;">
-                    <div class="level-score-number">Total</div>
-                </div>
-                <div class="level-score-hearts">${totalScore} ♥️</div>
-            `;
-            
-            container.appendChild(totalItem);
+            // Use common component to generate level score display (levels 1-10, with death level indicator)
+            generateLevelScoreDisplay(10, game.deathLevel);
             
             // Hide total score section
             document.getElementById('totalScoreSection').style.display = 'none';
