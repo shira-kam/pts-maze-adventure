@@ -703,7 +703,6 @@
                 const csvText = await response.text();
                 console.log('CSV loaded successfully, length:', csvText.length);
                 console.log('First few lines:', csvText.split('\n').slice(0, 3).join('\n'));
-                console.log('Looking for r1/r2 doors in CSV:', csvText.includes('r1'), csvText.includes('r2'));
                 return parseMazeFromCSV(csvText);
             } catch (error) {
                 console.error('Error loading CSV for level', game.selectedDifficulty, ':', error);
@@ -764,16 +763,6 @@
                             break;
                         case 'r':
                             doors.push({ x, y, type: 'reading', open: false, color: '#4ECDC4' });
-                            // Add path under door for walkability
-                            paths.push({ x, y, width: 40, height: 40 });
-                            break;
-                        case 'r1':
-                            doors.push({ x, y, type: 'reading1', open: false, color: '#9C27B0' }); // Purple
-                            // Add path under door for walkability
-                            paths.push({ x, y, width: 40, height: 40 });
-                            break;
-                        case 'r2':
-                            doors.push({ x, y, type: 'reading2', open: false, color: '#FF9800' }); // Orange
                             // Add path under door for walkability
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
@@ -1056,8 +1045,6 @@ PIG 🐖`;
             endpoint: new Image(),
             heart: new Image(),    // Heart collectible texture
             bonus: new Image(),    // Bonus collectible texture (level 9)
-            reading1: new Image(), // Will fallback to reading texture
-            reading2: new Image(), // Will fallback to reading texture
             sorting: new Image(),  // Will fallback to math texture
             loaded: false
         };
@@ -1094,8 +1081,6 @@ PIG 🐖`;
             }
             
             // For door types without specific textures, use existing ones
-            textures.reading1 = textures.reading; // Use reading texture for letter matching
-            textures.reading2 = textures.reading; // Use reading texture for emoji-to-word
             textures.sorting = textures.math;     // Use math texture for sorting
             
             // Track when all main textures are loaded
@@ -2161,10 +2146,6 @@ PIG 🐖`;
                         doorTexture = textures.math;
                     } else if (door.type === 'reading') {
                         doorTexture = textures.reading;
-                    } else if (door.type === 'reading1') {
-                        doorTexture = textures.reading1;
-                    } else if (door.type === 'reading2') {
-                        doorTexture = textures.reading2;
                     } else if (door.type === 'sorting') {
                         doorTexture = textures.sorting;
                     }
@@ -2185,8 +2166,6 @@ PIG 🐖`;
                         let symbol = '🔀'; // Default sorting symbol
                         if (door.type === 'math') symbol = '🪨';
                         else if (door.type === 'reading') symbol = '📚';
-                        else if (door.type === 'reading1') symbol = '🔤';
-                        else if (door.type === 'reading2') symbol = '🏞️';
                         ctx.fillText(symbol, door.x + 60, door.y + 65);
                     }
                 }
@@ -3663,148 +3642,6 @@ PIG 🐖`;
                         options.appendChild(button);
                     });
                 }
-            } else if (type === 'reading1') {
-                // Math problems (same as main math problems)
-                const isAddition = Math.random() < 0.5;
-                let num1, num2, answer;
-                const maxAnswer = 12; // Max answer for math problems
-                
-                if (isAddition) {
-                    // For addition, ensure sum doesn't exceed maxAnswer
-                    const maxNum1 = maxAnswer - 1;
-                    num1 = Math.floor(Math.random() * maxNum1) + 1; // 1 to (maxAnswer-1)
-                    num2 = Math.floor(Math.random() * (maxAnswer - num1)) + 1; // 1 to (maxAnswer-num1)
-                    answer = num1 + num2;
-                    title.textContent = `${num1} + ${num2} = ?`;
-                } else {
-                    // For subtraction, ensure result is between 1-maxAnswer
-                    num1 = Math.floor(Math.random() * maxAnswer) + 1;
-                    num2 = Math.floor(Math.random() * Math.min(num1, maxAnswer)) + 1;
-                    answer = num1 - num2;
-                    title.textContent = `${num1} - ${num2} = ?`;
-                }
-                
-                question.textContent = '';
-                
-                // Generate wrong answers between 1-maxAnswer
-                const wrongAnswers = [];
-                while (wrongAnswers.length < 2) {
-                    const wrong = Math.floor(Math.random() * maxAnswer) + 1;
-                    if (wrong !== answer && !wrongAnswers.includes(wrong)) {
-                        wrongAnswers.push(wrong);
-                    }
-                }
-                
-                const allAnswers = [answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
-                
-                options.innerHTML = '';
-                allAnswers.forEach(ans => {
-                    const button = document.createElement('button');
-                    button.className = 'puzzle-button';
-                    button.textContent = ans;
-                    button.onclick = () => checkAnswer(ans === answer, type, door, button);
-                    options.appendChild(button);
-                });
-            } else if (type === 'reading2') {
-                // Emoji to word matching with same-first-letter strategy - show emoji, choose word
-                const wordEmojiPairs = game.wordEmojiPairs;
-                
-                // Check if word list is loaded
-                if (!wordEmojiPairs || wordEmojiPairs.length === 0) {
-                    console.error('Word list not loaded yet!');
-                    return;
-                }
-                
-                // Filter out already used words in this level
-                const availableWords = wordEmojiPairs.filter(pair => !game.usedWords.includes(pair.word));
-                
-                // If all words have been used, reset the used words list
-                const wordsToUse = availableWords.length > 0 ? availableWords : wordEmojiPairs;
-                if (availableWords.length === 0) {
-                    game.usedWords = [];
-                    console.log('All words used - resetting word tracking for this level');
-                }
-                
-                // Pick a random word-emoji pair from available words
-                const correctPair = wordsToUse[Math.floor(Math.random() * wordsToUse.length)];
-                
-                // Add this word to used words list
-                if (!game.usedWords.includes(correctPair.word)) {
-                    game.usedWords.push(correctPair.word);
-                }
-                const firstLetter = correctPair.word.charAt(0).toUpperCase();
-                const wrongWords = [];
-                
-                // Try to find words with same first letter
-                const sameLetterWords = wordEmojiPairs.filter(pair => 
-                    pair.word.charAt(0).toUpperCase() === firstLetter && 
-                    pair.word !== correctPair.word
-                );
-                
-                // Add wrong words from same-letter words
-                while (wrongWords.length < 2 && sameLetterWords.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * sameLetterWords.length);
-                    const wrongPair = sameLetterWords.splice(randomIndex, 1)[0];
-                    wrongWords.push(wrongPair.word);
-                }
-                
-                // If not enough same-letter words, use distractors (words that start with same letter)
-                if (wrongWords.length < 2 && game.distractors[firstLetter]) {
-                    // Convert distractors to fake words that start with the same letter
-                    const commonWords = {
-                        'A': ['APPLE', 'ARROW', 'ANGEL'],
-                        'B': ['BREAD', 'BRUSH', 'BRAIN'],
-                        'C': ['CLOUD', 'CHAIR', 'CROWN'],
-                        'D': ['DUCK', 'DRUM', 'DOOR'],
-                        'F': ['FISH', 'FIRE', 'FARM'],
-                        'G': ['GRASS', 'GIFT', 'GUARD'],
-                        'H': ['HOUSE', 'HEART', 'HORSE'],
-                        'L': ['LAMP', 'LEAF', 'LOCK'],
-                        'M': ['MILK', 'MASK', 'MAGIC'],
-                        'P': ['PLANT', 'PIZZA', 'PLANE'],
-                        'R': ['ROBOT', 'RING', 'ROCK'],
-                        'S': ['STAR', 'SNAKE', 'SMILE'],
-                        'T': ['TREE', 'TRUCK', 'TIGER']
-                    };
-                    
-                    if (commonWords[firstLetter]) {
-                        const availableWords = commonWords[firstLetter].filter(word => 
-                            word !== correctPair.word.toUpperCase() && 
-                            !wrongWords.includes(word)
-                        );
-                        
-                        while (wrongWords.length < 2 && availableWords.length > 0) {
-                            const randomIndex = Math.floor(Math.random() * availableWords.length);
-                            const word = availableWords.splice(randomIndex, 1)[0];
-                            wrongWords.push(word);
-                        }
-                    }
-                }
-                
-                // Final fallback to any random words if still not enough
-                if (wrongWords.length < 2) {
-                    while (wrongWords.length < 2) {
-                        const randomPair = wordEmojiPairs[Math.floor(Math.random() * wordEmojiPairs.length)];
-                        if (randomPair.word !== correctPair.word && !wrongWords.includes(randomPair.word)) {
-                            wrongWords.push(randomPair.word);
-                        }
-                    }
-                }
-                
-                title.textContent = ''; // No title for reading2 type
-                question.innerHTML = `<div style=\"font-size: 48px; margin: 20px 0;\">${correctPair.emoji}</div>`;
-                
-                const allAnswers = [correctPair.word, ...wrongWords].sort(() => Math.random() - 0.5);
-                
-                options.innerHTML = '';
-                allAnswers.forEach(word => {
-                    const button = document.createElement('button');
-                    button.className = 'puzzle-button';
-                    button.textContent = word;
-                    button.style.fontSize = '24px';
-                    button.onclick = () => checkAnswer(word === correctPair.word, type, door, button);
-                    options.appendChild(button);
-                });
             }
         }
         
@@ -4235,8 +4072,6 @@ PIG 🐖`;
                 // Give +1 point for correct answer (net effect: 1 - number_of_wrong_attempts)
                 if (type === 'math') updateScore(1);
                 if (type === 'reading') updateScore(1);
-                if (type === 'reading1') updateScore(1);
-                if (type === 'reading2') updateScore(1);
                 if (type === 'sorting') updateScore(1);
                 
                 // Reset attempt counters
@@ -4279,8 +4114,6 @@ PIG 🐖`;
                 
                 if (type === 'math') updateScore(pointsToDeduct);
                 if (type === 'reading') updateScore(pointsToDeduct);
-                if (type === 'reading1') updateScore(pointsToDeduct);
-                if (type === 'reading2') updateScore(pointsToDeduct);
                 if (type === 'sorting') updateScore(pointsToDeduct);
                 
                 // Disable the wrong answer button

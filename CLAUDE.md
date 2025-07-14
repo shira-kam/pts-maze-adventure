@@ -29,12 +29,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Levels 8-9**: Advanced - Triple addition math and division with basket manipulation
 - **Level 10**: Debug/Multiplication - Interactive groups puzzle with dual validation
 
-### Level Assets (per level directory)
+### Level Assets and Texture Mapping
+
+#### **Standard Assets (all levels 1-10)**
 - **`grid.csv`**: Maze layout with encoded door types and special items
 - **`Word-List.txt`**: Educational content (word-emoji pairs, format: `WORD EMOJI,`)
-- **Texture files**: `wall.png`, `open.png`, `math.png`, `reading.png`, `endpoint.png`
-- **Special textures**: `heart.png` (levels 6-10), `bonus.png` (levels 9-10)
-- **Sprites**: `celebrate.png` (level completion), `PT-Bonus-Sprite.svg` (levels 9-10)
+- **Core textures**: `wall.png`, `open.png`, `math.png`, `reading.png`, `endpoint.png`
+- **`celebrate.png`**: Level-specific celebration animation sprite
+
+#### **Progressive Asset Introduction**
+- **Levels 1-5**: Standard assets only (basic gameplay)
+- **Levels 6-8**: Standard assets + `heart.png` (heart collectibles)
+- **Levels 9-10**: Standard assets + `heart.png` + `bonus.png` + `PT-Bonus-Sprite.svg` (full bonus system)
+
+#### **Global Assets (root directory)**
+- **`PT-sprite.svg`**: Main movement sprite (960x160, 6 frames)
+- **`game-over.png`**: Game over animation sprite
+- **`celebrate.png`**: Fallback celebration sprite
 
 ## Educational Puzzle System
 
@@ -262,11 +273,9 @@ Each level features two distinct educational challenges accessed through door ty
 
 ### Cell Type Encoding
 - **`o`**: Open path (traversable)
-- **`m`**: Math door (red) - triggers math puzzles
-- **`r`**: Reading door (teal) - triggers reading puzzles
-- **`r1`**: Letter matching door (purple) - lowercase to uppercase
-- **`r2`**: Emoji-to-word door (orange) - reverse word matching
-- **`s`**: Sorting door (yellow) - not implemented
+- **`m`**: Math door - triggers math puzzles
+- **`r`**: Reading door - triggers reading puzzles
+- **`s`**: Sorting door - not implemented
 - **`w`**: Watering hole (goal) - level completion trigger
 - **`h`**: Heart collectible (levels 6-10) - bonus scoring
 - **`b`**: Bonus collectible (levels 9-10) - rocket boost activation
