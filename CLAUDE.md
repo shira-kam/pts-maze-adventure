@@ -38,24 +38,171 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Educational Puzzle System
 
-### Math Puzzles by Level
-- **Levels 1-3**: Simple arithmetic (addition/subtraction, answers 1-12)
-- **Levels 4-7**: Number line visualization with 13-cell grid system
-- **Levels 8-9**: Triple addition (A+B+C format) with problem tracking
-- **Level 10**: Interactive multiplication groups with visual arrangement + multiple choice
+Each level features two distinct educational challenges accessed through door types in the maze grid:
+- **Math Doors (`m`)**: Red doors triggering mathematical puzzles
+- **Reading Doors (`r`)**: Teal doors triggering language/reading puzzles
 
-### Reading and Language Puzzles
-- **Levels 1-2**: Word-to-emoji matching with visual feedback
-- **Levels 3-7**: Digraph sound recognition with text-to-speech integration
-- **Levels 8-9**: Division puzzles with drag-and-drop dot manipulation
-- **All levels**: Letter matching (r1) and emoji-to-word (r2) variants available
+### Level-by-Level Puzzle Breakdown
 
-### Puzzle Mechanics
-- **Modal-based UI**: Centralized puzzle display system
-- **Adaptive difficulty**: Scoring penalties based on difficulty mode and attempt count
-- **Usage tracking**: Prevents problem repetition within levels
-- **Text-to-speech**: Browser synthesis for pronunciation support
-- **Visual feedback**: Thumbs up/down indicators, color-coded validation
+#### **Level 1: Foundation Building**
+**Math Doors (`m`)**:
+- **Mechanics**: Simple addition and subtraction with answers 1-12
+- **UI**: Multiple choice with 3 answer buttons
+- **Examples**: "3 + 4 = ?", "8 - 2 = ?", "5 + 6 = ?"
+- **Validation**: Immediate visual feedback with green/red button styling
+- **Educational Goal**: Basic arithmetic fluency and number recognition
+
+**Reading Doors (`r`)**:
+- **Mechanics**: Word-to-emoji matching for sight word recognition
+- **UI**: Word displayed in title, 3 emoji choice buttons below
+- **Vocabulary**: Basic 3-letter words (BAG 💼, CAT 🐈, DOG 🐕, HAT 🎩, etc.)
+- **Strategy**: Wrong answers prioritize words with same first letter for challenge
+- **Educational Goal**: Sight word vocabulary and visual word recognition
+
+#### **Level 2: Skill Reinforcement**
+**Math Doors (`m`)**:
+- **Mechanics**: Identical to Level 1 - addition/subtraction with answers 1-12
+- **UI**: Same multiple choice interface with 3 buttons
+- **Educational Goal**: Continued arithmetic practice and fluency building
+
+**Reading Doors (`r`)**:
+- **Mechanics**: Same word-to-emoji matching system as Level 1
+- **Vocabulary**: Same basic word set with consistent emoji pairings
+- **Educational Goal**: Reinforcement of sight word recognition skills
+
+#### **Level 3: Phonics Introduction** 
+**Math Doors (`m`)**:
+- **Mechanics**: Continued simple arithmetic (answers 1-12)
+- **UI**: Multiple choice button interface
+- **Educational Goal**: Maintaining arithmetic skills while introducing new reading concepts
+
+**Reading Doors (`r`)**:
+- **Mechanics**: **DIGRAPH PHONICS GAME** - major pedagogical shift
+- **UI**: Large digraph letters (CH, SH, TH, PH, etc.) with speaker button for audio
+- **Interaction**: Player clicks speaker to hear phonetic pronunciation, selects matching emoji
+- **Examples**: "CH" sound with choices like 🧀 (cheese), 🍒 (cherry), 🪑 (chair)
+- **Audio**: Text-to-speech integration for proper phonetic modeling
+- **Educational Goal**: Phonics awareness and digraph sound recognition
+
+#### **Level 4: Visual Math Introduction**
+**Math Doors (`m`)**:
+- **Mechanics**: **NUMBER LINE PUZZLES** - interactive visual mathematics
+- **UI**: 13-cell grid (positions 0-12) with animated PT elephant
+- **Features**: PT starts at black zero cell, players click or use arrow keys to move
+- **Problems**: Simple addition/subtraction visualized on the number line
+- **Keyboard Support**: Arrow keys for movement, Enter key for answer submission
+- **Educational Goal**: Visual number sense and spatial understanding of arithmetic
+
+**Reading Doors (`r`)**:
+- **Mechanics**: Same digraph phonics game as Level 3
+- **UI**: Digraph display with audio pronunciation support
+- **Educational Goal**: Continued phonics mastery and sound recognition
+
+#### **Level 5: Number Line Reinforcement**
+**Math Doors (`m`)**:
+- **Mechanics**: Continued number line puzzles identical to Level 4
+- **UI**: Same interactive 13-cell grid with PT movement
+- **Educational Goal**: Reinforcement of visual arithmetic concepts
+
+**Reading Doors (`r`)**:
+- **Mechanics**: Same digraph phonics game as Levels 3-4
+- **Educational Goal**: Phonics skill reinforcement and sound pattern recognition
+
+#### **Level 6: Heart Collection Introduction**
+**Math Doors (`m`)**:
+- **Mechanics**: Same number line puzzles (A+B, A-B operations)
+- **UI**: Interactive 13-cell grid with PT movement
+- **Educational Goal**: Continued visual arithmetic practice
+
+**Reading Doors (`r`)**:
+- **Mechanics**: Same digraph phonics game with audio support
+- **Educational Goal**: Phonics mastery and automatic sound recognition
+
+**Special Feature**: **Heart items (`h`)** appear in maze for health/score bonuses
+
+#### **Level 7: Skill Consolidation**
+**Math Doors (`m`)**:
+- **Mechanics**: Same number line puzzles as previous levels
+- **Educational Goal**: Arithmetic fluency with visual support systems
+
+**Reading Doors (`r`)**:
+- **Mechanics**: Same digraph phonics game with text-to-speech
+- **Educational Goal**: Phonics reinforcement and sound-symbol correspondence
+
+**Special Feature**: Heart collection continues for bonus scoring
+
+#### **Level 8: Advanced Mathematics**
+**Math Doors (`m`)**:
+- **Mechanics**: **TRIPLE ADDITION** number line puzzles (A+B+C format)
+- **UI**: Same 13-cell grid, but with 3-term colored equations
+- **Examples**: "3 + 4 + 2 = ?" with distinct color coding for each term
+- **Constraints**: Total sum ≤ 12, algorithms reduce zero values in problems
+- **Educational Goal**: Multi-term addition with visual scaffolding
+
+**Reading Doors (`r`)**:
+- **Mechanics**: **DIVISION PUZZLES** - major shift to advanced mathematical concepts
+- **UI**: Drag-and-drop interface with dots and basket containers
+- **Interaction**: Player drags individual dots into equal groups/baskets
+- **Examples**: "12 ÷ 3 = ?" solved by distributing 12 dots into 3 equal baskets
+- **Features**: Touch and mouse support, submit button activation when complete
+- **Constraints**: Avoids duplicate problems, limits A÷1 and answer=1 cases
+- **Educational Goal**: Visual division understanding through equal grouping
+
+#### **Level 9: Advanced Operations**
+**Math Doors (`m`)**:
+- **Mechanics**: Same triple addition (A+B+C) as Level 8
+- **Educational Goal**: Multi-term arithmetic mastery and mental math skills
+
+**Reading Doors (`r`)**:
+- **Mechanics**: Same division puzzles as Level 8 with drag-and-drop interface
+- **UI**: Dots and baskets with visual distribution validation
+- **Educational Goal**: Division fluency through hands-on grouping activities
+
+**Special Features**: Hearts + **Bonus items (`b`)** for rocket boost activation
+
+#### **Level 10: Multiplication Mastery**
+**Math Doors (`m`)**:
+- **Mechanics**: **MULTIPLICATION GROUPS PUZZLE** - most sophisticated math interface
+- **UI**: Interactive red squares with +/- control buttons and multiple choice answers
+- **Interaction**: Player creates visual groups by adding squares and dots to represent multiplication
+- **Examples**: "3 × 4 = ?" solved by creating 3 squares with 4 dots each
+- **Validation**: Dual verification - correct visual arrangement AND correct numerical answer
+- **Constraints**: Problems maintain A<10, B<10, A×B<15 for age-appropriate difficulty
+- **Wrong Answers**: Generated within |W-R| < 4 constraint for appropriate challenge
+- **Educational Goal**: Multiplication as repeated addition and visual grouping
+
+**Reading Doors (`r`)**:
+- **Mechanics**: Same division puzzles as Levels 8-9
+- **Educational Goal**: Division mastery and mathematical problem-solving
+
+**Special Features**: Hearts + Bonus items, most complex maze layouts
+
+### Educational Progression Framework
+
+#### **Mathematical Learning Path**:
+1. **Foundation (Levels 1-3)**: Basic arithmetic operations (answers 1-12)
+2. **Visualization (Levels 4-7)**: Number line spatial reasoning (A+B, A-B)
+3. **Complex Operations (Levels 8-9)**: Multi-term addition (A+B+C)
+4. **Advanced Concepts (Level 10)**: Multiplication through grouping models
+
+#### **Reading/Language Learning Path**:
+1. **Sight Words (Levels 1-2)**: Visual word recognition and vocabulary building
+2. **Phonics (Levels 3-7)**: Digraph sound recognition with audio support
+3. **Mathematical Reading (Levels 8-10)**: Division problem comprehension and solving
+
+#### **Cognitive Skill Development**:
+- **Visual Processing**: Number lines, grouping models, spatial reasoning
+- **Auditory Processing**: Text-to-speech integration for phonics
+- **Motor Skills**: Drag-and-drop interactions, precise clicking
+- **Problem Solving**: Multi-step puzzle completion and validation
+
+### Puzzle Mechanics and Technical Features
+- **Modal-based UI**: Centralized puzzle display system with consistent interactions
+- **Adaptive Difficulty**: Scoring penalties based on difficulty mode and attempt counts
+- **Usage Tracking**: Prevents problem repetition within individual levels
+- **Audio Integration**: Text-to-speech synthesis for pronunciation modeling
+- **Visual Feedback**: Thumbs up/down indicators with position-specific placement
+- **Input Validation**: Keyboard and mouse support with accessibility considerations
 
 ## Advanced Game Features
 
