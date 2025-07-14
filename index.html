@@ -65,6 +65,15 @@
             color: #4169E1;
         }
         
+        /* Black text during rocket boost for better visibility */
+        #gameContainer.rocket-boost #score {
+            color: #000000;
+        }
+        
+        #gameContainer.rocket-boost #level {
+            color: #000000;
+        }
+        
         #puzzleModal {
             display: none;
             position: fixed;
@@ -74,6 +83,10 @@
             height: 100%;
             background: rgba(0,0,0,0.7);
             z-index: 5000;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         
         #puzzleContent {
@@ -91,17 +104,29 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
             max-height: 85vh;
             overflow-y: auto;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         
         #puzzleTitle {
             font-size: 28px;
             margin-bottom: 20px;
             text-align: center;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         
         #puzzleQuestion {
             font-size: 20px;
             margin-bottom: 25px;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         
         .puzzle-button {
@@ -116,6 +141,10 @@
             font-family: inherit;
             min-width: 100px;
             min-height: 80px;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         
         .puzzle-button:hover {
@@ -834,8 +863,8 @@
         // CSV Parser for dynamic maze loading
         async function loadMazeFromCSV() {
             try {
-                // Level 10 uses level 9's maze (debug duplicate)
-                const mazeLevel = game.selectedDifficulty === 10 ? 9 : game.selectedDifficulty;
+                // Load maze for current level
+                const mazeLevel = game.selectedDifficulty;
                 const csvPath = `level-${mazeLevel}/grid.csv`;
                 console.log(`Attempting to load ${csvPath}...`);
                 console.log('Selected difficulty:', game.selectedDifficulty);
@@ -883,14 +912,17 @@
             const paths = [];
             const bonusItems = [];
             let watering_hole = null;
+            const maze = []; // Store raw maze data for wall transitions
             
             // Skip header row (line 0)
             for (let rowIndex = 1; rowIndex < lines.length; rowIndex++) {
                 const cells = lines[rowIndex].split(',');
+                const mazeRow = [];
                 
                 // Skip first column (row number), start from column 1
                 for (let colIndex = 1; colIndex < cells.length; colIndex++) {
                     const cellValue = cells[colIndex].trim();
+                    mazeRow.push(cellValue); // Store cell value in maze array
                     
                     // Calculate actual coordinates (0-based for arrays)
                     const x = (colIndex - 1) * 40; // Column A=0, B=1, etc. * 40
@@ -932,16 +964,17 @@
                         // Empty cells and walls are ignored
                     }
                 }
+                maze.push(mazeRow); // Add completed row to maze
             }
             
-            return { doors, paths, watering_hole, bonusItems };
+            return { doors, paths, watering_hole, bonusItems, maze };
         }
         
         // Word list parser for dynamic loading
         async function loadWordListFromFile() {
             try {
-                // Level 10 uses level 9's word list (debug duplicate)
-                const wordListLevel = game.selectedDifficulty === 10 ? 9 : game.selectedDifficulty;
+                // Load word list for current level
+                const wordListLevel = game.selectedDifficulty;
                 const wordListPath = `level-${wordListLevel}/Word-List.txt`;
                 console.log(`Attempting to load ${wordListPath}...`);
                 const response = await fetch(wordListPath + '?v=' + Date.now());
@@ -1277,6 +1310,9 @@ PIG 🐖`;
             hasBonus: false, // Whether PT has collected the bonus
             rocketCountdown: 0, // Countdown timer for rocket boost (in seconds)
             rocketBoostData: null, // Stores rocket boost movement data when puzzle is active
+            boostTransitionState: 'normal', // 'normal', 'starting', 'active', 'ending'
+            originalMaze: [], // Store original maze for wall restoration
+            playerStartPosition: { x: 0, y: 0 }, // Store starting position for teleport
             watering_hole: null, // Will be populated from CSV
             wordEmojiPairs: [], // Will be populated from Word-List.txt
             distractors: {}, // Will be populated from distractors.txt
@@ -1297,6 +1333,7 @@ PIG 🐖`;
             digraphSounds: {}, // Will be populated from digraph-sounds.txt for Level 3
             emojiNames: {}, // Will be populated from emoji-names.txt for Level 3
             usedDigraphs: [], // Track digraphs used in current level to prevent repetition
+        usedMultiplicationProblems: [], // Track multiplication pairs used in current level to prevent repetition
             levelScores: {}, // Track final score for each completed level
             deathLevel: null, // Track which level the user died on
             gameSession: { // Track current game session
@@ -1665,6 +1702,12 @@ PIG 🐖`;
                 console.log(`Reset division problem tracking for level ${game.selectedDifficulty}`);
             }
             
+            // Reset multiplication problem tracking when starting/restarting level 10
+            if (game.selectedDifficulty === 10) {
+                game.usedMultiplicationProblems = [];
+                console.log(`Reset multiplication problem tracking for level ${game.selectedDifficulty}`);
+            }
+            
             // Reset bonus state when starting level 9 or 10
             if (game.selectedDifficulty === 9 || game.selectedDifficulty === 10) {
                 game.hasBonus = false;
@@ -1700,6 +1743,9 @@ PIG 🐖`;
             game.paths = mazeData.paths;
             game.watering_hole = mazeData.watering_hole;
             game.bonusItems = mazeData.bonusItems;
+            
+            // Store original maze for wall restoration during rocket boost
+            game.originalMaze = JSON.parse(JSON.stringify(mazeData.maze || []));
             game.wordEmojiPairs = wordList;
             game.distractors = distractors;
             
@@ -1859,15 +1905,10 @@ PIG 🐖`;
                 // Mark bonus as collected
                 bonusItem.collected = true;
                 
-                // Set bonus flag and switch to bonus sprite
-                game.hasBonus = true;
-                currentMovementSprites = ptSprites.bonus;
+                // Start the boost transition instead of immediate activation
+                startBoostTransition();
                 
-                // Start 90-second rocket countdown
-                game.rocketCountdown = 90;
-                startRocketCountdown();
-                
-                console.log('Bonus collected! PT now has rocket boost for 90 seconds');
+                console.log('Bonus collected! Starting rocket boost transition');
             }
         }
         
@@ -1883,12 +1924,10 @@ PIG 🐖`;
                     updateRocketDisplay();
                     
                     if (game.rocketCountdown <= 0) {
-                        // Rocket boost expired
+                        // Rocket boost expired - start end transition
                         clearInterval(countdownInterval);
-                        game.hasBonus = false;
-                        currentMovementSprites = ptSprites.movement;
-                        updateRocketDisplay(); // Hide the display
-                        console.log('Rocket boost expired! PT back to normal movement');
+                        endBoostTransition();
+                        console.log('Rocket boost expired! Starting end transition');
                     }
                 }
             }, 1000);
@@ -1973,6 +2012,215 @@ PIG 🐖`;
             game.rocketBoostData = null;
             
             console.log(`Rocket boost completed: moved ${data.maxSpaces} spaces`);
+        }
+        
+        // Wall transition functions for rocket boost
+        function startBoostTransition() {
+            if (game.selectedDifficulty !== 9 && game.selectedDifficulty !== 10) return;
+            
+            console.log('Starting rocket boost transition');
+            game.boostTransitionState = 'starting';
+            
+            // Freeze player movement
+            game.player.isMoving = false;
+            
+            // Show boost transition modal
+            showBoostTransitionModal(true);
+        }
+        
+        function showBoostTransitionModal(isStarting) {
+            // Create modal
+            const modal = document.createElement('div');
+            modal.id = 'boostTransitionModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                z-index: 6000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                user-select: none;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+            `;
+            
+            const content = document.createElement('div');
+            content.style.cssText = `
+                background: white;
+                padding: 40px;
+                border-radius: 20px;
+                text-align: center;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            `;
+            
+            // Create animated PT sprite canvas
+            const spriteCanvas = document.createElement('canvas');
+            spriteCanvas.width = 200;
+            spriteCanvas.height = 200;
+            spriteCanvas.style.cssText = `
+                display: block;
+                margin: 20px auto;
+                border: 3px solid #2E8B57;
+                border-radius: 10px;
+            `;
+            
+            const spriteCtx = spriteCanvas.getContext('2d');
+            const spriteToUse = isStarting ? ptSprites.bonus : ptSprites.movement;
+            
+            // Animate the sprite
+            let animFrame = 0;
+            const animateSprite = () => {
+                if (spriteToUse.complete) {
+                    spriteCtx.clearRect(0, 0, 200, 200);
+                    
+                    // Use right-facing frames and alternate between them
+                    const frameX = (animFrame % 2 === 0) ? 0 : 160;
+                    
+                    spriteCtx.drawImage(
+                        spriteToUse,
+                        frameX, 0, 160, 160,
+                        20, 20, 160, 160
+                    );
+                    
+                    animFrame++;
+                }
+            };
+            
+            const animInterval = setInterval(animateSprite, 500);
+            
+            // Create button
+            const button = document.createElement('button');
+            button.textContent = isStarting ? 'START BOOST!' : 'RETURN TO NORMAL';
+            button.style.cssText = `
+                background: ${isStarting ? '#FF4500' : '#4CAF50'};
+                color: white;
+                padding: 15px 30px;
+                border: none;
+                border-radius: 10px;
+                font-size: 20px;
+                font-weight: bold;
+                cursor: pointer;
+                margin-top: 20px;
+            `;
+            
+            button.onclick = () => {
+                clearInterval(animInterval);
+                document.body.removeChild(modal);
+                
+                if (isStarting) {
+                    // Start boost mode
+                    removeWalls();
+                    currentMovementSprites = ptSprites.bonus;
+                    game.rocketCountdown = 30;
+                    game.boostTransitionState = 'active';
+                    startRocketCountdown();
+                    
+                    const gameContainer = document.getElementById('gameContainer');
+                    gameContainer.style.transition = 'background 0.5s ease';
+                    gameContainer.classList.add('rocket-boost');
+                    
+                    console.log('Rocket boost active - walls removed');
+                } else {
+                    // End boost mode
+                    game.player.x = game.playerStartPosition.x;
+                    game.player.y = game.playerStartPosition.y;
+                    restoreWalls();
+                    currentMovementSprites = ptSprites.movement;
+                    
+                    const gameContainer = document.getElementById('gameContainer');
+                    gameContainer.style.transition = 'background 0.5s ease';
+                    gameContainer.classList.remove('rocket-boost', 'blinking');
+                    
+                    game.hasBonus = false;
+                    game.rocketCountdown = 0;
+                    game.boostTransitionState = 'normal';
+                    updateRocketDisplay();
+                    
+                    console.log('Rocket boost ended - walls restored, player teleported to start');
+                }
+            };
+            
+            // Add title
+            const title = document.createElement('h2');
+            title.textContent = isStarting ? '🚀 ROCKET BOOST READY!' : '🏁 BOOST ENDING';
+            title.style.cssText = `
+                color: ${isStarting ? '#FF4500' : '#4CAF50'};
+                font-size: 28px;
+                margin-bottom: 10px;
+            `;
+            
+            content.appendChild(title);
+            content.appendChild(spriteCanvas);
+            content.appendChild(button);
+            modal.appendChild(content);
+            document.body.appendChild(modal);
+        }
+        
+        function endBoostTransition() {
+            if (game.selectedDifficulty !== 9 && game.selectedDifficulty !== 10) return;
+            
+            console.log('Ending rocket boost transition');
+            game.boostTransitionState = 'ending';
+            
+            // Check if player is on a heart and collect it
+            checkHeartCollection(game.player.x, game.player.y);
+            
+            // Freeze player movement
+            game.player.isMoving = false;
+            
+            // Show boost transition modal
+            showBoostTransitionModal(false);
+        }
+        
+        function removeWalls() {
+            // Collect all wall positions first
+            const wallPositions = [];
+            for (let rowIndex = 0; rowIndex < game.originalMaze.length; rowIndex++) {
+                for (let colIndex = 0; colIndex < game.originalMaze[rowIndex].length; colIndex++) {
+                    const cellValue = game.originalMaze[rowIndex][colIndex];
+                    if (cellValue === '' || cellValue === ' ') {
+                        wallPositions.push({ rowIndex, colIndex });
+                    }
+                }
+            }
+            
+            // Shuffle the wall positions to randomize which half we remove
+            for (let i = wallPositions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [wallPositions[i], wallPositions[j]] = [wallPositions[j], wallPositions[i]];
+            }
+            
+            // Remove only half of the walls
+            const halfCount = Math.floor(wallPositions.length / 2);
+            for (let i = 0; i < halfCount; i++) {
+                const { rowIndex, colIndex } = wallPositions[i];
+                const x = colIndex * 40;
+                const y = rowIndex * 40;
+                game.paths.push({ x, y, width: 40, height: 40 });
+            }
+            
+            console.log(`Removed ${halfCount} out of ${wallPositions.length} walls`);
+        }
+        
+        function restoreWalls() {
+            // Remove all paths that were originally walls
+            game.paths = game.paths.filter(path => {
+                const colIndex = path.x / 40;
+                const rowIndex = path.y / 40;
+                
+                // Check if this path was originally a wall
+                if (rowIndex < game.originalMaze.length && colIndex < game.originalMaze[rowIndex].length) {
+                    const originalCell = game.originalMaze[rowIndex][colIndex];
+                    // Keep paths that were originally non-empty (not walls)
+                    return originalCell !== '' && originalCell !== ' ';
+                }
+                return true;
+            });
         }
         
         function setupDivisionDragDrop(door) {
@@ -2312,11 +2560,15 @@ PIG 🐖`;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             // Draw wall texture background across the entire canvas (including padding areas)
-            if (textures.loaded && textures.wall.complete) {
+            let wallTexture = textures.wall;
+            
+            // Walls always use normal texture - boost texture is only for newly opened paths
+            
+            if (textures.loaded && wallTexture.complete) {
                 // Draw wall texture in a proper grid pattern covering entire canvas
                 for (let x = 0; x < Math.ceil(canvas.width / 40); x++) {
                     for (let y = 0; y < Math.ceil(canvas.height / 40); y++) {
-                        ctx.drawImage(textures.wall, x * 40, y * 40, 40, 40);
+                        ctx.drawImage(wallTexture, x * 40, y * 40, 40, 40);
                     }
                 }
             } else {
@@ -2460,6 +2712,7 @@ PIG 🐖`;
             }
         }
         
+        
         // Debug mode keyboard listener (Shift + Ctrl + D)
         document.addEventListener('keydown', (e) => {
             if (e.shiftKey && e.ctrlKey && (e.key === 'D' || e.key === 'd')) {
@@ -2481,8 +2734,9 @@ PIG 🐖`;
         
         // Keyboard controls
         document.addEventListener('keydown', (e) => {
-            // Don't allow movement if puzzle is active
+            // Don't allow movement if puzzle is active or during boost transitions
             if (game.puzzleActive) return;
+            if (game.boostTransitionState === 'starting' || game.boostTransitionState === 'ending') return;
             
             // Snap current position to grid first
             let currentGridX = Math.round(game.player.x / game.tileSize) * game.tileSize;
@@ -2491,8 +2745,8 @@ PIG 🐖`;
             let newX = currentGridX;
             let newY = currentGridY;
             
-            // Calculate movement distance (triple if rocket boost active)
-            const moveDistance = game.hasBonus && game.rocketCountdown > 0 ? game.tileSize * 3 : game.tileSize;
+            // Movement is always single tile now (walls are removed during boost instead of triple movement)
+            const moveDistance = game.tileSize;
             
             switch(e.key) {
                 case 'ArrowUp':
@@ -2519,96 +2773,18 @@ PIG 🐖`;
                     return;
             }
             
-            // Handle rocket boost movement (3 spaces) or normal movement (1 space)
-            if (game.hasBonus && game.rocketCountdown > 0 && moveDistance === game.tileSize * 3) {
-                // Rocket boost: handle 3-space movement with simplified logic
-                const deltaX = (newX - currentGridX) / 3;
-                const deltaY = (newY - currentGridY) / 3;
-                const space1X = currentGridX + deltaX;
-                const space1Y = currentGridY + deltaY;
-                const space2X = currentGridX + deltaX * 2;
-                const space2Y = currentGridY + deltaY * 2;
-                const space3X = newX;
-                const space3Y = newY;
-                
-                // Find how far PT can move before hitting a wall
-                let finalX = currentGridX;
-                let finalY = currentGridY;
-                let maxSpaces = 0;
-                
-                if (isOnPath(space1X, space1Y)) {
-                    finalX = space1X;
-                    finalY = space1Y;
-                    maxSpaces = 1;
+            // Normal movement (single space)
+            if (isOnPath(newX, newY)) {
+                // Check if a door is blocking the path
+                if (!isDoorBlocking(newX, newY)) {
+                    // Update player position
+                    game.player.x = newX;
+                    game.player.y = newY;
                     
-                    if (isOnPath(space2X, space2Y)) {
-                        finalX = space2X;
-                        finalY = space2Y;
-                        maxSpaces = 2;
-                        
-                        if (isOnPath(space3X, space3Y)) {
-                            finalX = space3X;
-                            finalY = space3Y;
-                            maxSpaces = 3;
-                        }
-                    }
-                }
-                
-                // Find the first puzzle in the path
-                let firstPuzzleDoor = null;
-                if (maxSpaces >= 1) {
-                    const door1 = getBlockingDoor(space1X, space1Y);
-                    if (door1 && !door1.open) {
-                        firstPuzzleDoor = door1;
-                    } else if (maxSpaces >= 2) {
-                        const door2 = getBlockingDoor(space2X, space2Y);
-                        if (door2 && !door2.open) {
-                            firstPuzzleDoor = door2;
-                        } else if (maxSpaces >= 3) {
-                            const door3 = getBlockingDoor(space3X, space3Y);
-                            if (door3 && !door3.open) {
-                                firstPuzzleDoor = door3;
-                            }
-                        }
-                    }
-                }
-                
-                // If there's a puzzle to solve, show it and store rocket boost data
-                if (firstPuzzleDoor) {
-                    // Store rocket boost movement data for completion
-                    game.rocketBoostData = {
-                        spaces: [
-                            {x: space1X, y: space1Y},
-                            {x: space2X, y: space2Y}, 
-                            {x: space3X, y: space3Y}
-                        ],
-                        maxSpaces: maxSpaces,
-                        currentX: currentGridX,
-                        currentY: currentGridY
-                    };
-                    
-                    showPuzzle(firstPuzzleDoor.type, firstPuzzleDoor);
-                    return; // Don't move yet, wait for puzzle completion
-                }
-                
-                // No puzzles - move PT to final position and collect everything along the way
-                if (maxSpaces > 0) {
-                    game.player.x = finalX;
-                    game.player.y = finalY;
-                    
-                    // Collect hearts/bonuses from all traversed spaces
-                    if (maxSpaces >= 1) {
-                        checkHeartCollection(space1X, space1Y);
-                        checkBonusCollection(space1X, space1Y);
-                    }
-                    if (maxSpaces >= 2) {
-                        checkHeartCollection(space2X, space2Y);
-                        checkBonusCollection(space2X, space2Y);
-                    }
-                    if (maxSpaces >= 3) {
-                        checkHeartCollection(space3X, space3Y);
-                        checkBonusCollection(space3X, space3Y);
-                    }
+                    // Check for heart collection
+                    checkHeartCollection(newX, newY);
+                    // Check for bonus collection
+                    checkBonusCollection(newX, newY);
                     
                     // Update direction and start animation
                     if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
@@ -2624,55 +2800,31 @@ PIG 🐖`;
                     // Trigger walking animation
                     game.player.isMoving = true;
                     game.player.animFrame = (game.player.animFrame + 1) % 2; // Toggle between frames 0 and 1
-                }
-            } else {
-                // Normal movement (single space)
-                if (isOnPath(newX, newY)) {
-                    // Check if a door is blocking the path
-                    if (!isDoorBlocking(newX, newY)) {
-                        // Update player position
-                        game.player.x = newX;
-                        game.player.y = newY;
-                        
-                        // Check for heart collection
-                        checkHeartCollection(newX, newY);
-                        // Check for bonus collection
-                        checkBonusCollection(newX, newY);
-                        
-                        // Update direction and start animation
-                        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-                            game.player.direction = 'left';
-                        } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-                            game.player.direction = 'right';
-                        } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
-                            game.player.direction = 'up';
-                        } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-                            game.player.direction = 'down';
-                        }
-                        
-                        // Trigger walking animation
-                        game.player.isMoving = true;
-                        game.player.animFrame = (game.player.animFrame + 1) % 2; // Toggle between frames 0 and 1
-                    } else {
-                        // Find which door is blocking and show puzzle
-                        const blockingDoor = game.doors.find(door => 
-                            !door.open && 
-                            newX === door.x && newY === door.y
-                        );
-                        if (blockingDoor && !game.puzzleActive) {
-                            showPuzzle(blockingDoor.type, blockingDoor);
-                        }
+                } else {
+                    // Find which door is blocking and show puzzle
+                    const blockingDoor = game.doors.find(door => 
+                        !door.open && 
+                        newX === door.x && newY === door.y
+                    );
+                    if (blockingDoor && !game.puzzleActive) {
+                        showPuzzle(blockingDoor.type, blockingDoor);
                     }
                 }
+            } else {
+                // Path is blocked by wall - no movement allowed
+                console.log('Movement blocked by wall');
             }
             
             // Check for watering hole win condition
             if (game.watering_hole) {
-                const distance = Math.sqrt(
-                    Math.pow(game.player.x + 20 - game.watering_hole.x, 2) + 
-                    Math.pow(game.player.y + 20 - game.watering_hole.y, 2)
-                );
-                if (distance < 40) {
+                // Player needs to be on the exact same tile as the watering hole
+                const playerGridX = Math.round(game.player.x / 40) * 40;
+                const playerGridY = Math.round(game.player.y / 40) * 40;
+                const wateringHoleGridX = Math.round(game.watering_hole.x / 40) * 40;
+                const wateringHoleGridY = Math.round(game.watering_hole.y / 40) * 40;
+                
+                if (playerGridX === wateringHoleGridX && playerGridY === wateringHoleGridY) {
+                    console.log(`Player reached watering hole at (${playerGridX}, ${playerGridY})`);
                     showCelebration();
                 }
             }
@@ -3022,15 +3174,43 @@ PIG 🐖`;
             const question = document.getElementById('puzzleQuestion');
             const options = document.getElementById('puzzleOptions');
             
-            // Generate simple multiplication problem (A < 10, B < 10, A×B < 15)
-            let A, B;
-            do {
-                A = Math.floor(Math.random() * 6) + 2; // 2-7
-                B = Math.floor(Math.random() * 4) + 2; // 2-5
-            } while (A >= 10 || B >= 10 || A * B >= 15);
+            // Initialize tracking if not already done
+            if (!game.usedMultiplicationProblems) {
+                game.usedMultiplicationProblems = [];
+            }
+            
+            // Generate all valid multiplication pairs (A,B) where A and B are 1-10, A×B is 1-20
+            const allValidPairs = [];
+            for (let a = 1; a <= 10; a++) {
+                for (let b = 1; b <= 10; b++) {
+                    if (a * b <= 20) {
+                        allValidPairs.push([a, b]);
+                    }
+                }
+            }
+            
+            // Filter out used pairs
+            const availablePairs = allValidPairs.filter(pair => 
+                !game.usedMultiplicationProblems.some(used => used[0] === pair[0] && used[1] === pair[1])
+            );
+            
+            // If no pairs available, reset the used pairs (shouldn't happen as there are 46 pairs)
+            if (availablePairs.length === 0) {
+                console.log('All multiplication pairs used, resetting...');
+                game.usedMultiplicationProblems = [];
+                availablePairs.push(...allValidPairs);
+            }
+            
+            // Select a random pair from available pairs
+            const randomIndex = Math.floor(Math.random() * availablePairs.length);
+            const [A, B] = availablePairs[randomIndex];
+            
+            // Mark this pair as used
+            game.usedMultiplicationProblems.push([A, B]);
             
             const correctAnswer = A * B;
             console.log(`Generated problem: ${A} × ${B} = ${correctAnswer}`);
+            console.log(`Used pairs so far: ${game.usedMultiplicationProblems.length}/46`);
             
             // Store puzzle data
             door.multiplicationA = A;
@@ -4462,6 +4642,9 @@ PIG 🐖`;
             game.player.x = 0;
             game.player.y = 0;
             game.player.direction = 'right';
+            // Store starting position for rocket boost teleport
+            game.playerStartPosition.x = 0;
+            game.playerStartPosition.y = 0;
             // Only reset testMode if it's not already set to true (preserve test mode)
             if (!game.testMode) {
                 game.testMode = false;

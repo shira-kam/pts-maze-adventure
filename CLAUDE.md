@@ -179,7 +179,8 @@ Each level features two distinct educational challenges accessed through door ty
 - **Interaction**: Player creates visual groups by adding squares and dots to represent multiplication
 - **Examples**: "3 × 4 = ?" solved by creating 3 squares with 4 dots each
 - **Validation**: Dual verification - correct visual arrangement AND correct numerical answer
-- **Constraints**: Problems maintain A<10, B<10, A×B<15 for age-appropriate difficulty
+- **Constraints**: A×B where A and B are 1-10, A×B ≤ 20 (46 total unique ordered pairs)
+- **Problem Generation**: No repetition within a level using `game.usedMultiplicationProblems` tracking
 - **Wrong Answers**: Generated within |W-R| < 4 constraint for appropriate challenge
 - **Educational Goal**: Multiplication as repeated addition and visual grouping
 
@@ -228,10 +229,11 @@ Each level features two distinct educational challenges accessed through door ty
 - **Final Score**: Only shown when all 10 levels are completed
 
 ### Rocket Boost System (Levels 9-10)
-- **Activation**: Collecting bonus items (`b` in maze) grants rocket power
-- **Mechanics**: Triple movement speed (120px vs 40px), countdown timer, visual effects
-- **UI**: Orange gradient background with blinking animation in final 5 seconds
+- **Activation**: Collecting bonus items (`b` in maze) opens boost modal
+- **Mechanics**: Modal-based transition, half walls removed for 30 seconds, teleport to start when ended
+- **UI**: Orange gradient background with blinking animation in final 5 seconds, black text for visibility
 - **Sprite**: Special PT-Bonus-Sprite.svg for rocket mode appearance
+- **Transitions**: Animated 200x200px PT sprite in modal with "START BOOST!" / "RETURN TO NORMAL" buttons
 
 ### Heart Collection System (Levels 6-10)
 - **Placement**: Hearts (`h`) embedded in maze paths for collection
