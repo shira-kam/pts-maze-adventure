@@ -112,58 +112,40 @@ This document outlines a comprehensive refactoring plan to transform the current
   - `calculateFrameProperties()`
 
 ### Phase 2: Puzzle System Modularization (Priority: High)
+**NEW APPROACH**: Incremental, one puzzle type at a time, invisible to end users
 
-#### Step 2.1: Create Base Puzzle Class
-- **File**: `puzzle-base.js` (new)
-- **Structure**:
-  ```javascript
-  class BasePuzzle {
-    constructor(config, door) { 
-      this.config = config;
-      this.door = door;
-      this.tracking = config.tracking || {};
-      this.usedProblems = this.tracking.trackingScope === 'level' ? [] : 
-                         this.tracking.trackingScope === 'session' ? sessionStorage : 
-                         localStorage;
-    }
-    generateProblem() { } // Abstract - must implement tracking
-    validateAnswer(answer) { } // Abstract  
-    render() { } // Abstract
-    handleInput(input) { }
-    destroy() { }
-    
-    // Shared tracking methods
-    markProblemUsed(problem) { }
-    isProblemUsed(problem) { }
-    resetTracking() { }
-  }
-  ```
+#### Step 2.1: Simple Math Puzzle Modularization (Levels 1-3)
+- **File**: `simple-math-puzzle.js` (new)
+- **Goal**: Create exact replica of original simple arithmetic puzzle
+- **Strategy**: 
+  - No visible changes to user experience
+  - Uses existing `checkAnswer()` function for integration
+  - Only routes `simple_arithmetic` puzzle type to modular system
+  - All other puzzle types continue using original system
+- **Integration**: Minimal routing function `showSimpleMathPuzzle()`
+- **Testing**: Must be identical to original in all aspects
 
-#### Step 2.2: Create Puzzle Type Classes
-- **Files**: 
-  - `puzzle-math-simple.js` (addition/subtraction)
-  - `puzzle-math-numberline.js` (visual number line)
-  - `puzzle-math-division.js` (drag and drop)
-  - `puzzle-math-multiplication.js` (grouping)
-  - `puzzle-reading-wordmatch.js` (word-emoji)
-  - `puzzle-reading-digraph.js` (phonics)
+#### Step 2.2: Word-Emoji Reading Puzzle Modularization (Levels 1-2)
+- **File**: `word-emoji-puzzle.js` (new)
+- **Goal**: Modularize word-to-emoji matching puzzles
+- **Strategy**: Same incremental approach as simple math
+- **Integration**: Extend routing to handle `word_emoji_matching` type
 
-#### Step 2.3: Create Puzzle Factory
-- **File**: `puzzle-factory.js` (new)
-- **Function**: `createPuzzle(type, config, door)`
-- **Maps**: Configuration puzzle types to class constructors
+#### Step 2.3: Number Line Puzzle Modularization (Levels 4+)
+- **File**: `number-line-puzzle.js` (new)
+- **Goal**: Modularize visual number line puzzles
+- **Complexity**: Higher due to visual components and keyboard handling
+- **Strategy**: Replicate exact DOM structure and event handling
 
-#### Step 2.4: Refactor showPuzzle() Function
-- **Goal**: Replace massive switch statement with factory pattern
-- **New logic**: 
-  ```javascript
-  function showPuzzle(door) {
-    const config = getLevelConfig(game.selectedDifficulty);
-    const puzzleType = config.puzzles[door.type];
-    const puzzle = PuzzleFactory.create(puzzleType, config, door);
-    puzzle.render();
-  }
-  ```
+#### Step 2.4: Advanced Puzzle Modularization (Later)
+- **Files**: Division, multiplication, digraph puzzles
+- **Goal**: One puzzle type per session to avoid breaking working systems
+- **Strategy**: Only proceed after thorough testing of previous types
+
+#### Step 2.5: Consolidation (Final Step)
+- **Goal**: Remove original puzzle code once ALL types are modularized
+- **Strategy**: Only after extensive testing of all modular versions
+- **File**: Eventually refactor `showPuzzle()` to route all to modular system
 
 ### Phase 3: Asset Management System (Priority: Medium)
 

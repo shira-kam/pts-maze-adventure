@@ -858,6 +858,7 @@
     <!-- Configuration System -->
     <script src="game-config.js"></script>
     <script src="config-manager.js"></script>
+    <script src="simple-math-puzzle.js"></script>
     
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -2831,7 +2832,17 @@ PIG 🐖`;
                         newX === door.x && newY === door.y
                     );
                     if (blockingDoor && !game.puzzleActive) {
-                        showPuzzle(blockingDoor.type, blockingDoor);
+                        // Try modular system for math doors first
+                        if (blockingDoor.type === 'math') {
+                            const usedModular = showSimpleMathPuzzle(blockingDoor);
+                            if (!usedModular) {
+                                // Fall back to original system for non-simple math
+                                showPuzzle(blockingDoor.type, blockingDoor);
+                            }
+                        } else {
+                            // Use original system for all non-math doors
+                            showPuzzle(blockingDoor.type, blockingDoor);
+                        }
                     }
                 }
             } else {
@@ -4491,6 +4502,22 @@ PIG 🐖`;
                     result.style.fontSize = '';
                 }, 1500);
             }
+        }
+        
+        // Simple Math Puzzle Integration - Only for simple_arithmetic type
+        function showSimpleMathPuzzle(door) {
+            // Only handle simple arithmetic puzzles (Levels 1-3)
+            const level = game.selectedDifficulty;
+            const puzzleConfig = configManager.getPuzzleConfig(level, 'math');
+            
+            if (puzzleConfig && puzzleConfig.type === 'simple_arithmetic') {
+                console.log(`Using modular simple math puzzle for level ${level}`);
+                const puzzle = new SimpleMathPuzzle(door);
+                puzzle.render();
+                return true; // Indicates modular system was used
+            }
+            
+            return false; // Fall back to original system
         }
         
         function checkAnswer(correct, type, door, buttonElement, selectedEmoji = null) {

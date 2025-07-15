@@ -10,6 +10,12 @@ const LEVEL_CONFIG = {
                 type: 'simple_arithmetic',
                 maxNumber: 10,
                 operations: ['addition', 'subtraction'],
+                // Configurable limits for A+B=C problems
+                limits: {
+                    maxA: 9,      // First number limit
+                    maxB: 9,      // Second number limit  
+                    maxResult: 10 // Result limit (C)
+                },
                 tracking: {
                     preventRepetition: true,
                     maxAttempts: 3,
@@ -49,6 +55,12 @@ const LEVEL_CONFIG = {
                 type: 'simple_arithmetic',
                 maxNumber: 15,
                 operations: ['addition', 'subtraction'],
+                // Configurable limits for A+B=C problems
+                limits: {
+                    maxA: 12,     // First number limit
+                    maxB: 12,     // Second number limit  
+                    maxResult: 15 // Result limit (C)
+                },
                 tracking: {
                     preventRepetition: true,
                     maxAttempts: 3,
@@ -88,6 +100,12 @@ const LEVEL_CONFIG = {
                 type: 'simple_arithmetic',
                 maxNumber: 20,
                 operations: ['addition', 'subtraction'],
+                // Configurable limits for A+B=C problems
+                limits: {
+                    maxA: 15,     // First number limit
+                    maxB: 15,     // Second number limit  
+                    maxResult: 20 // Result limit (C)
+                },
                 tracking: {
                     preventRepetition: true,
                     maxAttempts: 3,
@@ -132,7 +150,7 @@ const LEVEL_CONFIG = {
         features: ['basic_movement'],
         puzzles: {
             math: {
-                type: 'simple_arithmetic',
+                type: 'number_line',
                 maxNumber: 25,
                 operations: ['addition', 'subtraction'],
                 tracking: {
@@ -452,9 +470,9 @@ const LEVEL_CONFIG = {
         features: ['basic_movement', 'rocket_boost'],
         puzzles: {
             math: {
-                type: 'simple_arithmetic',
+                type: 'multiplication_groups',
                 maxNumber: 100,
-                operations: ['addition', 'subtraction', 'multiplication'],
+                operations: ['multiplication'],
                 tracking: {
                     preventRepetition: true,
                     maxAttempts: 3,
