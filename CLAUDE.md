@@ -5,6 +5,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 "PT's Maze Adventure" is a sophisticated educational HTML5 Canvas maze game featuring PT the elephant. The game spans 10 levels with progressive difficulty, incorporating multiple educational puzzle types, advanced movement mechanics, comprehensive scoring systems, and extensive debug capabilities. Built as a single-page application with no external dependencies.
 
+## Running the Game
+**IMPORTANT**: This game requires a local HTTP server to function properly due to browser security restrictions on loading local files (CSV, text files, images). The game dynamically loads level data from CSV files and educational content from text files, which browsers block when opening HTML files directly from the file system.
+
+### Setup Options:
+1. **Python**: `python -m http.server 8000` or `python3 -m http.server 8000`
+2. **Node.js**: `npx http-server` or `npx serve`
+3. **VS Code**: Use "Live Server" extension
+4. **Any local web server** that can serve static files
+
+Then navigate to `http://localhost:8000` (or appropriate port) to play the game.
+
 ## Architecture Overview
 
 ### Core Files Structure
@@ -180,7 +191,8 @@ Each level features two distinct educational challenges accessed through door ty
 - **Examples**: "3 × 4 = ?" solved by creating 3 squares with 4 dots each
 - **Validation**: Dual verification - correct visual arrangement AND correct numerical answer
 - **Constraints**: A×B where A and B are 1-10, A×B ≤ 20 (46 total unique ordered pairs)
-- **Problem Generation**: No repetition within a level using `game.usedMultiplicationProblems` tracking
+- **Problem Generation**: No repetition within a level using `game.usedMultiplicationProblems` tracking array
+- **Unique Pair System**: Pre-generates all valid (A,B) combinations, shuffles for random selection
 - **Wrong Answers**: Generated within |W-R| < 4 constraint for appropriate challenge
 - **Educational Goal**: Multiplication as repeated addition and visual grouping
 
@@ -229,16 +241,49 @@ Each level features two distinct educational challenges accessed through door ty
 - **Final Score**: Only shown when all 10 levels are completed
 
 ### Rocket Boost System (Levels 9-10)
-- **Activation**: Collecting bonus items (`b` in maze) opens boost modal
-- **Mechanics**: Modal-based transition, half walls removed for 30 seconds, teleport to start when ended
-- **UI**: Orange gradient background with blinking animation in final 5 seconds, black text for visibility
-- **Sprite**: Special PT-Bonus-Sprite.svg for rocket mode appearance
-- **Transitions**: Animated 200x200px PT sprite in modal with "START BOOST!" / "RETURN TO NORMAL" buttons
+#### **Activation Process**
+- **Trigger**: Collecting bonus items (`b` in maze grid) activates boost modal
+- **Modal Interface**: Interactive transition screen with animated 200x200px PT sprite
+- **User Control**: Player clicks "START BOOST!" button to begin (no automatic activation)
+
+#### **Boost Mechanics**
+- **Wall Removal**: Randomly removes half of maze walls for easier navigation
+- **Duration**: 30-second timer with countdown display
+- **Movement**: Normal speed (not triple-speed) with enhanced maze traversal
+- **Visual State**: Orange gradient background (`#FF4500` to `#FFD700`) with rocket styling
+
+#### **Enhanced Features**
+- **Sprite System**: Switches to PT-Bonus-Sprite.svg during boost mode
+- **UI Adaptations**: Black text overlay for visibility during orange background
+- **Final Warning**: Blinking animation in final 5 seconds of countdown
+- **Safe Return**: Modal-based transition back to normal with "RETURN TO NORMAL" button
+- **Teleportation**: Returns PT to original starting position when boost ends
+- **Wall Restoration**: All walls restored to original maze state after boost
 
 ### Heart Collection System (Levels 6-10)
 - **Placement**: Hearts (`h`) embedded in maze paths for collection
 - **Scoring**: Integrated with main scoring system for bonus points
 - **Display**: Single heart emoji with count (prevents UI expansion)
+
+### Dual Score Display System
+The game features a comprehensive scoring system with both level-specific and cumulative tracking:
+
+#### **Level Score (Red Heart ❤️)**
+- **Reset Behavior**: Resets to starting hearts (3 for hard, 5 for easy/medium) at each level start
+- **Real-time Updates**: Changes immediately as player gains/loses hearts during gameplay
+- **Purpose**: Shows current health/progress within the active level
+
+#### **Cumulative Score (Black Heart 🖤)**
+- **Session Tracking**: Accumulates all hearts gained/lost across entire browser session
+- **Continuous Updates**: Updates in real-time alongside level score changes
+- **Reset Behavior**: Resets to 0 only on browser refresh/restart (no localStorage persistence)
+- **Starting Hearts**: Includes initial hearts when starting each new level (once per level attempt)
+- **Purpose**: Shows total progress across all levels played in current session
+
+#### **Display Format**
+- **Location**: Top-left of game area in blue text (`#4169E1`) matching level indicator
+- **Format**: `❤️ 5 | 🖤 23` (level score | cumulative score)
+- **Updates**: Both scores update simultaneously when hearts are gained/lost
 
 ### Scoring and Progression
 - **Base System**: Lives-based (hearts) with difficulty-dependent starting amounts
@@ -253,6 +298,8 @@ Each level features two distinct educational challenges accessed through door ty
 - **Movement sprites**: SVG-based (PT-sprite.svg) with 6 frames (160x160 each)
 - **Direction mapping**: Right (1-2), Left (3-4), Up/Down (5-6)
 - **Celebration animations**: Per-level PNG sheets with variable frame counts
+  - **Level 10**: 53 frames for extended celebration sequence
+  - **Other levels**: Variable frame counts based on sprite sheet dimensions
 - **Game over**: 13-frame horizontal sequence (436x436 frames)
 - **Scaling**: Dynamic sizing with aspect ratio preservation
 

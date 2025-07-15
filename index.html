@@ -58,7 +58,7 @@
         }
         
         #score {
-            color: #FF6347;
+            color: #4169E1;
         }
         
         #level {
@@ -1066,8 +1066,16 @@ PIG 🐖`;
         
         // Load PT sprites
         ptSprites.movement.src = 'PT-sprite.svg';
-        ptSprites.bonus.src = 'level-9/PT-Bonus-Sprite.svg';
-        // Celebration sprites will be loaded dynamically based on difficulty
+         // function to load bonus PT sprites based on level
+        function loadPTBonusSprite(level) {
+        const cacheBuster = '?v=' + Date.now();
+
+        if (level === 9 || level === 10) {
+            ptSprites.bonus.src = `level-${level}/PT-Bonus-Sprite.svg` + cacheBuster;
+        } else {
+            ptSprites.bonus.src = `level-9/PT-Bonus-Sprite.svg` + cacheBuster;
+        }
+}// Celebration sprites will be loaded dynamically based on difficulty
         
         // Digraph data for Level 3
         let digraphEmojis = {};
@@ -1152,9 +1160,9 @@ PIG 🐖`;
             5: { frames: 52, layout: 'horizontal' },
             6: { frames: 29, layout: 'horizontal' },
             7: { frames: 24, layout: 'horizontal' },
-            8: { frames: 29, layout: 'horizontal' },
+            8: { frames: 28, layout: 'horizontal' },
             9: { frames: 27, layout: 'horizontal' },
-            10: { frames: 27, layout: 'horizontal' }
+            10: { frames: 53, layout: 'horizontal' }
         };
         
         // Function to get celebration frame configuration for a level
@@ -1199,7 +1207,7 @@ PIG 🐖`;
             const celebrationSprite = new Image();
             const cacheBuster = '?v=' + Date.now();
             
-            if (difficulty >= 1 && difficulty <= 9) {
+            if (difficulty >= 1 && difficulty <= 10) {
                 celebrationSprite.src = `level-${difficulty}/celebrate.png` + cacheBuster;
             } else {
                 console.error(`Invalid difficulty level: ${difficulty}`);
@@ -1290,6 +1298,8 @@ PIG 🐖`;
         // Game object - will be populated with dynamic maze data
         const game = {
             score: 3,
+            cumulativeScore: 0, // Session-only cumulative score, resets on page refresh
+            currentLevelStartingHeartsAdded: false, // Track if we've added starting hearts for current level attempt
             currentLevel: 1,
             selectedDifficulty: 1,
             maxUnlockedLevel: parseInt(localStorage.getItem('ptMazeMaxLevel')) || 1, // Track highest level unlocked
@@ -1339,7 +1349,8 @@ PIG 🐖`;
             gameSession: { // Track current game session
                 startTime: null,
                 levelsCompleted: 0,
-                totalScore: 0
+                totalScore: 0,
+                completedLevels: new Set()
             }
         };
         
@@ -1502,6 +1513,7 @@ PIG 🐖`;
             
             // Start the selected level
             game.selectedDifficulty = level;
+            game.currentLevelStartingHeartsAdded = false; // Reset flag for new level
             currentCelebrationSprites = loadCelebrationSprite(level);
             initializeGame();
         }
@@ -1604,7 +1616,7 @@ PIG 🐖`;
                 const cacheBuster = '?v=' + Date.now() + '_' + Math.random();
                 
                 // Level 10 uses level 9's celebration sprite (debug duplicate)
-                const spriteLevel = level === 10 ? 9 : level;
+                const spriteLevel = level;
                 sprite.src = `level-${spriteLevel}/celebrate.png` + cacheBuster;
                 
                 sprite.onload = () => {
@@ -1720,6 +1732,9 @@ PIG 🐖`;
             // Load textures for this level
             loadTextures(game.selectedDifficulty);
             
+            loadPTBonusSprite(game.selectedDifficulty);
+            
+
             // Load maze data, word list, distractors, and digraph data (for Level 3) in parallel
             const loadPromises = [
                 loadMazeFromCSV(),
@@ -1769,10 +1784,11 @@ PIG 🐖`;
         
         function updateScore(points) {
             game.score += points;
+            game.cumulativeScore += points;
             
-            // Update hearts display with single heart and count
-            const livesText = `${Math.max(0, game.score)} ♥️`;
-            document.getElementById('score').textContent = livesText;
+            // Update display with level score and cumulative score
+            const scoreText = `❤️ ${Math.max(0, game.score)} | 🖤 ${Math.max(0, game.cumulativeScore)}`;
+            document.getElementById('score').textContent = scoreText;
             
             if (game.score <= 0) {
                 // Immediately dismiss any open puzzle dialog
@@ -3000,7 +3016,9 @@ PIG 🐖`;
                 answer > 10 || // Keep answers reasonable (max 10 dots per basket)
                 (answer === 1 && game.hasUsedAnswerOne) || // Answer = 1 only once per level
                 (divisor === 1 && game.hasUsedDivideByOne) || // A ÷ 1 only once per level
-                game.usedDivisionProblems.has(`${dividend}÷${divisor}`) // No repeats
+                game.usedDivisionProblems.has(`${dividend}÷${divisor}`) || // No repeats
+                (dividend === 1 && divisor >= 7) || // When A=1, B must be < 7
+                (divisor === 1 && dividend >= 7) // When B=1, A must be < 7
             );
             
             // Mark answer = 1 as used if this problem has answer = 1
@@ -3180,10 +3198,15 @@ PIG 🐖`;
             }
             
             // Generate all valid multiplication pairs (A,B) where A and B are 1-10, A×B is 1-20
+            // Additional constraint: when A=1 or B=1, both A and B must be < 7
             const allValidPairs = [];
             for (let a = 1; a <= 10; a++) {
                 for (let b = 1; b <= 10; b++) {
                     if (a * b <= 20) {
+                        // Apply constraint: when A=1 or B=1, both must be < 7
+                        if ((a === 1 && b >= 7) || (b === 1 && a >= 7)) {
+                            continue; // Skip this pair
+                        }
                         allValidPairs.push([a, b]);
                     }
                 }
@@ -4651,13 +4674,18 @@ PIG 🐖`;
             }
             
             // Set starting hearts based on difficulty mode
-            if (game.difficultyMode === 'easy' || game.difficultyMode === 'medium') {
-                game.score = 5;
-            } else {
-                game.score = 3; // hard mode
+            const startingHearts = (game.difficultyMode === 'easy' || game.difficultyMode === 'medium') ? 5 : 3;
+            game.score = startingHearts;
+            
+            // Only add starting hearts to cumulative score if we haven't already for this level attempt
+            if (!game.currentLevelStartingHeartsAdded) {
+                game.cumulativeScore += startingHearts;
+                game.currentLevelStartingHeartsAdded = true;
             }
             
-            updateScore(0); // This will set the hearts display
+            // Update display
+            const scoreText = `❤️ ${Math.max(0, game.score)} | 🖤 ${Math.max(0, game.cumulativeScore)}`;
+            document.getElementById('score').textContent = scoreText;
             
             // Display level and difficulty mode
             const difficultyEmoji = {
