@@ -623,14 +623,48 @@ metadata: { frames: 'auto', dimensions: 'auto' }
 
 ---
 
+## CRITICAL LESSONS LEARNED - FAILED PHASE 2 ATTEMPT
+
+### ❌ WHAT NOT TO DO - Phase 2 Modular Puzzle System Failure
+
+**What Went Wrong (January 15, 2025)**:
+1. **Broke Original Working System**: Created modular puzzle system that completely replaced working puzzle mechanics
+2. **Routing Logic Error**: Sent ALL math/reading doors to incomplete modular system instead of only supported types
+3. **Incomplete Implementation**: Only supported `simple_arithmetic` and `word_emoji_matching` but routed all puzzle types
+4. **Lost Core Features**: Broke scoring, modal dismissal, visual feedback, level/cumulative score display
+5. **Changed Mechanics**: Replaced multiple choice with text input, broke thumbs up/down feedback for children
+
+**Critical Errors Made**:
+- **Error #1**: Didn't study original puzzle system mechanics before implementing replacement
+- **Error #2**: Used generic routing (`if (type === 'math')`) instead of specific puzzle type checks
+- **Error #3**: Implemented text input for math instead of preserving multiple choice buttons
+- **Error #4**: Used text feedback instead of visual feedback for non-reading children
+- **Error #5**: Broke score tracking and modal dismissal functionality
+
+**Why It Failed**:
+- **Refactoring Rule Violation**: Changed functionality instead of preserving it
+- **Incomplete Modular System**: Only 2 of 8+ puzzle types implemented
+- **Poor Integration**: Modular system didn't properly integrate with existing game state
+
+**Lessons for Future Attempts**:
+1. **STUDY ORIGINAL FIRST**: Understand ALL puzzle mechanics before changing anything
+2. **PRESERVE FUNCTIONALITY**: Refactoring must maintain exact same user experience
+3. **INCREMENTAL APPROACH**: One puzzle type at a time, not all at once
+4. **PROPER ROUTING**: Only route puzzle types that are fully implemented
+5. **VISUAL FEEDBACK**: Children need thumbs up/down, not text messages
+
+**Recovery Action**: Reverted to commit `9d0759c` (Phase 1 complete) - all functionality restored
+
+---
+
 ## CURRENT STATUS (Updated Each Session)
 
 **Current Phase**: Phase 1 - Configuration System COMPLETE ✅
-**Current Step**: Ready to begin Phase 2 - Puzzle System Modularization
+**Current Step**: Ready to begin Phase 2 - Puzzle System Modularization (RESTART)
 **Game State**: Working - All Phase 1 tests passed
 **Files Recently Modified**: game-config.js (complete), config-manager.js (complete), index.html (updated with config integration)
-**Immediate Next Task**: Begin Phase 2, Step 2.1 - Create Base Puzzle Class
-**Context Summary**: Phase 1 complete! Successfully created comprehensive configuration system, replaced hardcoded level logic with config-driven approach, fixed heart texture bug, and passed all testing. Game is working perfectly with new modular configuration system.
+**Immediate Next Task**: Begin Phase 2 with PROPER approach - study original system first
+**Context Summary**: Phase 1 complete! Successfully created comprehensive configuration system. Previous Phase 2 attempt failed and was reverted. Game is working perfectly with new modular configuration system.
 
 **Last Updated**: 2025-01-15
-**Session Notes**: Completed Phase 1 by replacing hardcoded conditionals with configuration manager calls. Updated 6 key functions to use configuration system. All levels working correctly.
+**Session Notes**: Completed Phase 1 by replacing hardcoded conditionals with configuration manager calls. Updated 6 key functions to use configuration system. All levels working correctly. Previous failed Phase 2 attempt documented above.
