@@ -115,17 +115,41 @@ class SimpleMathPuzzle {
     }
 
     /**
-     * Generate wrong answers within the result range
-     * Now uses configurable maxResult limit
+     * Generate wrong answers close to the correct answer
+     * Uses |R-W| < 4 to prevent guessing/estimation and force calculation
      */
     generateWrongAnswers(correctAnswer) {
         const wrongAnswers = [];
+        const maxDistance = 4; // Maximum distance from correct answer
+        let attempts = 0;
+        const maxAttempts = 50; // Prevent infinite loops
+        
+        while (wrongAnswers.length < 2 && attempts < maxAttempts) {
+            // Generate offset between -maxDistance and +maxDistance (excluding 0)
+            let offset;
+            do {
+                offset = Math.floor(Math.random() * (maxDistance * 2 + 1)) - maxDistance;
+            } while (offset === 0); // Ensure offset is not 0
+            
+            const wrong = correctAnswer + offset;
+            
+            // Ensure answer is valid (within range) and unique
+            if (wrong >= 1 && wrong <= this.limits.maxResult && 
+                wrong !== correctAnswer && !wrongAnswers.includes(wrong)) {
+                wrongAnswers.push(wrong);
+            }
+            
+            attempts++;
+        }
+        
+        // Fallback: if we can't generate enough close answers, use broader range
         while (wrongAnswers.length < 2) {
             const wrong = Math.floor(Math.random() * this.limits.maxResult) + 1;
             if (wrong !== correctAnswer && !wrongAnswers.includes(wrong)) {
                 wrongAnswers.push(wrong);
             }
         }
+        
         return wrongAnswers;
     }
 
