@@ -16,14 +16,69 @@ class SimpleMathPuzzle {
             maxResult: 12
         };
         
+        // Initialize tracking system if enabled
+        this.tracking = config.tracking || {};
+        this.preventRepetition = this.tracking.preventRepetition || false;
+        
+        // Get or create level-specific problem tracking
+        if (this.preventRepetition) {
+            const trackingKey = `math_problems_level_${level}`;
+            if (!game[trackingKey]) {
+                game[trackingKey] = new Set();
+            }
+            this.usedProblems = game[trackingKey];
+        }
+        
         console.log(`Level ${level} math limits:`, this.limits);
+        console.log(`Problem tracking enabled: ${this.preventRepetition}`);
     }
 
     /**
      * Generate a simple arithmetic problem (addition or subtraction)
-     * Now uses configurable limits for A, B, and C in A+B=C
+     * Now uses configurable limits and tracking to prevent repetition
      */
     generateProblem() {
+        let problem;
+        let attempts = 0;
+        const maxAttempts = 50;
+        
+        do {
+            problem = this.createArithmeticProblem();
+            attempts++;
+            
+            // If tracking is disabled, return immediately
+            if (!this.preventRepetition) {
+                break;
+            }
+            
+            // Create problem key for tracking
+            const problemKey = `${problem.num1}${problem.operation}${problem.num2}`;
+            
+            // If problem hasn't been used, mark it as used and return
+            if (!this.usedProblems.has(problemKey)) {
+                this.usedProblems.add(problemKey);
+                console.log(`New problem: ${problemKey}, total used: ${this.usedProblems.size}`);
+                break;
+            }
+            
+        } while (attempts < maxAttempts);
+        
+        // Fallback: if all problems exhausted, reset tracking and use current problem
+        if (attempts >= maxAttempts && this.preventRepetition) {
+            console.log('All problems used, resetting tracking for this level');
+            this.usedProblems.clear();
+            const problemKey = `${problem.num1}${problem.operation}${problem.num2}`;
+            this.usedProblems.add(problemKey);
+        }
+        
+        return problem;
+    }
+    
+    /**
+     * Create a single arithmetic problem without tracking
+     * Separated from generateProblem for cleaner code
+     */
+    createArithmeticProblem() {
         const isAddition = Math.random() < 0.5;
         let num1, num2, answer;
         
@@ -39,7 +94,9 @@ class SimpleMathPuzzle {
             return {
                 question: `${num1} + ${num2} = ?`,
                 answer: answer,
-                operation: 'addition'
+                operation: '+',
+                num1: num1,
+                num2: num2
             };
         } else {
             // For subtraction A-B=C, ensure positive result within limits
@@ -50,7 +107,9 @@ class SimpleMathPuzzle {
             return {
                 question: `${num1} - ${num2} = ?`,
                 answer: answer,
-                operation: 'subtraction'
+                operation: '-',
+                num1: num1,
+                num2: num2
             };
         }
     }
