@@ -1266,10 +1266,10 @@ PIG 🐖`;
             
             // Load bonus assets if level has them
             if (configManager.hasBonusFeatures(level)) {
-                if (!textures.hearts) textures.hearts = new Image();
+                if (!textures.heart) textures.heart = new Image();
                 if (!textures.bonus) textures.bonus = new Image();
                 
-                textures.hearts.src = basePath + 'hearts.png' + cacheBuster;
+                textures.heart.src = basePath + 'heart.png' + cacheBuster;
                 textures.bonus.src = basePath + 'bonus.png' + cacheBuster;
             }
             

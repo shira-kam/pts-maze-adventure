@@ -261,13 +261,13 @@ const LEVEL_CONFIG = {
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'heart', 'endpoint'],
             sprites: {
                 celebrate: { frames: 20, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 }
             },
             bonus: false,
-            hearts: false
+            hearts: true
         },
         animation: {
             celebrationFrames: 20,
@@ -316,13 +316,13 @@ const LEVEL_CONFIG = {
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'heart', 'endpoint'],
             sprites: {
                 celebrate: { frames: 20, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 }
             },
             bonus: false,
-            hearts: false
+            hearts: true
         },
         animation: {
             celebrationFrames: 20,
@@ -371,13 +371,13 @@ const LEVEL_CONFIG = {
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'heart', 'endpoint'],
             sprites: {
                 celebrate: { frames: 20, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 }
             },
             bonus: false,
-            hearts: false
+            hearts: true
         },
         animation: {
             celebrationFrames: 20,
@@ -426,7 +426,7 @@ const LEVEL_CONFIG = {
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'bonus', 'hearts', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'bonus', 'heart', 'endpoint'],
             sprites: {
                 celebrate: { frames: 20, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 },
@@ -487,7 +487,7 @@ const LEVEL_CONFIG = {
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'bonus', 'hearts', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'bonus', 'heart', 'endpoint'],
             sprites: {
                 celebrate: { frames: 53, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 },
