@@ -113,10 +113,10 @@ const LEVEL_CONFIG = {
                 }
             },
             reading: {
-                type: 'word_emoji_matching',
+                type: 'digraph_sounds',
                 tracking: {
                     preventRepetition: true,
-                    usedWords: [],
+                    usedDigraphs: [],
                     trackingScope: 'level'
                 }
             },
@@ -160,10 +160,10 @@ const LEVEL_CONFIG = {
                 }
             },
             reading: {
-                type: 'word_emoji_matching',
+                type: 'digraph_sounds',
                 tracking: {
                     preventRepetition: true,
-                    usedWords: [],
+                    usedDigraphs: [],
                     trackingScope: 'level'
                 }
             },
@@ -207,10 +207,10 @@ const LEVEL_CONFIG = {
                 }
             },
             reading: {
-                type: 'word_emoji_matching',
+                type: 'digraph_sounds',
                 tracking: {
                     preventRepetition: true,
-                    usedWords: [],
+                    usedDigraphs: [],
                     trackingScope: 'level'
                 }
             },

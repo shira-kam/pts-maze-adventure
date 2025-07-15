@@ -67,7 +67,7 @@ class WordEmojiPuzzle {
         // Generate wrong answers using same-letter strategy
         const wrongEmojis = this.generateSameLetterWrongAnswers(correctPair.word, correctPair.emoji);
         
-        // Create all answer choices (1 correct + 3 wrong)
+        // Create all answer choices (1 correct + 2 wrong = 3 total)
         const allChoices = [correctPair.emoji, ...wrongEmojis];
         
         // Shuffle the choices
@@ -100,15 +100,15 @@ class WordEmojiPuzzle {
         
         // Add emojis from same-letter words
         sameLetterWords.forEach(pair => {
-            if (wrongEmojis.length < 3) {
+            if (wrongEmojis.length < 2) {
                 wrongEmojis.push(pair.emoji);
             }
         });
         
         // Strategy 2: If not enough same-letter words, use distractors
-        if (wrongEmojis.length < 3 && this.distractors[firstLetter]) {
+        if (wrongEmojis.length < 2 && this.distractors[firstLetter]) {
             const distractorEmojis = [...this.distractors[firstLetter]];
-            while (wrongEmojis.length < 3 && distractorEmojis.length > 0) {
+            while (wrongEmojis.length < 2 && distractorEmojis.length > 0) {
                 const randomIndex = Math.floor(Math.random() * distractorEmojis.length);
                 const distractor = distractorEmojis.splice(randomIndex, 1)[0];
                 if (!wrongEmojis.includes(distractor) && distractor !== correctEmoji) {
@@ -118,9 +118,9 @@ class WordEmojiPuzzle {
         }
         
         // Strategy 3: Fallback - use any random emojis if still not enough
-        if (wrongEmojis.length < 3) {
+        if (wrongEmojis.length < 2) {
             const allEmojis = this.wordEmojiPairs.map(pair => pair.emoji);
-            while (wrongEmojis.length < 3) {
+            while (wrongEmojis.length < 2) {
                 const randomEmoji = allEmojis[Math.floor(Math.random() * allEmojis.length)];
                 if (!wrongEmojis.includes(randomEmoji) && randomEmoji !== correctEmoji) {
                     wrongEmojis.push(randomEmoji);
@@ -128,8 +128,8 @@ class WordEmojiPuzzle {
             }
         }
         
-        // Return exactly 3 wrong answers
-        return wrongEmojis.slice(0, 3);
+        // Return exactly 2 wrong answers
+        return wrongEmojis.slice(0, 2);
     }
 
     /**
@@ -147,7 +147,7 @@ class WordEmojiPuzzle {
         const wrongEmojis = fallbackPairs
             .filter(pair => pair.emoji !== correctPair.emoji)
             .map(pair => pair.emoji)
-            .slice(0, 3);
+            .slice(0, 2);
         
         const allChoices = [correctPair.emoji, ...wrongEmojis].sort(() => Math.random() - 0.5);
         
@@ -191,8 +191,10 @@ class WordEmojiPuzzle {
             const button = document.createElement('button');
             button.className = 'puzzle-button';
             button.textContent = emoji;
-            button.style.fontSize = '24px'; // Make emojis bigger
-            button.style.padding = '15px 20px'; // More padding for emoji buttons
+            button.style.fontSize = '40px'; // Make emojis bigger like original
+            button.style.background = 'white'; // White background like original
+            button.style.color = 'black'; // Black text like original
+            button.style.border = '3px solid #4CAF50'; // Green border like original
             
             // Use the existing checkAnswer function - this is critical!
             button.onclick = () => checkAnswer(
