@@ -859,6 +859,7 @@
     <script src="game-config.js"></script>
     <script src="config-manager.js"></script>
     <script src="simple-math-puzzle.js"></script>
+    <script src="word-emoji-puzzle.js"></script>
     
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -2839,8 +2840,15 @@ PIG 🐖`;
                                 // Fall back to original system for non-simple math
                                 showPuzzle(blockingDoor.type, blockingDoor);
                             }
+                        } else if (blockingDoor.type === 'reading') {
+                            // Try modular system for reading doors
+                            const usedModular = showWordEmojiPuzzle(blockingDoor);
+                            if (!usedModular) {
+                                // Fall back to original system for non-word-emoji reading
+                                showPuzzle(blockingDoor.type, blockingDoor);
+                            }
                         } else {
-                            // Use original system for all non-math doors
+                            // Use original system for all other door types
                             showPuzzle(blockingDoor.type, blockingDoor);
                         }
                     }
@@ -4513,6 +4521,22 @@ PIG 🐖`;
             if (puzzleConfig && puzzleConfig.type === 'simple_arithmetic') {
                 console.log(`Using modular simple math puzzle for level ${level}`);
                 const puzzle = new SimpleMathPuzzle(door);
+                puzzle.render();
+                return true; // Indicates modular system was used
+            }
+            
+            return false; // Fall back to original system
+        }
+        
+        // Word-Emoji Puzzle Integration - Only for word_emoji_matching type
+        function showWordEmojiPuzzle(door) {
+            // Only handle word-emoji matching puzzles (Levels 1-2)
+            const level = game.selectedDifficulty;
+            const puzzleConfig = configManager.getPuzzleConfig(level, 'reading');
+            
+            if (puzzleConfig && puzzleConfig.type === 'word_emoji_matching') {
+                console.log(`Using modular word-emoji puzzle for level ${level}`);
+                const puzzle = new WordEmojiPuzzle(door);
                 puzzle.render();
                 return true; // Indicates modular system was used
             }
