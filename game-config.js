@@ -197,7 +197,7 @@ const LEVEL_CONFIG = {
         features: ['basic_movement'],
         puzzles: {
             math: {
-                type: 'simple_arithmetic',
+                type: 'number_line',
                 maxNumber: 30,
                 operations: ['addition', 'subtraction'],
                 tracking: {
@@ -299,9 +299,9 @@ const LEVEL_CONFIG = {
         features: ['basic_movement'],
         puzzles: {
             math: {
-                type: 'division_visual',
+                type: 'number_line',
                 maxNumber: 100,
-                operations: ['division'],
+                operations: ['addition', 'subtraction'],
                 tracking: {
                     preventRepetition: true,
                     maxAttempts: 3,
@@ -354,9 +354,10 @@ const LEVEL_CONFIG = {
         features: ['basic_movement'],
         puzzles: {
             math: {
-                type: 'multiplication_groups',
+                type: 'number_line',
+                equationType: 'triple_add',
                 maxNumber: 100,
-                operations: ['multiplication'],
+                operations: ['addition'],
                 tracking: {
                     preventRepetition: true,
                     maxAttempts: 3,
@@ -409,9 +410,10 @@ const LEVEL_CONFIG = {
         features: ['basic_movement', 'rocket_boost'],
         puzzles: {
             math: {
-                type: 'simple_arithmetic',
+                type: 'number_line',
+                equationType: 'triple_add',
                 maxNumber: 100,
-                operations: ['addition', 'subtraction', 'multiplication'],
+                operations: ['addition'],
                 tracking: {
                     preventRepetition: true,
                     maxAttempts: 3,
