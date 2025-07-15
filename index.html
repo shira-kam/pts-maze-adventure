@@ -855,6 +855,9 @@
         </div>
     </div>
     
+    <!-- Configuration System -->
+    <script src="game-config.js"></script>
+    <script src="config-manager.js"></script>
     
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -1249,19 +1252,24 @@ PIG 🐖`;
             const basePath = `level-${level}/`;
             const cacheBuster = '?v=' + Date.now();
             
-            textures.wall.src = basePath + 'wall.png' + cacheBuster;
-            textures.open.src = basePath + 'open.png' + cacheBuster;
-            textures.math.src = basePath + 'math.png' + cacheBuster;
-            textures.reading.src = basePath + 'reading.png' + cacheBuster;
-            textures.endpoint.src = basePath + 'endpoint.png' + cacheBuster;
+            // Get required textures from configuration
+            const requiredTextures = configManager.getRequiredTextures(level);
             
-            // Load heart texture for level 6, 7, 8, 9, and 10
-            if (level === 6 || level === 7 || level === 8 || level === 9 || level === 10) {
-                textures.heart.src = basePath + 'heart.png' + cacheBuster;
-            }
+            // Load all required textures dynamically
+            requiredTextures.forEach(textureType => {
+                // Create texture object if it doesn't exist
+                if (!textures[textureType]) {
+                    textures[textureType] = new Image();
+                }
+                textures[textureType].src = basePath + textureType + '.png' + cacheBuster;
+            });
             
-            // Load bonus texture for level 9 and 10
-            if (level === 9 || level === 10) {
+            // Load bonus assets if level has them
+            if (configManager.hasBonusFeatures(level)) {
+                if (!textures.hearts) textures.hearts = new Image();
+                if (!textures.bonus) textures.bonus = new Image();
+                
+                textures.hearts.src = basePath + 'hearts.png' + cacheBuster;
                 textures.bonus.src = basePath + 'bonus.png' + cacheBuster;
             }
             
@@ -1270,7 +1278,6 @@ PIG 🐖`;
             
             // Track when all main textures are loaded
             let loadedCount = 0;
-            const requiredTextures = ['wall', 'open', 'math', 'reading', 'endpoint'];
             
             requiredTextures.forEach(textureType => {
                 textures[textureType].onload = () => {
@@ -4673,8 +4680,9 @@ PIG 🐖`;
                 game.testMode = false;
             }
             
-            // Set starting hearts based on difficulty mode
-            const startingHearts = (game.difficultyMode === 'easy' || game.difficultyMode === 'medium') ? 5 : 3;
+            // Set starting hearts based on level configuration and difficulty mode
+            const configStartingHearts = configManager.getStartingHearts(game.selectedDifficulty);
+            const startingHearts = (game.difficultyMode === 'easy' || game.difficultyMode === 'medium') ? 5 : configStartingHearts;
             game.score = startingHearts;
             
             // Only add starting hearts to cumulative score if we haven't already for this level attempt
