@@ -1073,7 +1073,7 @@ PIG 🐖`;
         function loadPTBonusSprite(level) {
         const cacheBuster = '?v=' + Date.now();
 
-        if (level === 9 || level === 10) {
+        if (configManager.hasFeature(level, 'rocket_boost')) {
             ptSprites.bonus.src = `level-${level}/PT-Bonus-Sprite.svg` + cacheBuster;
         } else {
             ptSprites.bonus.src = `level-9/PT-Bonus-Sprite.svg` + cacheBuster;
@@ -1697,7 +1697,7 @@ PIG 🐖`;
                 
                 // Update frame counter
                 debugState.animationTimers[level]++;
-                const frameDelay = level === 3 ? 40 : 25;
+                const frameDelay = configManager.getAnimationConfig(level).frameDelay;
                 if (debugState.animationTimers[level] >= frameDelay) {
                     debugState.animationFrames[level] = (debugState.animationFrames[level] + 1) % totalFrames;
                     debugState.animationTimers[level] = 0;
@@ -1713,22 +1713,23 @@ PIG 🐖`;
         async function initializeGame() {
             console.log(`Initializing game for level ${game.selectedDifficulty}`);
             
-            // Reset division problem tracking when starting/restarting level 8, 9, or 10
-            if (game.selectedDifficulty === 8 || game.selectedDifficulty === 9 || game.selectedDifficulty === 10) {
-                game.hasUsedAnswerOne = false;
-                game.hasUsedDivideByOne = false;
-                game.usedDivisionProblems = new Set();
-                console.log(`Reset division problem tracking for level ${game.selectedDifficulty}`);
+            // Reset problem tracking based on puzzle types for this level
+            const mathConfig = configManager.getPuzzleConfig(game.selectedDifficulty, 'math');
+            if (mathConfig) {
+                if (mathConfig.operations.includes('division')) {
+                    game.hasUsedAnswerOne = false;
+                    game.hasUsedDivideByOne = false;
+                    game.usedDivisionProblems = new Set();
+                    console.log(`Reset division problem tracking for level ${game.selectedDifficulty}`);
+                }
+                if (mathConfig.operations.includes('multiplication')) {
+                    game.usedMultiplicationProblems = [];
+                    console.log(`Reset multiplication problem tracking for level ${game.selectedDifficulty}`);
+                }
             }
             
-            // Reset multiplication problem tracking when starting/restarting level 10
-            if (game.selectedDifficulty === 10) {
-                game.usedMultiplicationProblems = [];
-                console.log(`Reset multiplication problem tracking for level ${game.selectedDifficulty}`);
-            }
-            
-            // Reset bonus state when starting level 9 or 10
-            if (game.selectedDifficulty === 9 || game.selectedDifficulty === 10) {
+            // Reset bonus state when starting levels with rocket boost
+            if (configManager.hasFeature(game.selectedDifficulty, 'rocket_boost')) {
                 game.hasBonus = false;
                 game.rocketCountdown = 0;
                 currentMovementSprites = ptSprites.movement;

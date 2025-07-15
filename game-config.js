@@ -122,7 +122,7 @@ const LEVEL_CONFIG = {
         },
         animation: {
             celebrationFrames: 20,
-            frameDelay: 25
+            frameDelay: 40
         },
         startingHearts: 3
     },
