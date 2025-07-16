@@ -937,13 +937,38 @@
                         case 'o':
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
-                        case 'm':
-                            doors.push({ x, y, type: 'math', open: false, color: '#FF6B6B' });
+                        case 'ma':
+                            doors.push({ x, y, type: 'math_arithmetic', open: false, color: '#FF6B6B' });
                             // Add path under door for walkability
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
-                        case 'r':
-                            doors.push({ x, y, type: 'reading', open: false, color: '#4ECDC4' });
+                        case 'nl':
+                            doors.push({ x, y, type: 'number_line', open: false, color: '#FF6B6B' });
+                            // Add path under door for walkability
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
+                        case 'nt':
+                            doors.push({ x, y, type: 'number_triple', open: false, color: '#FF6B6B' });
+                            // Add path under door for walkability
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
+                        case 'mg':
+                            doors.push({ x, y, type: 'math_groups', open: false, color: '#FF6B6B' });
+                            // Add path under door for walkability
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
+                        case 'we':
+                            doors.push({ x, y, type: 'word_emoji', open: false, color: '#4ECDC4' });
+                            // Add path under door for walkability
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
+                        case 'ds':
+                            doors.push({ x, y, type: 'digraph_sounds', open: false, color: '#4ECDC4' });
+                            // Add path under door for walkability
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
+                        case 'dv':
+                            doors.push({ x, y, type: 'division_visual', open: false, color: '#4ECDC4' });
                             // Add path under door for walkability
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
@@ -2655,10 +2680,10 @@ PIG 🐖`;
                 if (!door.open) {
                     let doorTexture = null;
                     
-                    // Select appropriate texture
-                    if (door.type === 'math') {
+                    // Select appropriate texture based on door type
+                    if (door.type.includes('math') || door.type.includes('number') || door.type.includes('groups')) {
                         doorTexture = textures.math;
-                    } else if (door.type === 'reading') {
+                    } else if (door.type.includes('word') || door.type.includes('digraph') || door.type.includes('division')) {
                         doorTexture = textures.reading;
                     } else if (door.type === 'sorting') {
                         doorTexture = textures.sorting;
@@ -2678,8 +2703,8 @@ PIG 🐖`;
                         ctx.font = '20px Arial';
                         ctx.textAlign = 'center';
                         let symbol = '🔀'; // Default sorting symbol
-                        if (door.type === 'math') symbol = '🪨';
-                        else if (door.type === 'reading') symbol = '📚';
+                        if (door.type.includes('math') || door.type.includes('number') || door.type.includes('groups')) symbol = '🪨';
+                        else if (door.type.includes('word') || door.type.includes('digraph') || door.type.includes('division')) symbol = '📚';
                         ctx.fillText(symbol, door.x + 60, door.y + 65);
                     }
                 }
@@ -2833,22 +2858,21 @@ PIG 🐖`;
                         newX === door.x && newY === door.y
                     );
                     if (blockingDoor && !game.puzzleActive) {
-                        // Try modular system for math doors first
-                        if (blockingDoor.type === 'math') {
+                        // Route to appropriate puzzle system based on door type
+                        if (blockingDoor.type === 'math_arithmetic') {
+                            // Use modular system for simple arithmetic
                             const usedModular = showSimpleMathPuzzle(blockingDoor);
                             if (!usedModular) {
-                                // Fall back to original system for non-simple math
                                 showPuzzle(blockingDoor.type, blockingDoor);
                             }
-                        } else if (blockingDoor.type === 'reading') {
-                            // Try modular system for reading doors
+                        } else if (blockingDoor.type === 'word_emoji') {
+                            // Use modular system for word-emoji matching
                             const usedModular = showWordEmojiPuzzle(blockingDoor);
                             if (!usedModular) {
-                                // Fall back to original system for non-word-emoji reading
                                 showPuzzle(blockingDoor.type, blockingDoor);
                             }
                         } else {
-                            // Use original system for all other door types
+                            // Use original system for all other puzzle types
                             showPuzzle(blockingDoor.type, blockingDoor);
                         }
                     }
@@ -4514,12 +4538,9 @@ PIG 🐖`;
         
         // Simple Math Puzzle Integration - Only for simple_arithmetic type
         function showSimpleMathPuzzle(door) {
-            // Only handle simple arithmetic puzzles (Levels 1-3)
-            const level = game.selectedDifficulty;
-            const puzzleConfig = configManager.getPuzzleConfig(level, 'math');
-            
-            if (puzzleConfig && puzzleConfig.type === 'simple_arithmetic') {
-                console.log(`Using modular simple math puzzle for level ${level}`);
+            // Only handle math_arithmetic door type (Levels 1-3)
+            if (door.type === 'math_arithmetic') {
+                console.log(`Using modular simple math puzzle for door type: ${door.type}`);
                 const puzzle = new SimpleMathPuzzle(door);
                 puzzle.render();
                 return true; // Indicates modular system was used
@@ -4530,12 +4551,9 @@ PIG 🐖`;
         
         // Word-Emoji Puzzle Integration - Only for word_emoji_matching type
         function showWordEmojiPuzzle(door) {
-            // Only handle word-emoji matching puzzles (Levels 1-2)
-            const level = game.selectedDifficulty;
-            const puzzleConfig = configManager.getPuzzleConfig(level, 'reading');
-            
-            if (puzzleConfig && puzzleConfig.type === 'word_emoji_matching') {
-                console.log(`Using modular word-emoji puzzle for level ${level}`);
+            // Only handle word_emoji door type (Levels 1-2)
+            if (door.type === 'word_emoji') {
+                console.log(`Using modular word-emoji puzzle for door type: ${door.type}`);
                 const puzzle = new WordEmojiPuzzle(door);
                 puzzle.render();
                 return true; // Indicates modular system was used

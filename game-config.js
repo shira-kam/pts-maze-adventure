@@ -1,5 +1,6 @@
 // PT's Maze Adventure - Game Configuration
 // This file centralizes all level-specific configuration to eliminate hardcoded conditionals
+// Updated to use specific door types: ma, nl, nt, mg, we, ds, dv
 
 const LEVEL_CONFIG = {
     1: {
@@ -130,7 +131,7 @@ const LEVEL_CONFIG = {
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'endpoint'],
             sprites: {
                 celebrate: { frames: 20, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 }
@@ -177,7 +178,7 @@ const LEVEL_CONFIG = {
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'endpoint'],
             sprites: {
                 celebrate: { frames: 20, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 }
@@ -224,7 +225,7 @@ const LEVEL_CONFIG = {
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'endpoint'],
             sprites: {
                 celebrate: { frames: 20, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 }
@@ -260,26 +261,10 @@ const LEVEL_CONFIG = {
                     usedDigraphs: [],
                     trackingScope: 'level'
                 }
-            },
-            reading1: {
-                type: 'letter_matching',
-                tracking: {
-                    preventRepetition: true,
-                    usedLetters: [],
-                    trackingScope: 'level'
-                }
-            },
-            reading2: {
-                type: 'emoji_to_word',
-                tracking: {
-                    preventRepetition: true,
-                    usedWords: [],
-                    trackingScope: 'level'
-                }
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'heart', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'heart', 'endpoint'],
             sprites: {
                 celebrate: { frames: 20, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 }
@@ -315,26 +300,10 @@ const LEVEL_CONFIG = {
                     usedDigraphs: [],
                     trackingScope: 'level'
                 }
-            },
-            reading1: {
-                type: 'letter_matching',
-                tracking: {
-                    preventRepetition: true,
-                    usedLetters: [],
-                    trackingScope: 'level'
-                }
-            },
-            reading2: {
-                type: 'emoji_to_word',
-                tracking: {
-                    preventRepetition: true,
-                    usedWords: [],
-                    trackingScope: 'level'
-                }
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'heart', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'heart', 'endpoint'],
             sprites: {
                 celebrate: { frames: 20, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 }
@@ -371,26 +340,10 @@ const LEVEL_CONFIG = {
                     usedDigraphs: [],
                     trackingScope: 'level'
                 }
-            },
-            reading1: {
-                type: 'letter_matching',
-                tracking: {
-                    preventRepetition: true,
-                    usedLetters: [],
-                    trackingScope: 'level'
-                }
-            },
-            reading2: {
-                type: 'emoji_to_word',
-                tracking: {
-                    preventRepetition: true,
-                    usedWords: [],
-                    trackingScope: 'level'
-                }
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'heart', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'heart', 'endpoint'],
             sprites: {
                 celebrate: { frames: 20, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 }
@@ -427,26 +380,10 @@ const LEVEL_CONFIG = {
                     usedDigraphs: [],
                     trackingScope: 'level'
                 }
-            },
-            reading1: {
-                type: 'letter_matching',
-                tracking: {
-                    preventRepetition: true,
-                    usedLetters: [],
-                    trackingScope: 'level'
-                }
-            },
-            reading2: {
-                type: 'emoji_to_word',
-                tracking: {
-                    preventRepetition: true,
-                    usedWords: [],
-                    trackingScope: 'level'
-                }
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'bonus', 'heart', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'bonus', 'heart', 'endpoint'],
             sprites: {
                 celebrate: { frames: 20, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 },
@@ -488,26 +425,10 @@ const LEVEL_CONFIG = {
                     usedDigraphs: [],
                     trackingScope: 'level'
                 }
-            },
-            reading1: {
-                type: 'letter_matching',
-                tracking: {
-                    preventRepetition: true,
-                    usedLetters: [],
-                    trackingScope: 'level'
-                }
-            },
-            reading2: {
-                type: 'emoji_to_word',
-                tracking: {
-                    preventRepetition: true,
-                    usedWords: [],
-                    trackingScope: 'level'
-                }
             }
         },
         assets: {
-            textures: ['wall', 'open', 'math', 'reading', 'reading1', 'reading2', 'bonus', 'heart', 'endpoint'],
+            textures: ['wall', 'open', 'math', 'reading', 'bonus', 'heart', 'endpoint'],
             sprites: {
                 celebrate: { frames: 53, frameWidth: 200, frameHeight: 200 },
                 movement: { frames: 6, frameWidth: 160, frameHeight: 160 },
