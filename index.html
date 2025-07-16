@@ -3871,49 +3871,10 @@ PIG 🐖`;
                     initializeNumberLine(door);
                     
                     return; // Exit early for all number line levels
-                } else {
-                    // Levels 1-3: Regular multiple choice math (answers 1-12)
-                    const isAddition = Math.random() < 0.5;
-                    let num1, num2, answer;
-                    const maxAnswer = 12; // Max answer for Levels 1-3
-                    
-                    if (isAddition) {
-                        // For addition, ensure sum doesn't exceed maxAnswer
-                        const maxNum1 = maxAnswer - 1;
-                        num1 = Math.floor(Math.random() * maxNum1) + 1; // 1 to (maxAnswer-1)
-                        num2 = Math.floor(Math.random() * (maxAnswer - num1)) + 1; // 1 to (maxAnswer-num1)
-                        answer = num1 + num2;
-                        title.textContent = `${num1} + ${num2} = ?`;
-                    } else {
-                        // For subtraction, ensure result is between 1-maxAnswer
-                        num1 = Math.floor(Math.random() * maxAnswer) + 1;
-                        num2 = Math.floor(Math.random() * Math.min(num1, maxAnswer)) + 1;
-                        answer = num1 - num2;
-                        title.textContent = `${num1} - ${num2} = ?`;
-                    }
-                    
-                    question.textContent = '';
-                    
-                    // Generate wrong answers between 1-maxAnswer
-                    const wrongAnswers = [];
-                    while (wrongAnswers.length < 2) {
-                        const wrong = Math.floor(Math.random() * maxAnswer) + 1;
-                        if (wrong !== answer && !wrongAnswers.includes(wrong)) {
-                            wrongAnswers.push(wrong);
-                        }
-                    }
-                    
-                    const allAnswers = [answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
-                    
-                    options.innerHTML = '';
-                    allAnswers.forEach(ans => {
-                        const button = document.createElement('button');
-                        button.className = 'puzzle-button';
-                        button.textContent = ans;
-                        button.onclick = () => checkAnswer(ans === answer, type, door, button);
-                        options.appendChild(button);
-                    });
                 }
+                
+                // Fallback for any non-number-line math puzzles (should not be reached normally)
+                console.log('Fallback math puzzle - this should use modular system');
             } else if (mappedType === 'reading') {
                 // Check if this is Level 8, 9, or 10 - use division
                 if (game.selectedDifficulty === 8 || game.selectedDifficulty === 9 || game.selectedDifficulty === 10) {
