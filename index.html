@@ -3447,7 +3447,7 @@ PIG 🐖`;
         
         // Add a dot to all red squares (SYNCHRONIZED)
         function addDotToAllSquares() {
-            const door = game.doors.find(d => d.type === 'math');
+            const door = game.doors.find(d => d.type.includes('math') || d.type.includes('groups'));
             if (!door) return;
             
             door.currentDots++;
@@ -3490,7 +3490,7 @@ PIG 🐖`;
         
         // Remove a dot from all red squares (SYNCHRONIZED)
         function removeDotFromAllSquares() {
-            const door = game.doors.find(d => d.type === 'math');
+            const door = game.doors.find(d => d.type.includes('math') || d.type.includes('groups'));
             if (!door || door.currentDots <= 0) return;
             
             door.currentDots--;
@@ -3512,7 +3512,7 @@ PIG 🐖`;
         
         // Add a new red square (MUST come pre-filled with same dots as existing squares)
         function addRedSquare() {
-            const door = game.doors.find(d => d.type === 'math');
+            const door = game.doors.find(d => d.type.includes('math') || d.type.includes('groups'));
             if (!door) return;
             
             // Get current dot count from existing squares to ensure synchronization
@@ -3599,7 +3599,7 @@ PIG 🐖`;
         
         // Remove a red square
         function removeRedSquare() {
-            const door = game.doors.find(d => d.type === 'math');
+            const door = game.doors.find(d => d.type.includes('math') || d.type.includes('groups'));
             if (!door || door.currentBoxes <= 1) return; // Always keep at least 1 square
             
             const squares = document.querySelectorAll('.basket[data-square]');
@@ -3787,17 +3787,15 @@ PIG 🐖`;
             game.puzzleActive = true;
             modal.style.display = 'block';
             
-            if (type === 'math') {
-                // Check if this is Level 10 - use interactive multiplication groups
-                if (game.selectedDifficulty === 10) {
-                    console.log('=== CALLING MULTIPLICATION PUZZLE ===');
-                    console.log('Level 10 detected, calling showMultiplicationGroupsPuzzle with door:', door);
-                    showMultiplicationGroupsPuzzle(door);
-                    return;
-                }
-                
-                // Check if this is Level 4 and up - use number line puzzles  
-                if (game.selectedDifficulty >= 4) {
+            // Map new door types to original logic
+            let mappedType = type;
+            if (type === 'math_arithmetic' || type === 'number_line' || type === 'number_triple' || type === 'math_groups') {
+                mappedType = 'math';
+            } else if (type === 'word_emoji' || type === 'digraph_sounds' || type === 'division_visual') {
+                mappedType = 'reading';
+            }
+            
+            if (mappedType === 'math') {
                     // Determine equation type based on level
                     let equationType;
                     if (game.selectedDifficulty === 8 || game.selectedDifficulty === 9) {
@@ -3916,7 +3914,7 @@ PIG 🐖`;
                         options.appendChild(button);
                     });
                 }
-            } else if (type === 'reading') {
+            } else if (mappedType === 'reading') {
                 // Check if this is Level 8, 9, or 10 - use division
                 if (game.selectedDifficulty === 8 || game.selectedDifficulty === 9 || game.selectedDifficulty === 10) {
                     // Clean up any existing keyboard handlers before starting division puzzle
@@ -4579,16 +4577,15 @@ PIG 🐖`;
                 completeRocketBoostMovement();
                 
                 // For Levels 3, 4, 5, 6, 7 digraph puzzles, speak the emoji word name
-                if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) && type === 'reading' && selectedEmoji) {
+                if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) && (type === 'digraph_sounds') && selectedEmoji) {
                     setTimeout(() => {
                         speakEmojiWord(selectedEmoji);
                     }, 300); // Slight delay after showing thumbs up
                 }
                 
                 // Give +1 point for correct answer (net effect: 1 - number_of_wrong_attempts)
-                if (type === 'math') updateScore(1);
-                if (type === 'reading') updateScore(1);
-                if (type === 'sorting') updateScore(1);
+                // Update score for correct answers (all puzzle types give +1)
+                updateScore(1);
                 
                 // Reset attempt counters
                 door.currentProblemAttempts = 0;
@@ -4610,7 +4607,7 @@ PIG 🐖`;
                 result.style.color = 'red';
                 
                 // For Levels 3, 4, 5, 6, 7 digraph puzzles, speak the emoji word name even for wrong answers
-                if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) && type === 'reading' && selectedEmoji) {
+                if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) && (type === 'digraph_sounds') && selectedEmoji) {
                     setTimeout(() => {
                         speakEmojiWord(selectedEmoji);
                     }, 300); // Slight delay after showing thumbs down
@@ -4628,9 +4625,8 @@ PIG 🐖`;
                     pointsToDeduct = -2; // Hard mode: always lose 2 points
                 }
                 
-                if (type === 'math') updateScore(pointsToDeduct);
-                if (type === 'reading') updateScore(pointsToDeduct);
-                if (type === 'sorting') updateScore(pointsToDeduct);
+                // Update score for wrong answers (all puzzle types use same penalty)
+                updateScore(pointsToDeduct);
                 
                 // Disable the wrong answer button
                 buttonElement.disabled = true;
@@ -4780,7 +4776,12 @@ PIG 🐖`;
             // Reset all doors
             game.doors.forEach(door => {
                 door.open = false;
-                door.color = door.type === 'math' ? '#FF6B6B' : '#4ECDC4';
+                // Set door color based on type category
+                if (door.type.includes('math') || door.type.includes('number') || door.type.includes('groups')) {
+                    door.color = '#FF6B6B'; // Red for math doors
+                } else {
+                    door.color = '#4ECDC4'; // Teal for reading doors
+                }
                 door.currentProblemAttempts = 0;
                 door.failedAttempts = 0;
             });
