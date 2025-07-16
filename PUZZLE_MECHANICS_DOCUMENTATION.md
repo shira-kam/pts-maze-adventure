@@ -29,26 +29,26 @@ This document provides comprehensive details of how each puzzle type works in th
 
 ## MATH PUZZLES
 
-### 1. Simple Arithmetic (Levels 1-3)
-**Configuration**: `simple_arithmetic` type
-**Location**: Lines 3834-3875 in `showPuzzle()`
+### 1. Simple Arithmetic (Levels 1-3) - Door Type: `ma`
+**Configuration**: `math_arithmetic` type
+**Location**: Modular system using `SimpleMathPuzzle` class
 
 #### Mechanics:
 - **Operation Selection**: 50% chance addition, 50% chance subtraction
-- **Answer Range**: 1-12 (strictly enforced)
+- **Answer Range**: 0-12 (answers start at 0, not 1)
 - **Title**: Shows actual problem (e.g., "5 + 3 = ?")
 - **Problem Generation**:
-  - **Addition**: `num1` (1 to 11), `num2` (1 to 12-num1) to ensure sum ≤ 12
-  - **Subtraction**: `num1` (1 to 12), `num2` (1 to min(num1, 12)) to ensure positive result
+  - **Addition**: `num1` + `num2` with constraints per level
+  - **Subtraction**: `num1` - `num2` ensuring non-negative result
 - **Answer Options**: 3 buttons (1 correct + 2 wrong)
-- **Wrong Answers**: Random numbers 1-12 that don't match correct answer
+- **Wrong Answers**: Generated within ±4 of correct answer to prevent guessing
 - **Button Style**: `puzzle-button` class
-- **Click Handler**: `checkAnswer(ans === answer, 'math', door, button)`
+- **Click Handler**: `checkAnswer(ans === answer, 'math_arithmetic', door, button)`
 
 #### Level Differences:
-- **Level 1**: Max answer 12, simpler problems
-- **Level 2**: Max answer 12, same mechanics
-- **Level 3**: Max answer 12, same mechanics
+- **Level 1**: Max answer 10 (0-10 range)
+- **Level 2**: Max answer 15 (0-15 range)  
+- **Level 3**: Max answer 20 (0-20 range)
 
 ### 2. Number Line Puzzles (Levels 4+)
 **Configuration**: `number_line` type

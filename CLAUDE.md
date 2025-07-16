@@ -37,7 +37,7 @@ Then navigate to `http://localhost:8000` (or appropriate port) to play the game.
 
 ### Current Levels (1-10)
 - **Levels 1-3**: Foundation - Basic math (addition/subtraction) and word-emoji matching
-- **Levels 4-7**: Intermediate - Number line puzzles and digraph sound recognition
+- **Levels 4-7**: Intermediate - Number line puzzles and digraph sound recognition  
 - **Levels 8-9**: Advanced - Triple addition math and division with basket manipulation
 - **Level 10**: Debug/Multiplication - Interactive groups puzzle with dual validation
 
@@ -93,19 +93,18 @@ Each level features two distinct educational challenges accessed through door ty
 - **Vocabulary**: Same basic word set with consistent emoji pairings
 - **Educational Goal**: Reinforcement of sight word recognition skills
 
-#### **Level 3: Phonics Introduction** 
-**Math Doors (`m`)**:
-- **Mechanics**: Continued simple arithmetic (answers 1-12)
+#### **Level 3: Word Recognition Reinforcement** 
+**Math Doors (`ma`)**:
+- **Mechanics**: Simple arithmetic (answers 0-20)
 - **UI**: Multiple choice button interface
-- **Educational Goal**: Maintaining arithmetic skills while introducing new reading concepts
+- **Educational Goal**: Expanding arithmetic range and maintaining fluency
 
-**Reading Doors (`r`)**:
-- **Mechanics**: **DIGRAPH PHONICS GAME** - major pedagogical shift
-- **UI**: Large digraph letters (CH, SH, TH, PH, etc.) with speaker button for audio
-- **Interaction**: Player clicks speaker to hear phonetic pronunciation, selects matching emoji
-- **Examples**: "CH" sound with choices like 🧀 (cheese), 🍒 (cherry), 🪑 (chair)
-- **Audio**: Text-to-speech integration for proper phonetic modeling
-- **Educational Goal**: Phonics awareness and digraph sound recognition
+**Reading Doors (`we`)**:
+- **Mechanics**: **WORD-EMOJI MATCHING** - continued sight word practice
+- **UI**: Word displayed in title, 3 emoji choice buttons below
+- **Vocabulary**: Extended word set including 4-letter words and more complex vocabulary
+- **Strategy**: Same-letter distractor system to prevent guessing
+- **Educational Goal**: Advanced sight word recognition and vocabulary expansion
 
 #### **Level 4: Visual Math Introduction**
 **Math Doors (`m`)**:
@@ -205,14 +204,14 @@ Each level features two distinct educational challenges accessed through door ty
 ### Educational Progression Framework
 
 #### **Mathematical Learning Path**:
-1. **Foundation (Levels 1-3)**: Basic arithmetic operations (answers 1-12)
+1. **Foundation (Levels 1-3)**: Basic arithmetic operations (answers 0-10, 0-15, 0-20)
 2. **Visualization (Levels 4-7)**: Number line spatial reasoning (A+B, A-B)
 3. **Complex Operations (Levels 8-9)**: Multi-term addition (A+B+C)
 4. **Advanced Concepts (Level 10)**: Multiplication through grouping models
 
 #### **Reading/Language Learning Path**:
-1. **Sight Words (Levels 1-2)**: Visual word recognition and vocabulary building
-2. **Phonics (Levels 3-7)**: Digraph sound recognition with audio support
+1. **Sight Words (Levels 1-3)**: Visual word recognition and vocabulary building
+2. **Phonics (Levels 4-7)**: Digraph sound recognition with audio support
 3. **Mathematical Reading (Levels 8-10)**: Division problem comprehension and solving
 
 #### **Cognitive Skill Development**:
