@@ -125,14 +125,11 @@ class DivisionPuzzle {
                 break;
             }
         } while (
-            dividend % divisor !== 0 || // Must be evenly divisible
-            answer === 0 || // No zero answers
-            answer > maxAnswer || // Keep answers within configured limit
-            (divisor === 1 && dividend >= 5) || // Only allow A:1 when A < 5
-            (dividend === divisor && dividend >= 5) || // Only allow A:A when A < 5
-            (excludeIdentity && dividend === divisor && dividend > 6) || // Exclude A÷A when A>6 
-            (dividend === 1 && divisor >= 6) || // When A=1, B must be < 6
-            (divisor === 1 && dividend >= 6) // When B=1, A must be < 6 
+                dividend % divisor !== 0 || // Must be evenly divisible
+                answer === 0 || // No zero answers
+                answer > maxAnswer || // Keep answers within configured limit
+                dividend === divisor || // Exclude A:A
+                divisor === 1 // Exclude A:1
         );
         
         // Generate wrong answers within |R-W| < 4

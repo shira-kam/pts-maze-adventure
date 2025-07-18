@@ -262,12 +262,12 @@
         "number_line": {
           "operations": ["addition", "subtraction"],
           "numberLine": {
-            "length": 12,
+            "length": 20,
             "minA": 1,
-            "maxA": 8,
+            "maxA": 19,
             "minB": 1,
-            "maxB": 8,
-            "maxResult": 12
+            "maxB": 19,
+            "maxResult": 20
           }
         }
       },
@@ -294,12 +294,12 @@
         "number_line": {
           "operations": ["addition", "subtraction"],
           "numberLine": {
-            "length": 12,
+            "length": 20,
             "minA": 1,
-            "maxA": 8,
+            "maxA": 19,
             "minB": 1,
-            "maxB": 8,
-            "maxResult": 12
+            "maxB": 19,
+            "maxResult": 20
           }
         }
       },
@@ -332,14 +332,14 @@
         "number_line": {
           "operations": ["addition", "subtraction"],
           "numberLine": {
-            "length": 15,
+            "length": 20,
             "minA": 1,
-            "maxA": 15,
+            "maxA": 19,
             "minB": 1,
-            "maxB": 15,
+            "maxB": 19,
             "minC": 1,
             "maxC": 4,
-            "maxResult": 15,
+            "maxResult": 20,
             "equationType": "triple_add"
           }
         }
@@ -373,11 +373,11 @@
           "numberLine": {
             "length": 12,
             "minA": 1,
-            "maxA": 4,
+            "maxA": 8,
             "minB": 1,
-            "maxB": 4,
+            "maxB": 10,
             "minC": 1,
-            "maxC": 4,
+            "maxC": 11,
             "maxResult": 12,
             "equationType": "triple_add"
           }
