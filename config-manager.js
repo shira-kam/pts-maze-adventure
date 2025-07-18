@@ -178,6 +178,71 @@ class ConfigManager {
     }
 
     /**
+     * Get list of available characters
+     * @returns {string[]} Array of character names
+     */
+    getAvailableCharacters() {
+        if (!this.gameConfig || !this.gameConfig.characters) {
+            return ['PT']; // Default fallback
+        }
+        return Object.keys(this.gameConfig.characters);
+    }
+
+    /**
+     * Get character configuration
+     * @param {string} characterName - Name of the character
+     * @returns {Object} Character configuration object
+     */
+    getCharacterConfig(characterName) {
+        if (!this.gameConfig || !this.gameConfig.characters) {
+            console.warn('No character configuration found, using PT defaults');
+            return {
+                name: 'PT the Elephant',
+                movement: 'PT-sprite.svg',
+                celebration: 'PT-celebrate.png',
+                gameOver: 'PT-game-over.png',
+                bonus: { '9': 'PT-Bonus-Sprite.svg', '10': 'PT-Bonus-Sprite.svg' }
+            };
+        }
+
+        const character = this.gameConfig.characters[characterName];
+        if (!character) {
+            console.warn(`Character '${characterName}' not found, using PT defaults`);
+            return this.getCharacterConfig('PT');
+        }
+
+        return character;
+    }
+
+    /**
+     * Get character-specific asset path
+     * @param {string} characterName - Name of the character
+     * @param {string} assetType - Type of asset (movement, celebration, gameOver)
+     * @param {number} level - Level number (for level-specific assets)
+     * @returns {string} Asset path
+     */
+    getCharacterAssetPath(characterName, assetType, level = null) {
+        const character = this.getCharacterConfig(characterName);
+        
+        switch (assetType) {
+            case 'movement':
+                return character.movement;
+            case 'celebration':
+                return level ? `level-${level}/${character.celebration}` : character.celebration;
+            case 'gameOver':
+                return character.gameOver;
+            case 'bonus':
+                if (level && character.bonus && character.bonus[level.toString()]) {
+                    return character.bonus[level.toString()];
+                }
+                return character.bonus?.['9'] || 'PT-Bonus-Sprite.svg'; // Fallback
+            default:
+                console.warn(`Unknown asset type: ${assetType}`);
+                return '';
+        }
+    }
+
+    /**
      * Get character configuration
      * @param {string} characterName - Character name (e.g., 'PT')
      * @returns {object} Character configuration

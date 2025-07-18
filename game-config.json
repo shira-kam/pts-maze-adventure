@@ -425,8 +425,24 @@
     "PT": {
       "name": "PT the Elephant",
       "movement": "PT-sprite.svg",
-      "bonus": "PT-Bonus-Sprite.svg",
+      "celebration": "PT-celebrate.png",
+      "gameOver": "PT-game-over.png",
+      "bonus": {
+        "9": "PT-Bonus-Sprite.svg",
+        "10": "PT-Bonus-Sprite.svg"
+      },
       "description": "A friendly elephant who loves solving puzzles"
+    },
+    "Enderman": {
+      "name": "Enderman",
+      "movement": "Enderman-sprite.svg",
+      "celebration": "Enderman-celebrate.png",
+      "gameOver": "Enderman-game-over.png",
+      "bonus": {
+        "9": "level-9/Enderman-Bonus-Sprite.svg",
+        "10": "level-10/Enderman-Bonus-Sprite.svg"
+      },
+      "description": "A mysterious dark figure from another dimension"
     }
   }
 }

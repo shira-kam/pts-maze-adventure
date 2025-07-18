@@ -1171,11 +1171,15 @@ PIG 🐖`;
             
             const availableLevels = configManager.getAvailableLevels();
             if (availableLevels.includes(difficulty)) {
-                celebrationSprite.src = `level-${difficulty}/celebrate.png` + cacheBuster;
+                const characterName = game.selectedCharacter || 'PT';
+                const celebrationPath = configManager.getCharacterAssetPath(characterName, 'celebration', difficulty);
+                celebrationSprite.src = celebrationPath + cacheBuster;
             } else {
                 console.error(`Invalid difficulty level: ${difficulty}`);
                 const fallbackLevel = availableLevels[0] || 1; // Use first available level or 1 as fallback
-                celebrationSprite.src = `level-${fallbackLevel}/celebrate.png` + cacheBuster;
+                const characterName = game.selectedCharacter || 'PT';
+                const celebrationPath = configManager.getCharacterAssetPath(characterName, 'celebration', fallbackLevel);
+                celebrationSprite.src = celebrationPath + cacheBuster;
             }
             
             return celebrationSprite;
@@ -1279,6 +1283,7 @@ PIG 🐖`;
             currentLevelStartingHeartsAdded: false, // Track if we've added starting hearts for current level attempt
             currentLevel: 1,
             selectedDifficulty: 1,
+            selectedCharacter: 'PT', // Default character
             maxUnlockedLevel: parseInt(localStorage.getItem('ptMazeMaxLevel')) || 1, // Track highest level unlocked
             gameLoopRunning: false, // Track if game loop is already running
             player: {
@@ -1606,9 +1611,10 @@ PIG 🐖`;
                 const sprite = new Image();
                 const cacheBuster = '?v=' + Date.now() + '_' + Math.random();
                 
-                // Use the level's own celebration sprite
+                // Use the level's own celebration sprite for current character
                 const spriteLevel = level;
-                const spritePath = `level-${spriteLevel}/celebrate.png` + cacheBuster;
+                const characterName = game.selectedCharacter || 'PT';
+                const spritePath = configManager.getCharacterAssetPath(characterName, 'celebration', spriteLevel) + cacheBuster;
                 
                 sprite.src = spritePath;
                 
