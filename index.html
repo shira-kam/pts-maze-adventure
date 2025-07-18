@@ -196,7 +196,7 @@
         }
         
         #difficultyScreen {
-            display: flex;
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
@@ -666,6 +666,125 @@
             transform: translateY(-2px);
         }
         
+        /* Character Selection Screen */
+        #characterSelectionScreen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #87CEEB, #98FB98);
+            z-index: 1000;
+        }
+        
+        #characterSelectionContent {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+        
+        #characterSelectionTitle {
+            font-size: 36px;
+            color: #2E8B57;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        #characterButtons {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .character-button {
+            background: #f0f8ff;
+            border: 3px solid #2E8B57;
+            border-radius: 15px;
+            padding: 20px;
+            width: 200px;
+            height: 250px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2E8B57;
+        }
+        
+        .character-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border-color: #228B22;
+            background: #e6f3ff;
+        }
+        
+        .character-button:active {
+            transform: translateY(-2px);
+        }
+        
+        .character-sprite {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .character-name {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .character-description {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+        
+        #backToCharacterBtn {
+            background: white;
+            color: black;
+            border: 2px solid #ddd;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin-top: 40px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #backToCharacterBtn:hover {
+            background: #f5f5f5;
+            transform: translateY(-2px);
+        }
+        
         
     </style>
 </head>
@@ -697,12 +816,22 @@
     </div>
     
     
+    <div id="characterSelectionScreen">
+        <div id="characterSelectionContent">
+            <div id="characterSelectionTitle">Select Character</div>
+            <div id="characterButtons">
+                <!-- Character buttons will be generated dynamically -->
+            </div>
+        </div>
+    </div>
+    
     <div id="difficultyScreen">
         <div id="difficultyContent">
             <div id="difficultyTitle">Choose Your Difficulty</div>
             <button class="difficulty-button easy" onclick="selectDifficulty('easy')">Easy Peasy 🫛</button>
             <button class="difficulty-button medium" onclick="selectDifficulty('medium')">Neutral 😐</button>
             <button class="difficulty-button hard" onclick="selectDifficulty('hard')">Hard Mode 🙀</button>
+            <button id="backToCharacterBtn" onclick="backToCharacterSelection()">←</button>
         </div>
     </div>
     
@@ -720,6 +849,21 @@
         <button id="debugCloseBtn" onclick="closeDebugMode()">✕ Close Debug</button>
         <div id="debugContent">
             <div id="debugTitle">🐛 DEBUG MODE 🐛</div>
+            
+            <div class="debug-section">
+                <h3>👤 Character Selection</h3>
+                <p>Select character for level testing:</p>
+                <div style="display: flex; flex-direction: column; gap: 15px; margin: 15px 0; align-items: flex-start;">
+                    <label style="display: flex; align-items: center; gap: 10px; color: #fff; font-size: 18px; cursor: pointer;">
+                        <input type="radio" name="debugCharacter" value="PT" checked style="transform: scale(1.5);">
+                        <span style="color: #fff; font-weight: bold;">PT the Elephant 🐘</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; color: #fff; font-size: 18px; cursor: pointer;">
+                        <input type="radio" name="debugCharacter" value="Enderman" style="transform: scale(1.5);">
+                        <span style="color: #fff; font-weight: bold;">Enderman 🖤</span>
+                    </label>
+                </div>
+            </div>
             
             <div class="debug-section">
                 <h3>⚙️ Difficulty Settings</h3>
@@ -1022,28 +1166,64 @@ PIG 🐖`;
         }
         
         // Load sprite sheets for PT
-        const ptSprites = {
+        const characterSprites = {
             movement: new Image(),
             celebration: {},
-            bonus: new Image()
+            bonus: new Image(),
+            gameOver: new Image()
         };
         
-        // Load PT sprites
-        ptSprites.movement.src = 'PT-sprite.svg';
-         // function to load bonus PT sprites based on level
-        function loadPTBonusSprite(level) {
-        const cacheBuster = '?v=' + Date.now();
-
-        // Load bonus sprite based on JSON config level assets
-        if (configManager.hasFeature(level, 'rocket_boost')) {
-            ptSprites.bonus.src = `level-${level}/PT-Bonus-Sprite.svg` + cacheBuster;
-        } else {
-            // Find the first level that has bonus feature as fallback
-            const availableLevels = configManager.getAvailableLevels();
-            const fallbackLevel = availableLevels.find(l => configManager.hasFeature(l, 'rocket_boost')) || 9;
-            ptSprites.bonus.src = `level-${fallbackLevel}/PT-Bonus-Sprite.svg` + cacheBuster;
+        // Load character sprites based on selected character
+        async function loadCharacterSprites() {
+            const selectedCharacter = game.selectedCharacter || 'PT';
+            
+            // Load config if not already loaded
+            if (!configManager.isConfigLoaded()) {
+                await configManager.loadConfig();
+            }
+            
+            const characterConfig = configManager.getCharacterConfig(selectedCharacter);
+            
+            console.log(`Loading sprites for character: ${selectedCharacter}`);
+            console.log(`Character config:`, characterConfig);
+            
+            // Load movement sprite
+            characterSprites.movement.src = characterConfig.movement;
+            console.log(`Loading movement sprite: ${characterConfig.movement}`);
+            
+            // Load game over sprite
+            characterSprites.gameOver.src = characterConfig.gameOver;
+            console.log(`Loading game over sprite: ${characterConfig.gameOver}`);
+            
+            // Load bonus sprite for the current level
+            loadCharacterBonusSprite(game.selectedDifficulty);
         }
-}// Celebration sprites will be loaded dynamically based on difficulty
+        
+        // Function to load bonus character sprites based on level
+        function loadCharacterBonusSprite(level) {
+            const selectedCharacter = game.selectedCharacter || 'PT';
+            const characterConfig = configManager.getCharacterConfig(selectedCharacter);
+            const cacheBuster = '?v=' + Date.now();
+
+            console.log(`Loading bonus sprite for ${selectedCharacter} at level ${level}`);
+            console.log(`Character bonus config:`, characterConfig.bonus);
+
+            // Load bonus sprite based on JSON config level assets
+            if (configManager.hasFeature(level, 'rocket_boost')) {
+                const bonusPath = characterConfig.bonus[level.toString()] + cacheBuster;
+                characterSprites.bonus.src = bonusPath;
+                console.log(`Loading bonus sprite: ${bonusPath}`);
+            } else {
+                // Find the first level that has bonus feature as fallback
+                const availableLevels = configManager.getAvailableLevels();
+                const fallbackLevel = availableLevels.find(l => configManager.hasFeature(l, 'rocket_boost')) || 9;
+                const bonusPath = characterConfig.bonus[fallbackLevel.toString()] + cacheBuster;
+                characterSprites.bonus.src = bonusPath;
+                console.log(`Loading fallback bonus sprite: ${bonusPath}`);
+            }
+        }
+        
+        // Celebration sprites will be loaded dynamically based on difficulty
         
         // Digraph data for Level 3
         let digraphEmojis = {};
@@ -1186,8 +1366,8 @@ PIG 🐖`;
         }
         
         // Current sprites
-        let currentMovementSprites = ptSprites.movement;
-        let currentCelebrationSprites = ptSprites.celebration;
+        let currentMovementSprites = characterSprites.movement;
+        let currentCelebrationSprites = characterSprites.celebration;
         
         // Texture system for maze elements - now supports dynamic door types
         const textures = {
@@ -1207,20 +1387,17 @@ PIG 🐖`;
             loaded: false
         };
         
-        // Game over sprite
-        const gameOverSprite = new Image();
-        gameOverSprite.src = 'game-over.png' + '?v=' + Date.now();
-        gameOverSprite.onload = () => {
-            console.log('Game over sprite loaded successfully');
-        };
-        gameOverSprite.onerror = () => {
-            console.error('Failed to load game over sprite');
-        };
+        // Game over sprite will be loaded dynamically based on selected character
+        const gameOverSprite = characterSprites.gameOver;
         
         // Function to load textures for current level
         function loadTextures(level) {
             const basePath = `level-${level}/`;
             const cacheBuster = '?v=' + Date.now();
+            
+            // Reset loaded flag
+            textures.loaded = false;
+            console.log(`Loading textures for level ${level}...`);
             
             // Get required textures from configuration
             const requiredTextures = configManager.getRequiredTextures(level);
@@ -1391,9 +1568,26 @@ PIG 🐖`;
         }
         
         // Difficulty selection function
-        function selectDifficulty(difficulty) {
+        async function selectDifficulty(difficulty) {
             game.difficultyMode = difficulty;
-            console.log(`Selected difficulty: ${difficulty}`);
+            console.log(`Selected difficulty: ${difficulty} with character: ${game.selectedCharacter}`);
+            
+            // Verify character configuration is available
+            if (configManager.isConfigLoaded()) {
+                const characterConfig = configManager.getCharacterConfig(game.selectedCharacter);
+                console.log(`Character config for ${game.selectedCharacter}:`, characterConfig);
+            } else {
+                console.error('Config manager not loaded when selecting difficulty!');
+            }
+            
+            // Load character sprites before proceeding
+            try {
+                console.log(`Loading character sprites for ${game.selectedCharacter} before difficulty ${difficulty}`);
+                await loadCharacterSprites();
+                console.log(`Character sprites loaded successfully for ${game.selectedCharacter}`);
+            } catch (error) {
+                console.error(`Error loading character sprites for ${game.selectedCharacter}:`, error);
+            }
             
             // Reset test mode when starting normal gameplay
             game.testMode = false;
@@ -1503,6 +1697,117 @@ PIG 🐖`;
             document.getElementById('difficultyScreen').style.display = 'flex';
         }
         
+        // Character selection functions
+        async function showCharacterSelection() {
+            await generateCharacterButtons();
+            document.getElementById('characterSelectionScreen').style.display = 'flex';
+        }
+        
+        async function generateCharacterButtons() {
+            const characterButtons = document.getElementById('characterButtons');
+            characterButtons.innerHTML = '';
+            
+            // Load config if not already loaded
+            if (!configManager.isConfigLoaded()) {
+                await configManager.loadConfig();
+            }
+            
+            // Get available characters from config
+            const availableCharacters = configManager.getAvailableCharacters();
+            console.log('Loading available characters:', availableCharacters);
+            
+            for (const characterName of availableCharacters) {
+                const characterConfig = configManager.getCharacterConfig(characterName);
+                
+                const button = document.createElement('button');
+                button.className = 'character-button';
+                button.onclick = () => selectCharacter(characterName);
+                
+                // Create character sprite div
+                const sprite = document.createElement('div');
+                sprite.className = 'character-sprite';
+                
+                // Load the character movement sprite and extract the last frame
+                const movementSprite = new Image();
+                movementSprite.onload = () => {
+                    console.log(`Successfully loaded sprite for ${characterName}: ${characterConfig.movement}`);
+                    console.log(`Sprite dimensions: ${movementSprite.width}x${movementSprite.height}`);
+                    
+                    // Check if this is an SVG file - SVGs may not provide width/height immediately
+                    const isSVG = characterConfig.movement.toLowerCase().includes('.svg');
+                    
+                    if (isSVG) {
+                        // For SVG files, use the sprite directly without canvas extraction
+                        // SVG sprites should display properly when scaled
+                        console.log(`Using SVG sprite directly for ${characterName}`);
+                        sprite.style.backgroundImage = `url('${characterConfig.movement}')`;
+                        sprite.style.backgroundSize = '960px 160px'; // Full sprite sheet size
+                        sprite.style.backgroundPosition = '-800px 0px'; // Show last frame (position 800,0)
+                        sprite.style.backgroundRepeat = 'no-repeat';
+                        console.log(`Set SVG sprite background for ${characterName} with position -800px 0px`);
+                    } else {
+                        // For PNG/other raster images, use canvas extraction
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = 160;
+                        canvas.height = 160;
+                        
+                        try {
+                            // Draw the last frame (5th frame, right-facing) - position 800,0 for 6-frame sprite
+                            ctx.drawImage(movementSprite, 800, 0, 160, 160, 0, 0, 160, 160);
+                            
+                            // Set the sprite background to this frame
+                            sprite.style.backgroundImage = `url('${canvas.toDataURL()}')`;
+                            console.log(`Set canvas sprite background for ${characterName} - canvas data URL created`);
+                        } catch (error) {
+                            console.error(`Error drawing sprite for ${characterName}:`, error);
+                            // Fallback: use the full sprite image scaled down
+                            sprite.style.backgroundImage = `url('${characterConfig.movement}')`;
+                            sprite.style.backgroundSize = 'cover';
+                            sprite.style.backgroundPosition = 'center';
+                            console.log(`Using fallback sprite display for ${characterName}`);
+                        }
+                    }
+                };
+                movementSprite.onerror = () => {
+                    console.error(`Failed to load sprite for ${characterName}: ${characterConfig.movement}`);
+                    // Show a fallback or error indicator
+                    sprite.style.backgroundColor = '#f0f0f0';
+                    sprite.style.border = '2px dashed #ccc';
+                    sprite.textContent = characterName[0]; // Show first letter as fallback
+                    console.log(`Using text fallback for ${characterName}`);
+                };
+                console.log(`Loading sprite for ${characterName}: ${characterConfig.movement}`);
+                movementSprite.src = characterConfig.movement;
+                
+                // Only add the sprite, remove all text
+                button.appendChild(sprite);
+                
+                characterButtons.appendChild(button);
+            }
+        }
+        
+        function selectCharacter(characterName) {
+            console.log(`Selected character: ${characterName}`);
+            game.selectedCharacter = characterName;
+            
+            // Verify character selection
+            console.log(`Game object selectedCharacter: ${game.selectedCharacter}`);
+            
+            // Hide character selection screen
+            document.getElementById('characterSelectionScreen').style.display = 'none';
+            
+            // Show difficulty selection screen
+            document.getElementById('difficultyScreen').style.display = 'flex';
+        }
+        
+        function backToCharacterSelection() {
+            // Hide difficulty selection screen
+            document.getElementById('difficultyScreen').style.display = 'none';
+            // Show character selection screen
+            document.getElementById('characterSelectionScreen').style.display = 'flex';
+        }
+        
         // Debug mode variables
         const debugState = {
             celebrationSprites: {},
@@ -1555,10 +1860,18 @@ PIG 🐖`;
             console.log(`🐛 Jumping to level ${level} from debug mode`);
             
             // Hide all possible screens that might be showing
+            document.getElementById('characterSelectionScreen').style.display = 'none';
             document.getElementById('difficultyScreen').style.display = 'none';
             document.getElementById('levelSelectionScreen').style.display = 'none';
             document.getElementById('gameOverScreen').style.display = 'none';
             document.getElementById('finalScoreScreen').style.display = 'none';
+            
+            // Get selected character from debug mode radio buttons
+            const selectedCharacterRadio = document.querySelector('input[name="debugCharacter"]:checked');
+            if (selectedCharacterRadio) {
+                game.selectedCharacter = selectedCharacterRadio.value;
+                console.log(`🐛 Set character to ${game.selectedCharacter}`);
+            }
             
             // Get selected difficulty from debug mode radio buttons
             const selectedDifficultyRadio = document.querySelector('input[name="debugDifficulty"]:checked');
@@ -1769,12 +2082,18 @@ PIG 🐖`;
         
         // Initialize game with dynamic maze and word list data
         async function initializeGame() {
-            console.log(`Initializing game for level ${game.selectedDifficulty}`);
+            console.log(`Initializing game for level ${game.selectedDifficulty} with character ${game.selectedCharacter}`);
             
             // Load game configuration if not already loaded
             if (!configManager.isConfigLoaded()) {
+                console.log('Loading config manager...');
                 await configManager.loadConfig();
             }
+            
+            // Load character sprites based on selected character
+            console.log('Loading character sprites...');
+            await loadCharacterSprites();
+            console.log('Character sprites loaded');
             
             // Reset problem tracking based on puzzle types for this level
             // Check for division visual puzzles
@@ -1797,17 +2116,19 @@ PIG 🐖`;
             if (configManager.hasFeature(game.selectedDifficulty, 'rocket_boost')) {
                 game.hasBonus = false;
                 game.rocketCountdown = 0;
-                currentMovementSprites = ptSprites.movement;
+                currentMovementSprites = characterSprites.movement;
                 updateRocketDisplay(); // Hide countdown display
                 console.log('Reset bonus state for level 9');
             }
             
             // Load textures for this level
+            console.log('Loading textures...');
             loadTextures(game.selectedDifficulty);
             
-            loadPTBonusSprite(game.selectedDifficulty);
+            console.log('Loading character bonus sprite...');
+            loadCharacterBonusSprite(game.selectedDifficulty);
             
-
+            console.log('Starting maze data loading...');
             // Load maze data, word list, distractors, and digraph data (for Level 3) in parallel
             const loadPromises = [
                 loadMazeFromCSV(),
@@ -1827,6 +2148,8 @@ PIG 🐖`;
             console.log(`Loaded maze data:`, mazeData);
             console.log(`Loaded word list:`, wordList);
             console.log(`Loaded distractors:`, distractors);
+            console.log(`Doors found: ${mazeData.doors?.length || 0}`);
+            console.log(`Paths found: ${mazeData.paths?.length || 0}`);
             
             game.doors = mazeData.doors;
             game.paths = mazeData.paths;
@@ -1943,9 +2266,9 @@ PIG 🐖`;
             // Stop game over animation
             game.gameOverActive = false;
             
-            // Hide game over screen and show difficulty selection
+            // Hide game over screen and show character selection
             document.getElementById('gameOverScreen').style.display = 'none';
-            document.getElementById('difficultyScreen').style.display = 'flex';
+            showCharacterSelection();
         }
         
         function isOnPath(x, y) {
@@ -2160,7 +2483,7 @@ PIG 🐖`;
             `;
             
             const spriteCtx = spriteCanvas.getContext('2d');
-            const spriteToUse = isStarting ? ptSprites.bonus : ptSprites.movement;
+            const spriteToUse = isStarting ? characterSprites.bonus : characterSprites.movement;
             
             // Animate the sprite
             let animFrame = 0;
@@ -2205,7 +2528,7 @@ PIG 🐖`;
                 if (isStarting) {
                     // Start boost mode
                     removeWalls();
-                    currentMovementSprites = ptSprites.bonus;
+                    currentMovementSprites = characterSprites.bonus;
                     game.rocketCountdown = 30;
                     game.boostTransitionState = 'active';
                     startRocketCountdown();
@@ -2220,7 +2543,7 @@ PIG 🐖`;
                     game.player.x = game.playerStartPosition.x;
                     game.player.y = game.playerStartPosition.y;
                     restoreWalls();
-                    currentMovementSprites = ptSprites.movement;
+                    currentMovementSprites = characterSprites.movement;
                     
                     const gameContainer = document.getElementById('gameContainer');
                     gameContainer.style.transition = 'background 0.5s ease';
@@ -4434,8 +4757,8 @@ PIG 🐖`;
                 totalScore: 0
             };
             
-            // Show difficulty selection to start over
-            document.getElementById('difficultyScreen').style.display = 'flex';
+            // Show character selection to start over
+            showCharacterSelection();
         }
         
         function showGameOverScore() {
@@ -4488,8 +4811,15 @@ PIG 🐖`;
         }
         
         
-        // Show difficulty selection screen on game start
-        // The game will start after user selects difficulty via selectDifficulty() function
+        // Initialize character selection screen on game start
+        // Character selection -> difficulty selection -> level selection -> game start
+        document.addEventListener('DOMContentLoaded', () => {
+            // Start the game loop
+            gameLoop();
+            
+            // Show character selection screen as the first screen
+            showCharacterSelection();
+        });
     </script>
 </body>
 </html>
