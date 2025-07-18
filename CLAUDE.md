@@ -302,8 +302,14 @@ Target workflow:
 - ✅ Professional hosting with CDN performance
 
 **Deployment Workflow Established**:
-- Local development → Git commit → Push to GitHub → Automatic live update
-- **IMPORTANT**: Always commit major changes and confirm before pushing to live version
+- Local development → Git commit → Evaluate push strategy → Push to GitHub → Automatic live update
+- **IMPORTANT**: Always commit changes locally, but evaluate push strategy before deploying to live version
+
+**Push Strategy Guidelines**:
+- **Push immediately**: Documentation updates, asset files, configuration tweaks (safe, improves repo)
+- **Test first, then push**: Bug fixes, small improvements, feature enhancements (verify locally before deployment)
+- **Batch for major releases**: New puzzle types, character systems, major refactoring (coordinate larger releases)
+- **Pre-backlog consideration**: Evaluate push strategy before implementing backlog items to ensure appropriate deployment timing
 
 **Priority**: ✅ Complete - Game successfully deployed and accessible
 
