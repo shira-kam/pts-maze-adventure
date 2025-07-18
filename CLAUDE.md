@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-"PT's Maze Adventure" is an educational HTML5 Canvas maze game featuring PT the elephant. The game provides a dynamic level system with configurable educational puzzles, comprehensive scoring, and extensive debug capabilities. Built as a single-page application with no external dependencies.
+"PT's Maze Adventure" is a sophisticated educational HTML5 Canvas maze game featuring multiple playable characters. The game spans 10 levels with progressive difficulty, incorporating multiple educational puzzle types, advanced movement mechanics, comprehensive scoring systems, and extensive debug capabilities. Built as a single-page application with no external dependencies and fully dynamic character support.
 
 ## Running the Game
 **IMPORTANT**: This game requires a local HTTP server to function properly due to browser security restrictions on loading local files (CSV, text files, images). The game dynamically loads level data from CSV files and educational content from text files, which browsers block when opening HTML files directly from the file system.
@@ -19,25 +19,74 @@ Then navigate to `http://localhost:8000` (or appropriate port) to play the game.
 ## Architecture Overview
 
 ### Core Files Structure
-- **`index.html`**: Complete game implementation containing all HTML, CSS, JavaScript, and game logic
-- **`game-config.json`**: Main configuration file (currently being refactored)
-- **Level directories**: Each contains complete asset sets and configuration
+- **`index.html`**: Complete game implementation (4000+ lines) containing all HTML, CSS, JavaScript, and game logic
+- **`game-config.json`**: Comprehensive configuration file controlling levels, characters, and puzzles
+- **`config-manager.js`**: Configuration management utility for dynamic loading
+- **Level directories** (`level-1/` through `level-10/`): Each contains complete asset sets
 - **Educational data files**: `digraph-sounds.txt`, `digraph-emojis.txt`, `distractors.txt`, `emoji-names.txt`
-- **Modular puzzle files**: Individual JavaScript files for each puzzle type
+- **Character assets**: Movement sprites, celebration animations, bonus sprites, game over sprites
 
-### Game Flow
-1. **Difficulty Selection**: Easy Peasy/Neutral (5 hearts) vs Hard Mode (3 hearts)
-2. **Level Selection**: Dynamic grid showing configured levels
-3. **Level Progression**: Player-driven level selection after each completion
-4. **Puzzle Interactions**: Modal-based educational challenges
-5. **Special Mechanics**: Heart collection, bonus/boost system
-6. **Completion Screens**: Level celebrations, level selection, final scoring
+### Game States and Flow
+1. **Character Selection**: Choose from dynamically loaded characters
+2. **Difficulty Selection**: Easy Peasy/Neutral (5 hearts) vs Hard Mode (3 hearts)
+3. **Level Selection**: Interactive grid showing all levels with texture previews
+4. **Level Progression**: Player-driven level selection after each completion
+5. **Puzzle Interactions**: Modal-based educational challenges
+6. **Special Mechanics**: Rocket boost, heart collection, bonus systems
+7. **Completion Screens**: Level celebrations, level selection, final scoring when all complete
+8. **Debug Mode**: Comprehensive testing interface (Shift+Ctrl+D activation)
+
+## Dynamic Character System
+
+### Character Support
+The game features a fully dynamic character system that supports multiple playable characters:
+
+**Current Characters:**
+- **PT the Elephant**: Original character with full asset set
+- **Enderman**: Dark mysterious character with complete animation support
+
+**Character Assets Required:**
+- **Movement sprite**: 6-frame sprite sheet (960x160 pixels, SVG or PNG)
+- **Celebration sprites**: Per-level celebration animations (PNG sprite sheets)
+- **Game over sprite**: Character-specific game over animation
+- **Bonus sprites**: Rocket boost mode sprites for levels 9-10
+
+### Adding New Characters
+To add a new character, simply:
+
+1. **Add character configuration** to `game-config.json`:
+```json
+"NewCharacter": {
+  "name": "Character Display Name",
+  "movement": "NewCharacter-sprite.svg",
+  "celebration": "NewCharacter-celebrate.png",
+  "gameOver": "NewCharacter-game-over.png",
+  "bonus": {
+    "9": "level-9/NewCharacter-Bonus-Sprite.svg",
+    "10": "level-10/NewCharacter-Bonus-Sprite.svg"
+  },
+  "description": "Character description for display"
+}
+```
+
+2. **Provide required assets** in appropriate directories
+3. **No code changes needed** - character will automatically appear in:
+   - Character selection screen with sprite preview
+   - Debug mode character selection
+   - All gameplay functionality (movement, celebration, game over, bonus)
+
+### Character Selection Flow
+- **Character Selection Screen**: First screen, dynamically loads available characters
+- **Sprite Preview**: Shows last frame of movement sprite for character identification
+- **Dynamic Loading**: Character sprites loaded asynchronously before gameplay
+- **Debug Integration**: Debug mode includes character selection with celebration testing
 
 ## Configuration-Driven System
 
 ### Main Configuration File
 The game is designed to be fully configurable through a main JSON configuration file. This allows:
 - Adding new levels by creating level folders and updating config
+- Adding new characters by providing assets and config entries
 - Removing levels by removing them from config
 - Configuring puzzle difficulties and constraints per level
 - Setting celebration animation frame counts
@@ -216,18 +265,96 @@ All puzzles share common characteristics:
 ### Implementation Status
 🔄 **PARTIALLY MODULARIZED** - Remove legacy unused puzzles, complete configuration system
 
-## Debug Mode
+## Debug and Testing Features
 
-### Activation
-- **Hotkey**: Ctrl+Shift+D
-- **Features**:
-  - Jump to any level button
-  - Play celebration animations
-  - Access debug-only levels
-  - Level testing capabilities
+### Debug Mode (Shift+Ctrl+D)
+- **Dynamic Character Selection**: Choose any character from config for testing
+- **Level jumping**: Direct access to any level 1-10
+- **Celebration Animation Testing**: Preview and control celebration sprites for all levels
+- **Difficulty Selection**: Test with Easy, Neutral, or Hard mode settings
+- **Real-time Testing**: All debug features respect selected character and difficulty
+
+### Debug Features
+- **Character-Aware Testing**: Debug mode dynamically loads characters from config
+- **Level Testing**: Manual level progression with character-specific assets
+- **Animation Preview**: Individual celebration sprite testing with controls
+- **Visual Indicators**: Real-time level display and debugging information
+- **Performance Testing**: Animation frame rates, texture loading times
+
+### Testing Capabilities
+- **Manual Testing Workflow**: Level progression, puzzle validation, sprite loading
+- **Educational Testing**: Puzzle generation, content validation, speech synthesis
+- **Character Testing**: Movement, celebration, game over, and bonus sprite validation
+- **Dynamic Asset Testing**: Texture loading, fallback systems, cache validation
 
 ### Implementation Status
-✅ **FULLY CONFIG-DRIVEN** - All level references now use configuration file
+✅ **FULLY DYNAMIC** - All debug features now use configuration-driven character and level systems
+
+## Technical Implementation
+
+### Character System Architecture
+The character system is built on a fully dynamic foundation:
+
+**Key Components:**
+- **ConfigManager**: Handles character configuration loading and validation
+- **Character Selection Screen**: Dynamically generates buttons from config
+- **Character Sprites**: Supports both SVG and PNG sprite formats
+- **Asset Loading**: Asynchronous character sprite loading with fallbacks
+
+**Core Functions:**
+- `generateCharacterButtons()`: Creates character selection from config
+- `loadCharacterSprites()`: Loads character assets based on selection
+- `generateDebugCharacterSelection()`: Creates debug mode character options
+- `reloadDebugCelebrationSprites()`: Updates debug sprites when character changes
+
+### Sprite System
+**Movement Sprites**: 6-frame horizontal sprite sheets (960x160 pixels)
+- Frame 1-2: Right-facing movement
+- Frame 3-4: Left-facing movement  
+- Frame 5-6: Up/down movement
+- **SVG Support**: Uses CSS background positioning for frame extraction
+- **PNG Support**: Uses HTML5 Canvas for frame extraction
+
+**Celebration Sprites**: Per-level PNG sprite sheets with configurable frame counts
+- **Dynamic Loading**: Based on character and level from config
+- **Frame Configuration**: Set via `animation.celebrationFrames` in config
+- **Fallback System**: Graceful degradation when sprites unavailable
+
+### Configuration Integration
+**Character Config Structure**:
+```json
+"characterName": {
+  "name": "Display Name",
+  "movement": "path/to/movement-sprite.svg",
+  "celebration": "path/to/celebration.png",
+  "gameOver": "path/to/game-over.png",
+  "bonus": {
+    "9": "path/to/bonus-sprite-level-9.svg",
+    "10": "path/to/bonus-sprite-level-10.svg"
+  }
+}
+```
+
+**Dynamic Discovery**: Game automatically detects available characters from config
+**Asset Paths**: Supports both absolute and relative paths for character assets
+**Validation**: ConfigManager provides fallback handling for missing character data
+
+### Development Patterns
+**Adding Characters**: 
+1. Add config entry to `game-config.json`
+2. Provide required asset files
+3. No code changes needed - fully automatic
+
+**Character Selection Flow**:
+1. User selects character → `game.selectedCharacter` updated
+2. Difficulty selection → Character sprites loaded via `loadCharacterSprites()`
+3. Level gameplay → Character sprites used for movement, celebration, game over
+4. Debug mode → Character selection dynamically populated from config
+
+**Error Handling**:
+- Missing sprites fall back to placeholder graphics
+- Missing character configs default to PT
+- Console logging for debugging asset loading issues
 
 ## Refactoring Goals
 

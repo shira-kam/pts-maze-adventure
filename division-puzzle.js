@@ -119,8 +119,8 @@ class DivisionPuzzle {
             attempts++;
             if (attempts >= maxAttempts) {
                 // Fallback to simple problem
-                dividend = 4;
-                divisor = 1;
+                dividend = 12;
+                divisor = 3;
                 answer = 4;
                 break;
             }

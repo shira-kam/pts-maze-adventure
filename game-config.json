@@ -169,7 +169,7 @@
       },
       "assets": {
         "celebration": {
-          "frames": 43,
+          "frames": 41,
           "frameWidth": 200,
           "frameHeight": 200
         },
@@ -177,8 +177,8 @@
         "bonus": false
       },
       "animation": {
-        "celebrationFrames": 43,
-        "frameDelay": 40
+        "celebrationFrames": 41,
+        "frameDelay": 25
       }
     },
     "4": {
@@ -262,7 +262,7 @@
       },
       "assets": {
         "celebration": {
-          "frames": 29,
+          "frames": 30,
           "frameWidth": 200,
           "frameHeight": 200
         },
@@ -270,7 +270,7 @@
         "bonus": false
       },
       "animation": {
-        "celebrationFrames": 29,
+        "celebrationFrames": 30,
         "frameDelay": 25
       }
     },
@@ -294,7 +294,7 @@
       },
       "assets": {
         "celebration": {
-          "frames": 24,
+          "frames": 28,
           "frameWidth": 200,
           "frameHeight": 200
         },
@@ -302,7 +302,7 @@
         "bonus": false
       },
       "animation": {
-        "celebrationFrames": 24,
+        "celebrationFrames": 28,
         "frameDelay": 25
       }
     },
@@ -335,7 +335,7 @@
       },
       "assets": {
         "celebration": {
-          "frames": 28,
+          "frames": 24,
           "frameWidth": 200,
           "frameHeight": 200
         },
@@ -343,7 +343,7 @@
         "bonus": false
       },
       "animation": {
-        "celebrationFrames": 28,
+        "celebrationFrames": 24,
         "frameDelay": 25
       }
     },

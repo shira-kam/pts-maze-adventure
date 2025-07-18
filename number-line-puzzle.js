@@ -531,10 +531,10 @@ class NumberLinePuzzle {
         const config = configManager.getPuzzleConfig(game.selectedDifficulty, 'number_line');
         const numberLineLength = config.numberLine?.length || 12;
         const gridColumns = numberLineLength + 1; // 0 to numberLineLength
-        
+        const containerWidth = (gridColumns + 3) * 40; // 40px per cell + 2px gap
         // Create interface with number line and multiple choice
         options.innerHTML = `
-            <div class="numberline-container" style="margin: 20px auto; max-width: 600px;">
+            <div class="numberline-container" style="margin: 20px auto; max-width: ${containerWidth}px;">
                 <div class="number-grid" id="numberGrid" style="
                     display: grid;
                     grid-template-columns: repeat(${gridColumns}, 40px);
