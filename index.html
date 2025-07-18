@@ -649,20 +649,29 @@
         }
         
         #backToDifficultyBtn {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 16px;
-            border-radius: 25px;
+            background: white;
+            color: black;
+            border: 2px solid #ddd;
+            padding: 0;
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
             cursor: pointer;
             font-family: inherit;
             font-weight: bold;
+            font-size: 32px;
             transition: all 0.3s ease;
+            margin-top: 40px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         #backToDifficultyBtn:hover {
-            background: #5a6268;
+            background: #f5f5f5;
             transform: translateY(-2px);
         }
         
@@ -740,9 +749,9 @@
             width: 120px;
             height: 120px;
             margin-bottom: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            background-size: contain;
+            border: none;
+            border-radius: 0;
+            background-size: 120px 120px;
             background-repeat: no-repeat;
             background-position: center;
         }
@@ -763,13 +772,13 @@
             color: black;
             border: 2px solid #ddd;
             padding: 0;
-            width: 32px;
-            height: 32px;
-            border-radius: 4px;
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
             cursor: pointer;
             font-family: inherit;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 32px;
             transition: all 0.3s ease;
             margin-top: 40px;
             display: block;
@@ -841,7 +850,7 @@
             <div id="levelGrid">
                 <!-- Level buttons will be generated dynamically -->
             </div>
-            <button id="backToDifficultyBtn" onclick="backToDifficulty()">← Back to Difficulty</button>
+            <button id="backToDifficultyBtn" onclick="backToDifficulty()">←</button>
         </div>
     </div>
     
@@ -855,11 +864,11 @@
                 <p>Select character for level testing:</p>
                 <div style="display: flex; flex-direction: column; gap: 15px; margin: 15px 0; align-items: flex-start;">
                     <label style="display: flex; align-items: center; gap: 10px; color: #fff; font-size: 18px; cursor: pointer;">
-                        <input type="radio" name="debugCharacter" value="PT" checked style="transform: scale(1.5);">
+                        <input type="radio" name="debugCharacter" value="PT" checked style="transform: scale(1.5);" onchange="reloadDebugCelebrationSprites()">
                         <span style="color: #fff; font-weight: bold;">PT the Elephant 🐘</span>
                     </label>
                     <label style="display: flex; align-items: center; gap: 10px; color: #fff; font-size: 18px; cursor: pointer;">
-                        <input type="radio" name="debugCharacter" value="Enderman" style="transform: scale(1.5);">
+                        <input type="radio" name="debugCharacter" value="Enderman" style="transform: scale(1.5);" onchange="reloadDebugCelebrationSprites()">
                         <span style="color: #fff; font-weight: bold;">Enderman 🖤</span>
                     </label>
                 </div>
@@ -1741,10 +1750,10 @@ PIG 🐖`;
                         // SVG sprites should display properly when scaled
                         console.log(`Using SVG sprite directly for ${characterName}`);
                         sprite.style.backgroundImage = `url('${characterConfig.movement}')`;
-                        sprite.style.backgroundSize = '960px 160px'; // Full sprite sheet size
-                        sprite.style.backgroundPosition = '-800px 0px'; // Show last frame (position 800,0)
+                        sprite.style.backgroundSize = '720px 120px'; // Scale sprite sheet to fit in 120px height
+                        sprite.style.backgroundPosition = '-600px 0px'; // Show last frame (scaled position)
                         sprite.style.backgroundRepeat = 'no-repeat';
-                        console.log(`Set SVG sprite background for ${characterName} with position -800px 0px`);
+                        console.log(`Set SVG sprite background for ${characterName} with scaled position -600px 0px`);
                     } else {
                         // For PNG/other raster images, use canvas extraction
                         const canvas = document.createElement('canvas');
@@ -1910,6 +1919,13 @@ PIG 🐖`;
             stopAllDebugAnimations();
         }
         
+        // Reload debug celebration sprites when character changes
+        function reloadDebugCelebrationSprites() {
+            console.log('Reloading debug celebration sprites due to character change');
+            stopAllDebugAnimations();
+            loadDebugCelebrationSprites();
+        }
+        
         // Load all celebration sprites for debug mode
         function loadDebugCelebrationSprites() {
             // Use dynamic level loading from JSON config
@@ -1920,13 +1936,18 @@ PIG 🐖`;
                 return;
             }
             
+            // Get currently selected character from debug radio buttons
+            const selectedCharacterRadio = document.querySelector('input[name="debugCharacter"]:checked');
+            const characterName = selectedCharacterRadio ? selectedCharacterRadio.value : (game.selectedCharacter || 'PT');
+            
+            console.log(`Loading debug celebration sprites for character: ${characterName}`);
+            
             for (const level of availableLevels) {
                 const sprite = new Image();
                 const cacheBuster = '?v=' + Date.now() + '_' + Math.random();
                 
                 // Use the level's own celebration sprite for current character
                 const spriteLevel = level;
-                const characterName = game.selectedCharacter || 'PT';
                 const spritePath = configManager.getCharacterAssetPath(characterName, 'celebration', spriteLevel) + cacheBuster;
                 
                 sprite.src = spritePath;
