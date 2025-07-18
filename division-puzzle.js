@@ -130,9 +130,9 @@ class DivisionPuzzle {
             answer > maxAnswer || // Keep answers within configured limit
             (divisor === 1 && dividend >= 5) || // Only allow A:1 when A < 5
             (dividend === divisor && dividend >= 5) || // Only allow A:A when A < 5
-            (excludeIdentity && dividend === divisor && dividend > 6) || // Exclude A÷A when A>6 (legacy)
-            (dividend === 1 && divisor >= 7) || // When A=1, B must be < 7
-            (divisor === 1 && dividend >= 7) // When B=1, A must be < 7 (legacy)
+            (excludeIdentity && dividend === divisor && dividend > 6) || // Exclude A÷A when A>6 
+            (dividend === 1 && divisor >= 6) || // When A=1, B must be < 6
+            (divisor === 1 && dividend >= 6) // When B=1, A must be < 6 
         );
         
         // Generate wrong answers within |R-W| < 4
