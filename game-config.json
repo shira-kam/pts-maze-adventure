@@ -1,0 +1,432 @@
+{
+  "puzzles": {
+    "simple_arithmetic": {
+      "doorType": "ma",
+      "texture": "ma.png",
+      "operations": ["addition", "subtraction"],
+      "limits": {
+        "maxA": 10,
+        "maxB": 10,
+        "maxResult": 12
+      },
+      "tracking": {
+        "preventRepetition": true,
+        "maxAttempts": 3,
+        "trackingScope": "level"
+      }
+    },
+    "word_emoji_matching": {
+      "doorType": "we",
+      "texture": "we.png",
+      "tracking": {
+        "preventRepetition": true,
+        "usedWords": [],
+        "trackingScope": "level"
+      }
+    },
+    "number_line": {
+      "doorType": "nl",
+      "texture": "nl.png",
+      "operations": ["addition", "subtraction"],
+      "numberLine": {
+        "length": 12,
+        "minA": 1,
+        "maxA": 8,
+        "minB": 1,
+        "maxB": 8,
+        "maxResult": 12
+      },
+      "tracking": {
+        "preventRepetition": true,
+        "maxAttempts": 3,
+        "trackingScope": "level"
+      }
+    },
+    "digraph_sounds": {
+      "doorType": "ds",
+      "texture": "ds.png",
+      "digraphs": ["CH", "TH", "SH", "WH", "PH", "GH"],
+      "tracking": {
+        "preventRepetition": true,
+        "usedDigraphs": [],
+        "trackingScope": "level"
+      }
+    },
+    "division_visual": {
+      "doorType": "dv",
+      "texture": "dv.png",
+      "division": {
+        "maxA": 12,
+        "maxB": 10,
+        "maxAnswer": 10,
+        "excludeIdentity": true,
+        "excludeA1": true
+      },
+      "tracking": {
+        "preventRepetition": true,
+        "trackingScope": "level"
+      }
+    },
+    "multiplication_groups": {
+      "doorType": "mg",
+      "texture": "mg.png",
+      "operations": ["multiplication"],
+      "multiplication": {
+        "maxProduct": 20,
+        "minFactor": 2,
+        "maxFactor": 10,
+        "excludeOne": true
+      },
+      "tracking": {
+        "preventRepetition": true,
+        "maxAttempts": 3,
+        "trackingScope": "level"
+      }
+    }
+  },
+  "levels": {
+    "1": {
+      "playable": true,
+      "puzzles": {
+        "simple_arithmetic": {
+          "limits": {
+            "maxA": 9,
+            "maxB": 9,
+            "maxResult": 10
+          }
+        },
+        "word_emoji_matching": {
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      },
+      "assets": {
+        "celebration": {
+          "frames": 9,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "celebrationFrames": 9,
+        "frameDelay": 25
+      }
+    },
+    "2": {
+      "playable": true,
+      "puzzles": {
+        "simple_arithmetic": {
+          "limits": {
+            "maxA": 12,
+            "maxB": 12,
+            "maxResult": 15
+          }
+        },
+        "word_emoji_matching": {
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      },
+      "assets": {
+        "celebration": {
+          "frames": 62,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "celebrationFrames": 62,
+        "frameDelay": 25
+      }
+    },
+    "3": {
+      "playable": true,
+      "puzzles": {
+        "simple_arithmetic": {
+          "limits": {
+            "maxA": 15,
+            "maxB": 15,
+            "maxResult": 20
+          }
+        },
+        "word_emoji_matching": {
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      },
+      "assets": {
+        "celebration": {
+          "frames": 43,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "celebrationFrames": 43,
+        "frameDelay": 40
+      }
+    },
+    "4": {
+      "playable": true,
+      "puzzles": {
+        "number_line": {
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 12,
+            "minA": 1,
+            "maxA": 8,
+            "minB": 1,
+            "maxB": 8,
+            "maxResult": 12
+          }
+        }
+      },
+      "assets": {
+        "celebration": {
+          "frames": 62,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "celebrationFrames": 62,
+        "frameDelay": 25
+      }
+    },
+    "5": {
+      "playable": true,
+      "puzzles": {
+        "digraph_sounds": {
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
+        },
+        "number_line": {
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 12,
+            "minA": 1,
+            "maxA": 8,
+            "minB": 1,
+            "maxB": 8,
+            "maxResult": 12
+          }
+        }
+      },
+      "assets": {
+        "celebration": {
+          "frames": 52,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "celebrationFrames": 52,
+        "frameDelay": 25
+      }
+    },
+    "6": {
+      "playable": true,
+      "puzzles": {
+        "digraph_sounds": {
+          "digraphs": ["TR", "PR", "GR", "FR", "DR", "CR", "BR"]
+        },
+        "number_line": {
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 12,
+            "minA": 1,
+            "maxA": 8,
+            "minB": 1,
+            "maxB": 8,
+            "maxResult": 12
+          }
+        }
+      },
+      "assets": {
+        "celebration": {
+          "frames": 29,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "celebrationFrames": 29,
+        "frameDelay": 25
+      }
+    },
+    "7": {
+      "playable": true,
+      "puzzles": {
+        "digraph_sounds": {
+          "digraphs": ["CH", "TH", "SH", "WH", "PH"]
+        },
+        "number_line": {
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 12,
+            "minA": 1,
+            "maxA": 8,
+            "minB": 1,
+            "maxB": 8,
+            "maxResult": 12
+          }
+        }
+      },
+      "assets": {
+        "celebration": {
+          "frames": 24,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "celebrationFrames": 24,
+        "frameDelay": 25
+      }
+    },
+    "8": {
+      "playable": true,
+      "puzzles": {
+        "division_visual": {
+          "division": {
+            "maxA": 15,
+            "maxB": 15,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        },
+        "number_line": {
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 15,
+            "minA": 1,
+            "maxA": 15,
+            "minB": 1,
+            "maxB": 15,
+            "minC": 1,
+            "maxC": 4,
+            "maxResult": 15,
+            "equationType": "triple_add"
+          }
+        }
+      },
+      "assets": {
+        "celebration": {
+          "frames": 28,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "celebrationFrames": 28,
+        "frameDelay": 25
+      }
+    },
+    "9": {
+      "playable": true,
+      "puzzles": {
+        "division_visual": {
+          "division": {
+            "maxA": 15,
+            "maxB": 12,
+            "maxAnswer": 10
+          }
+        },
+        "number_line": {
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 12,
+            "minA": 1,
+            "maxA": 4,
+            "minB": 1,
+            "maxB": 4,
+            "minC": 1,
+            "maxC": 4,
+            "maxResult": 12,
+            "equationType": "triple_add"
+          }
+        }
+      },
+      "assets": {
+        "celebration": {
+          "frames": 27,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": true
+      },
+      "animation": {
+        "celebrationFrames": 27,
+        "frameDelay": 25
+      }
+    },
+    "10": {
+      "playable": true,
+      "puzzles": {
+        "division_visual": {
+          "division": {
+            "maxA": 20,
+            "maxB": 15,
+            "maxAnswer": 10
+          }
+        },
+        "multiplication_groups": {
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 20,
+            "minFactor": 2,
+            "maxFactor": 10,
+            "excludeOne": true
+          }
+        }
+      },
+      "assets": {
+        "celebration": {
+          "frames": 53,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": true
+      },
+      "animation": {
+        "celebrationFrames": 53,
+        "frameDelay": 25
+      }
+    }
+  },
+  "characters": {
+    "PT": {
+      "name": "PT the Elephant",
+      "movement": "PT-sprite.svg",
+      "bonus": "PT-Bonus-Sprite.svg",
+      "description": "A friendly elephant who loves solving puzzles"
+    }
+  }
+}

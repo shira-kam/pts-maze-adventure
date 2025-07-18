@@ -241,13 +241,49 @@ door.failedAttempts = 0;  // Reset failures
 
 ---
 
-## NEXT STEPS FOR MODULARIZATION
+## NEXT STEPS FOR DYNAMIC LEVEL SYSTEM
 
-1. **Start with Level 1-3 Math**: Simplest case, well-defined mechanics
-2. **Create Exact Replica**: New class must produce identical behavior
-3. **Preserve Integration**: Use existing `checkAnswer()` function
-4. **Test Thoroughly**: All mechanics must work identically
-5. **Document Changes**: Track exactly what was modified
-6. **One Level at a Time**: Don't break other puzzle types
+### Phase 1: Configuration-Driven Level Management
+1. **Create Level Config File**: `levels.json` with level metadata and ordering
+2. **Dynamic Level Discovery**: Code scans config file instead of hardcoded level numbers
+3. **Debug Mode Integration**: CTRL+SHIFT+D shows all levels with "(DISABLED)" indicators
+4. **Level Selection Refactor**: Populate from config file dynamically
 
-This documentation ensures that any modularization attempts preserve the exact functionality that children depend on for learning.
+### Phase 2: Texture-Grid Alignment System
+1. **Door Type Textures**: Each door type (ma, nl, nt, mg, we, ds, dv) gets its own texture
+2. **Dynamic Texture Loading**: Load textures based on door types found in grid
+3. **Fallback Colors**: Use puzzle-specific colors when texture files missing
+4. **Grid-Texture Consistency**: Level textures match grid door types exactly
+
+### Phase 3: Fully Dynamic Level System
+1. **Named Level Folders**: Replace numbered folders with descriptive names
+2. **Auto-Discovery**: Game finds all level folders and incorporates them
+3. **Zero-Code Expansion**: New levels work by adding folder + config entry
+4. **Flexible Ordering**: Config file defines display order, not filesystem
+
+### Configuration Structure
+```json
+{
+  "levels": [
+    {
+      "folder": "forest-adventure",
+      "displayName": "Forest Adventure", 
+      "enabled": true,
+      "debugOnly": false
+    }
+  ],
+  "puzzleTypes": {
+    "ma": { "name": "Math Arithmetic", "fallbackColor": "#FF6B6B" },
+    "we": { "name": "Word Emoji", "fallbackColor": "#4ECDC4" }
+  }
+}
+```
+
+### Benefits
+- **Content Creator Friendly**: Add levels without code changes
+- **Flexible Testing**: Debug mode shows all levels regardless of status
+- **Visual Consistency**: Textures match puzzle types in grid
+- **Easy Management**: Enable/disable levels via config file
+- **Future-Proof**: System scales to any number of levels/puzzle types
+
+This approach transforms the game into a fully dynamic, configuration-driven system while preserving all existing functionality.

@@ -1,8 +1,8 @@
 ,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T
-1,o,b,o,o,o,o,,,,,,,,,,,,,,
-2,o,o,o,o,o,o,,,,,,,,,,,,,,
+1,o,o,o,o,o,o,,,,,,,,,,,,,,
+2,o,o,b,o,o,o,,,,,,,,,,,,,,
 3,o,o,o,o,o,o,,,,,,,,,,,,,,
-4,mg,dv,mg,dv,mg,dv,mg,dv,mg,dv,mg,dv,mg,dv,mg,dv,mg,dv,mg,b
+4,,dv,mg,dv,mg,dv,mg,dv,mg,dv,mg,dv,mg,dv,mg,dv,mg,dv,,b
 5,,,,,,o,,,,,,,,,,,,,,o
 6,,h,h,h,,o,,h,h,,h,h,,h,h,,h,h,,o
 7,,h,h,h,,o,,h,h,,h,h,,h,h,,h,h,,o

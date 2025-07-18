@@ -722,109 +722,40 @@
             <div id="debugTitle">🐛 DEBUG MODE 🐛</div>
             
             <div class="debug-section">
+                <h3>⚙️ Difficulty Settings</h3>
+                <p>Select difficulty for level testing:</p>
+                <div style="display: flex; flex-direction: column; gap: 15px; margin: 15px 0; align-items: flex-start;">
+                    <label style="display: flex; align-items: center; gap: 10px; color: #fff; font-size: 18px; cursor: pointer;">
+                        <input type="radio" name="debugDifficulty" value="easy" checked style="transform: scale(1.5);">
+                        <span style="color: #fff; font-weight: bold;">Easy Peasy 🫛 (5 ❤️)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; color: #fff; font-size: 18px; cursor: pointer;">
+                        <input type="radio" name="debugDifficulty" value="medium" style="transform: scale(1.5);">
+                        <span style="color: #fff; font-weight: bold;">Neutral 😐 (5 ❤️)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; color: #fff; font-size: 18px; cursor: pointer;">
+                        <input type="radio" name="debugDifficulty" value="hard" style="transform: scale(1.5);">
+                        <span style="color: #fff; font-weight: bold;">Hard Mode 🙀 (3 ❤️)</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="debug-section">
                 <h3>🎮 Level Selection</h3>
                 <p>Jump to any level for testing:</p>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
-                    <button class="debug-button" onclick="jumpToLevel(1)">Jump to Level 1</button>
-                    <button class="debug-button" onclick="jumpToLevel(2)">Jump to Level 2</button>
-                    <button class="debug-button" onclick="jumpToLevel(3)">Jump to Level 3</button>
-                    <button class="debug-button" onclick="jumpToLevel(4)">Jump to Level 4</button>
-                    <button class="debug-button" onclick="jumpToLevel(5)">Jump to Level 5</button>
-                    <button class="debug-button" onclick="jumpToLevel(6)">Jump to Level 6</button>
-                    <button class="debug-button" onclick="jumpToLevel(7)">Jump to Level 7</button>
-                    <button class="debug-button" onclick="jumpToLevel(8)">Jump to Level 8</button>
-                    <button class="debug-button" onclick="jumpToLevel(9)">Jump to Level 9</button>
-                    <button class="debug-button" onclick="jumpToLevel(10)">Jump to Level 10 (Debug)</button>
+                <div id="debugLevelButtons" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+                    <!-- Level buttons will be generated dynamically -->
                 </div>
                 <p style="margin-top: 10px; font-size: 14px; color: #ccc;">Current Level: <span id="debugCurrentLevel">1</span></p>
             </div>
             
-            <div class="debug-section">
-                <h3>🧪 Test Versions</h3>
-                <p>Test alternative starting positions for number line levels:</p>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
-                    <button class="debug-button" onclick="jumpToTestLevel(4)">Test Level 4 (Start at 0)</button>
-                </div>
-                <p style="margin-top: 10px; font-size: 14px; color: #ccc;">Test versions start PT at 0 with black 0 square</p>
-            </div>
             
             <div class="debug-section">
                 <h3>🎉 Celebration Animations</h3>
                 <p>View all celebration sprites from each level:</p>
-                <button class="debug-button" onclick="loadDebugCelebrationSprites()" style="margin-bottom: 15px;">🔄 Reload All Sprites</button>
-                <div class="celebration-grid">
-                    <div class="celebration-item">
-                        <h4>Level 1 - PT Celebration</h4>
-                        <canvas class="celebration-preview" id="debugCelebration1" width="200" height="200"></canvas>
-                        <br>
-                        <button class="debug-button" onclick="debugPlayCelebration(1)">Play Animation</button>
-                        <button class="debug-button" onclick="debugStopCelebration(1)">Stop</button>
-                    </div>
-                    <div class="celebration-item">
-                        <h4>Level 2 - PT Celebration</h4>
-                        <canvas class="celebration-preview" id="debugCelebration2" width="200" height="200"></canvas>
-                        <br>
-                        <button class="debug-button" onclick="debugPlayCelebration(2)">Play Animation</button>
-                        <button class="debug-button" onclick="debugStopCelebration(2)">Stop</button>
-                    </div>
-                    <div class="celebration-item">
-                        <h4>Level 3 - PT Celebration</h4>
-                        <canvas class="celebration-preview" id="debugCelebration3" width="200" height="200"></canvas>
-                        <br>
-                        <button class="debug-button" onclick="debugPlayCelebration(3)">Play Animation</button>
-                        <button class="debug-button" onclick="debugStopCelebration(3)">Stop</button>
-                    </div>
-                    <div class="celebration-item">
-                        <h4>Level 4 - PT Celebration</h4>
-                        <canvas class="celebration-preview" id="debugCelebration4" width="200" height="200"></canvas>
-                        <br>
-                        <button class="debug-button" onclick="debugPlayCelebration(4)">Play Animation</button>
-                        <button class="debug-button" onclick="debugStopCelebration(4)">Stop</button>
-                    </div>
-                    <div class="celebration-item">
-                        <h4>Level 5 - PT Celebration</h4>
-                        <canvas class="celebration-preview" id="debugCelebration5" width="200" height="200"></canvas>
-                        <br>
-                        <button class="debug-button" onclick="debugPlayCelebration(5)">Play Animation</button>
-                        <button class="debug-button" onclick="debugStopCelebration(5)">Stop</button>
-                    </div>
-                    <div class="celebration-item">
-                        <h4>Level 6 - PT Celebration</h4>
-                        <canvas class="celebration-preview" id="debugCelebration6" width="200" height="200"></canvas>
-                        <br>
-                        <button class="debug-button" onclick="debugPlayCelebration(6)">Play Animation</button>
-                        <button class="debug-button" onclick="debugStopCelebration(6)">Stop</button>
-                    </div>
-                    <div class="celebration-item">
-                        <h4>Level 7 - PT Celebration</h4>
-                        <canvas class="celebration-preview" id="debugCelebration7" width="200" height="200"></canvas>
-                        <br>
-                        <button class="debug-button" onclick="debugPlayCelebration(7)">Play Animation</button>
-                        <button class="debug-button" onclick="debugStopCelebration(7)">Stop</button>
-                    </div>
-                    <div class="celebration-item">
-                        <h4>Level 8 - PT Celebration</h4>
-                        <canvas class="celebration-preview" id="debugCelebration8" width="200" height="200"></canvas>
-                        <br>
-                        <button class="debug-button" onclick="debugPlayCelebration(8)">Play Animation</button>
-                        <button class="debug-button" onclick="debugStopCelebration(8)">Stop</button>
-                    </div>
-                    
-                    <div class="celebration-item">
-                        <h4>Level 9 - PT Celebration</h4>
-                        <canvas class="celebration-preview" id="debugCelebration9" width="200" height="200"></canvas>
-                        <br>
-                        <button class="debug-button" onclick="debugPlayCelebration(9)">Play Animation</button>
-                        <button class="debug-button" onclick="debugStopCelebration(9)">Stop</button>
-                    </div>
-                    
-                    <div class="celebration-item">
-                        <h4>Level 10 - PT Celebration (Debug Only)</h4>
-                        <canvas class="celebration-preview" id="debugCelebration10" width="200" height="200"></canvas>
-                        <br>
-                        <button class="debug-button" onclick="debugPlayCelebration(10)">Play Animation</button>
-                        <button class="debug-button" onclick="debugStopCelebration(10)">Stop</button>
-                    </div>
+                <button class="debug-button" onclick="generateDebugCelebrationItems(); loadDebugCelebrationSprites();" style="margin-bottom: 15px;">🔄 Reload All Sprites</button>
+                <div id="debugCelebrationGrid" class="celebration-grid">
+                    <!-- Celebration items will be generated dynamically by generateDebugCelebrationItems() -->
                 </div>
             </div>
         </div>
@@ -856,10 +787,13 @@
     </div>
     
     <!-- Configuration System -->
-    <script src="game-config.js"></script>
     <script src="config-manager.js"></script>
     <script src="simple-math-puzzle.js"></script>
     <script src="word-emoji-puzzle.js"></script>
+    <script src="number-line-puzzle.js"></script>
+    <script src="division-puzzle.js"></script>
+    <script src="digraph-puzzle.js"></script>
+    <script src="multiplication-groups-puzzle.js"></script>
     
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -938,7 +872,7 @@
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
                         case 'ma':
-                            doors.push({ x, y, type: 'math_arithmetic', open: false, color: '#FF6B6B' });
+                            doors.push({ x, y, type: 'simple_arithmetic', open: false, color: '#FF6B6B' });
                             // Add path under door for walkability
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
@@ -948,17 +882,17 @@
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
                         case 'nt':
-                            doors.push({ x, y, type: 'number_triple', open: false, color: '#FF6B6B' });
+                            doors.push({ x, y, type: 'nt', open: false, color: '#FF6B6B' });
                             // Add path under door for walkability
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
                         case 'mg':
-                            doors.push({ x, y, type: 'math_groups', open: false, color: '#FF6B6B' });
+                            doors.push({ x, y, type: 'multiplication_groups', open: false, color: '#FF6B6B' });
                             // Add path under door for walkability
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
                         case 'we':
-                            doors.push({ x, y, type: 'word_emoji', open: false, color: '#4ECDC4' });
+                            doors.push({ x, y, type: 'word_emoji_matching', open: false, color: '#4ECDC4' });
                             // Add path under door for walkability
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
@@ -1100,10 +1034,14 @@ PIG 🐖`;
         function loadPTBonusSprite(level) {
         const cacheBuster = '?v=' + Date.now();
 
+        // Load bonus sprite based on JSON config level assets
         if (configManager.hasFeature(level, 'rocket_boost')) {
             ptSprites.bonus.src = `level-${level}/PT-Bonus-Sprite.svg` + cacheBuster;
         } else {
-            ptSprites.bonus.src = `level-9/PT-Bonus-Sprite.svg` + cacheBuster;
+            // Find the first level that has bonus feature as fallback
+            const availableLevels = configManager.getAvailableLevels();
+            const fallbackLevel = availableLevels.find(l => configManager.hasFeature(l, 'rocket_boost')) || 9;
+            ptSprites.bonus.src = `level-${fallbackLevel}/PT-Bonus-Sprite.svg` + cacheBuster;
         }
 }// Celebration sprites will be loaded dynamically based on difficulty
         
@@ -1181,28 +1119,23 @@ PIG 🐖`;
             }
         }
         
-        // Celebration animation configuration for all levels
-        const celebrationConfig = {
-            1: { frames: 9, layout: 'horizontal' },
-            2: { frames: 62, layout: 'horizontal' },
-            3: { frames: 43, layout: 'horizontal' },
-            4: { frames: 62, layout: 'horizontal' },
-            5: { frames: 52, layout: 'horizontal' },
-            6: { frames: 29, layout: 'horizontal' },
-            7: { frames: 24, layout: 'horizontal' },
-            8: { frames: 28, layout: 'horizontal' },
-            9: { frames: 27, layout: 'horizontal' },
-            10: { frames: 53, layout: 'horizontal' }
-        };
+        // Game configuration is now handled by ConfigManager class
         
-        // Function to get celebration frame configuration for a level
+        // Function to get celebration frame configuration for a level from JSON config
         function getCelebrationConfig(level) {
-            const config = celebrationConfig[level];
-            if (!config) {
-                console.error(`No celebration config found for level ${level}`);
-                return celebrationConfig[1]; // Fallback to level 1
+            if (configManager.isConfigLoaded()) {
+                const celebrationConfig = configManager.getCelebrationSpriteConfig(level);
+                return {
+                    frames: celebrationConfig.frames,
+                    layout: 'horizontal' // All celebrations are horizontal
+                };
             }
-            return config;
+            
+            // Fallback if config not loaded or missing
+            return {
+                frames: 20, // Default fallback
+                layout: 'horizontal'
+            };
         }
         
         // Function to calculate frame dimensions and properties
@@ -1215,8 +1148,7 @@ PIG 🐖`;
             
             if (config.layout === 'horizontal') {
                 framesPerRow = config.frames;
-                // Use Math.floor for level 3 to prevent drift, regular division for others
-                frameWidth = level === 3 ? Math.floor(actualSheetWidth / framesPerRow) : actualSheetWidth / framesPerRow;
+                frameWidth = actualSheetWidth / framesPerRow;
                 frameHeight = actualSheetHeight;
                 totalFrames = config.frames;
             } else {
@@ -1237,11 +1169,13 @@ PIG 🐖`;
             const celebrationSprite = new Image();
             const cacheBuster = '?v=' + Date.now();
             
-            if (difficulty >= 1 && difficulty <= 10) {
+            const availableLevels = configManager.getAvailableLevels();
+            if (availableLevels.includes(difficulty)) {
                 celebrationSprite.src = `level-${difficulty}/celebrate.png` + cacheBuster;
             } else {
                 console.error(`Invalid difficulty level: ${difficulty}`);
-                celebrationSprite.src = 'level-1/celebrate.png' + cacheBuster; // Fallback
+                const fallbackLevel = availableLevels[0] || 1; // Use first available level or 1 as fallback
+                celebrationSprite.src = `level-${fallbackLevel}/celebrate.png` + cacheBuster;
             }
             
             return celebrationSprite;
@@ -1251,16 +1185,21 @@ PIG 🐖`;
         let currentMovementSprites = ptSprites.movement;
         let currentCelebrationSprites = ptSprites.celebration;
         
-        // Texture system for maze elements
+        // Texture system for maze elements - now supports dynamic door types
         const textures = {
             wall: new Image(),
             open: new Image(),
-            math: new Image(),
-            reading: new Image(),
             endpoint: new Image(),
             heart: new Image(),    // Heart collectible texture
-            bonus: new Image(),    // Bonus collectible texture (level 9)
-            sorting: new Image(),  // Will fallback to math texture
+            bonus: new Image(),    // Bonus collectible texture
+            // Door-type-specific textures (loaded dynamically)
+            ma: new Image(),       // Simple arithmetic puzzle
+            we: new Image(),       // Word emoji matching puzzle
+            nl: new Image(),       // Number line puzzle
+            ds: new Image(),       // Digraph sounds puzzle
+            dv: new Image(),       // Division visual puzzle
+            mg: new Image(),       // Multiplication groups puzzle
+            sorting: new Image(),  // Will fallback to color if no texture
             loaded: false
         };
         
@@ -1281,6 +1220,7 @@ PIG 🐖`;
             
             // Get required textures from configuration
             const requiredTextures = configManager.getRequiredTextures(level);
+            console.log(`Level ${level} required textures:`, requiredTextures);
             
             // Load all required textures dynamically
             requiredTextures.forEach(textureType => {
@@ -1288,7 +1228,9 @@ PIG 🐖`;
                 if (!textures[textureType]) {
                     textures[textureType] = new Image();
                 }
-                textures[textureType].src = basePath + textureType + '.png' + cacheBuster;
+                const texturePath = basePath + textureType + '.png' + cacheBuster;
+                console.log(`Loading texture: ${textureType} from ${texturePath}`);
+                textures[textureType].src = texturePath;
             });
             
             // Load bonus assets if level has them
@@ -1300,26 +1242,27 @@ PIG 🐖`;
                 textures.bonus.src = basePath + 'bonus.png' + cacheBuster;
             }
             
-            // For door types without specific textures, use existing ones
-            textures.sorting = textures.math;     // Use math texture for sorting
+            // No specific texture setup needed for sorting - will fallback to color
             
             // Track when all main textures are loaded
             let loadedCount = 0;
             
             requiredTextures.forEach(textureType => {
                 textures[textureType].onload = () => {
+                    console.log(`✓ Successfully loaded ${textureType} texture for level ${level}`);
                     loadedCount++;
                     if (loadedCount === requiredTextures.length) {
                         textures.loaded = true;
-                        console.log(`Textures loaded for level ${level}`);
+                        console.log(`✓ All textures loaded for level ${level}`);
                     }
                 };
                 
                 textures[textureType].onerror = () => {
-                    console.warn(`Failed to load ${textureType} texture for level ${level}, using fallback`);
+                    console.error(`✗ Failed to load ${textureType} texture for level ${level}, using fallback`);
                     loadedCount++;
                     if (loadedCount === requiredTextures.length) {
                         textures.loaded = true;
+                        console.log(`All texture loading attempts complete for level ${level} (some failed)`);
                     }
                 };
             });
@@ -1428,7 +1371,8 @@ PIG 🐖`;
         
         // Function to unlock next level
         function unlockNextLevel() {
-            if (game.selectedDifficulty < 8) {
+            const maxLevel = Math.max(...configManager.getAvailableLevels());
+            if (game.selectedDifficulty < maxLevel) {
                 game.maxUnlockedLevel = Math.max(game.maxUnlockedLevel, game.selectedDifficulty + 1);
                 localStorage.setItem('ptMazeMaxLevel', game.maxUnlockedLevel.toString());
             }
@@ -1463,35 +1407,29 @@ PIG 🐖`;
             document.getElementById('difficultyScreen').style.display = 'none';
             
             // Show level selection screen instead of starting game directly
-            showLevelSelection();
+            showLevelSelection().catch(console.error);
         }
         
         // Level selection functions
-        function showLevelSelection() {
-            generateLevelButtons();
+        async function showLevelSelection() {
+            await generateLevelButtons();
             document.getElementById('levelSelectionScreen').style.display = 'flex';
         }
         
-        function generateLevelButtons() {
+        async function generateLevelButtons() {
             const levelGrid = document.getElementById('levelGrid');
             levelGrid.innerHTML = '';
             
-            // Define texture mappings for each level
-            const levelTextures = {
-                1: { wall: 'level-1/wall.png', endpoint: 'level-1/endpoint.png' },
-                2: { wall: 'level-2/wall.png', endpoint: 'level-2/endpoint.png' },
-                3: { wall: 'level-3/wall.png', endpoint: 'level-3/endpoint.png' },
-                4: { wall: 'level-4/wall.png', endpoint: 'level-4/endpoint.png' },
-                5: { wall: 'level-5/wall.png', endpoint: 'level-5/endpoint.png' },
-                6: { wall: 'level-6/wall.png', endpoint: 'level-6/endpoint.png' },
-                7: { wall: 'level-7/wall.png', endpoint: 'level-7/endpoint.png' },
-                8: { wall: 'level-8/wall.png', endpoint: 'level-8/endpoint.png' },
-                9: { wall: 'level-9/wall.png', endpoint: 'level-9/endpoint.png' },
-                10: { wall: 'level-10/wall.png', endpoint: 'level-10/endpoint.png' }
-            };
+            // Load config if not already loaded
+            if (!configManager.isConfigLoaded()) {
+                await configManager.loadConfig();
+            }
             
-            // Create buttons for levels 1-10
-            for (let level = 1; level <= 10; level++) {
+            // Get playable levels from config
+            const playableLevels = configManager.getPlayableLevels();
+            console.log('Loading playable levels:', playableLevels);
+            
+            for (const level of playableLevels) {
                 const button = document.createElement('button');
                 button.className = 'level-button';
                 
@@ -1513,20 +1451,20 @@ PIG 🐖`;
                 const preview = document.createElement('div');
                 preview.className = 'level-button-preview';
                 
-                // Add wall texture
+                // Add wall texture (dynamic path)
                 const wallTexture = document.createElement('div');
                 wallTexture.className = 'level-texture-preview';
-                wallTexture.style.backgroundImage = `url('${levelTextures[level].wall}')`;
+                wallTexture.style.backgroundImage = `url('level-${level}/wall.png')`;
                 
-                // Add endpoint texture  
+                // Add endpoint texture (dynamic path)
                 const endpointTexture = document.createElement('div');
                 endpointTexture.className = 'level-texture-preview';
-                endpointTexture.style.backgroundImage = `url('${levelTextures[level].endpoint}')`;
+                endpointTexture.style.backgroundImage = `url('level-${level}/endpoint.png')`;
                 
                 // Add wall again for [wall][endpoint][wall] pattern
                 const wallTexture2 = document.createElement('div');
                 wallTexture2.className = 'level-texture-preview';
-                wallTexture2.style.backgroundImage = `url('${levelTextures[level].wall}')`;
+                wallTexture2.style.backgroundImage = `url('level-${level}/wall.png')`;
                 
                 preview.appendChild(wallTexture);
                 preview.appendChild(endpointTexture);
@@ -1569,11 +1507,20 @@ PIG 🐖`;
         };
         
         // Debug mode toggle function
-        function toggleDebugMode() {
+        async function toggleDebugMode() {
             game.debugMode = !game.debugMode;
             if (game.debugMode) {
                 console.log('🐛 Debug mode enabled');
                 document.getElementById('debugScreen').style.display = 'block';
+                
+                // Ensure config is loaded before generating debug content
+                if (!configManager.isConfigLoaded()) {
+                    console.log('Loading config for debug mode...');
+                    await configManager.loadConfig();
+                }
+                
+                generateDebugLevelButtons();
+                generateDebugCelebrationItems();
                 loadDebugCelebrationSprites();
                 updateDebugCurrentLevel();
             } else {
@@ -1593,15 +1540,39 @@ PIG 🐖`;
         
         // Jump to specific level function for debug mode
         function jumpToLevel(level) {
-            if (level < 1 || level > 10) {
+            // Use dynamic level validation from JSON config
+            const availableLevels = configManager.getAvailableLevels();
+            if (!availableLevels.includes(level)) {
                 console.error('Invalid level:', level);
                 return;
             }
             
             console.log(`🐛 Jumping to level ${level} from debug mode`);
             
+            // Hide all possible screens that might be showing
+            document.getElementById('difficultyScreen').style.display = 'none';
+            document.getElementById('levelSelectionScreen').style.display = 'none';
+            document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('finalScoreScreen').style.display = 'none';
+            
+            // Get selected difficulty from debug mode radio buttons
+            const selectedDifficultyRadio = document.querySelector('input[name="debugDifficulty"]:checked');
+            if (selectedDifficultyRadio) {
+                game.difficultyMode = selectedDifficultyRadio.value;
+                // Set starting hearts based on difficulty
+                if (game.difficultyMode === 'hard') {
+                    game.score = 3;
+                    game.startingHearts = 3;
+                } else {
+                    game.score = 5;
+                    game.startingHearts = 5;
+                }
+                console.log(`🐛 Set difficulty to ${game.difficultyMode} with ${game.startingHearts} hearts`);
+            }
+            
             // Update game state
             game.selectedDifficulty = level;
+            game.currentLevelStartingHeartsAdded = false; // Reset flag for new level
             
             // Load celebration sprite for this level
             currentCelebrationSprites = loadCelebrationSprite(level);
@@ -1613,28 +1584,6 @@ PIG 🐖`;
             initializeGame();
         }
         
-        // Jump to test version of level (PT starts at 0, black 0 square)
-        function jumpToTestLevel(level) {
-            if (level < 1 || level > 10) {
-                console.error('Invalid test level:', level);
-                return;
-            }
-            
-            console.log(`🧪 Jumping to TEST version of level ${level} from debug mode`);
-            
-            // Update game state and mark as test mode
-            game.selectedDifficulty = level;
-            game.testMode = true; // Flag to indicate test mode
-            
-            // Load celebration sprite for this level
-            currentCelebrationSprites = loadCelebrationSprite(level);
-            
-            // Close debug mode
-            closeDebugMode();
-            
-            // Initialize the test level
-            initializeGame();
-        }
         
         // Close debug mode
         function closeDebugMode() {
@@ -1645,16 +1594,30 @@ PIG 🐖`;
         
         // Load all celebration sprites for debug mode
         function loadDebugCelebrationSprites() {
-            for (let level = 1; level <= 10; level++) {
+            // Use dynamic level loading from JSON config
+            const availableLevels = configManager.getAvailableLevels();
+            
+            if (availableLevels.length === 0) {
+                console.warn('No levels available for sprite loading!');
+                return;
+            }
+            
+            for (const level of availableLevels) {
                 const sprite = new Image();
                 const cacheBuster = '?v=' + Date.now() + '_' + Math.random();
                 
-                // Level 10 uses level 9's celebration sprite (debug duplicate)
+                // Use the level's own celebration sprite
                 const spriteLevel = level;
-                sprite.src = `level-${spriteLevel}/celebrate.png` + cacheBuster;
+                const spritePath = `level-${spriteLevel}/celebrate.png` + cacheBuster;
+                
+                sprite.src = spritePath;
                 
                 sprite.onload = () => {
-                    console.log(`Debug sprite loaded for level ${level}: ${sprite.width}x${sprite.height}`);
+                    console.log(`✓ Debug sprite loaded for level ${level}: ${sprite.width}x${sprite.height}`);
+                };
+                
+                sprite.onerror = () => {
+                    console.error(`✗ Failed to load sprite for level ${level}: ${spritePath}`);
                 };
                 
                 debugState.celebrationSprites[level] = sprite;
@@ -1679,8 +1642,70 @@ PIG 🐖`;
         
         // Stop all debug animations
         function stopAllDebugAnimations() {
-            for (let level = 1; level <= 10; level++) {
+            // Use dynamic level loading from JSON config
+            const availableLevels = configManager.getAvailableLevels();
+            for (const level of availableLevels) {
                 debugState.isAnimating[level] = false;
+            }
+        }
+        
+        // Generate debug level buttons dynamically
+        function generateDebugLevelButtons() {
+            const container = document.getElementById('debugLevelButtons');
+            container.innerHTML = '';
+            
+            const availableLevels = configManager.getAvailableLevels();
+            const playableLevels = configManager.getPlayableLevels();
+            
+            if (availableLevels.length === 0) {
+                console.warn('No levels found in config!');
+                container.innerHTML = '<p style="color: red;">No levels found in configuration file</p>';
+                return;
+            }
+            
+            for (const level of availableLevels) {
+                const button = document.createElement('button');
+                button.className = 'debug-button';
+                button.onclick = () => jumpToLevel(level);
+                
+                // Mark debug-only levels
+                const isPlayable = playableLevels.includes(level);
+                button.textContent = `Jump to Level ${level}${isPlayable ? '' : ' (Debug)'}`;
+                
+                container.appendChild(button);
+            }
+        }
+        
+        // Generate debug celebration items dynamically
+        function generateDebugCelebrationItems() {
+            const container = document.getElementById('debugCelebrationGrid');
+            container.innerHTML = '';
+            
+            const availableLevels = configManager.getAvailableLevels();
+            const playableLevels = configManager.getPlayableLevels();
+            
+            if (availableLevels.length === 0) {
+                console.warn('No levels found for celebration items!');
+                container.innerHTML = '<p style="color: red;">No levels found in configuration file</p>';
+                return;
+            }
+            
+            for (const level of availableLevels) {
+                const item = document.createElement('div');
+                item.className = 'celebration-item';
+                
+                const isPlayable = playableLevels.includes(level);
+                const debugSuffix = isPlayable ? '' : ' (Debug Only)';
+                
+                item.innerHTML = `
+                    <h4>Level ${level} - PT Celebration${debugSuffix}</h4>
+                    <canvas class="celebration-preview" id="debugCelebration${level}" width="200" height="200"></canvas>
+                    <br>
+                    <button class="debug-button" onclick="debugPlayCelebration(${level})">Play Animation</button>
+                    <button class="debug-button" onclick="debugStopCelebration(${level})">Stop</button>
+                `;
+                
+                container.appendChild(item);
             }
         }
         
@@ -1740,19 +1765,26 @@ PIG 🐖`;
         async function initializeGame() {
             console.log(`Initializing game for level ${game.selectedDifficulty}`);
             
+            // Load game configuration if not already loaded
+            if (!configManager.isConfigLoaded()) {
+                await configManager.loadConfig();
+            }
+            
             // Reset problem tracking based on puzzle types for this level
-            const mathConfig = configManager.getPuzzleConfig(game.selectedDifficulty, 'math');
-            if (mathConfig) {
-                if (mathConfig.operations.includes('division')) {
-                    game.hasUsedAnswerOne = false;
-                    game.hasUsedDivideByOne = false;
-                    game.usedDivisionProblems = new Set();
-                    console.log(`Reset division problem tracking for level ${game.selectedDifficulty}`);
-                }
-                if (mathConfig.operations.includes('multiplication')) {
-                    game.usedMultiplicationProblems = [];
-                    console.log(`Reset multiplication problem tracking for level ${game.selectedDifficulty}`);
-                }
+            // Check for division visual puzzles
+            const divisionConfig = configManager.getPuzzleConfig(game.selectedDifficulty, 'division_visual');
+            if (divisionConfig) {
+                game.hasUsedAnswerOne = false;
+                game.hasUsedDivideByOne = false;
+                game.usedDivisionProblems = new Set();
+                console.log(`Reset division problem tracking for level ${game.selectedDifficulty}`);
+            }
+            
+            // Check for multiplication puzzles
+            const multiplicationConfig = configManager.getPuzzleConfig(game.selectedDifficulty, 'multiplication_groups');
+            if (multiplicationConfig) {
+                game.usedMultiplicationProblems = [];
+                console.log(`Reset multiplication problem tracking for level ${game.selectedDifficulty}`);
             }
             
             // Reset bonus state when starting levels with rocket boost
@@ -1777,8 +1809,9 @@ PIG 🐖`;
                 loadDistractorsFromFile()
             ];
             
-            // Add digraph data loading for Levels 3, 4, 5, 6, 7, and 8
-            if (game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7 || game.selectedDifficulty === 8) {
+            // Add digraph data loading for levels that have digraph puzzles
+            const digraphConfig = configManager.getPuzzleConfig(game.selectedDifficulty, 'digraph_sounds');
+            if (digraphConfig) {
                 loadPromises.push(loadDigraphData());
             }
             
@@ -2680,32 +2713,46 @@ PIG 🐖`;
                 if (!door.open) {
                     let doorTexture = null;
                     
-                    // Select appropriate texture based on door type
-                    if (door.type.includes('math') || door.type.includes('number') || door.type.includes('groups')) {
-                        doorTexture = textures.math;
-                    } else if (door.type.includes('word') || door.type.includes('digraph') || door.type.includes('division')) {
-                        doorTexture = textures.reading;
-                    } else if (door.type === 'sorting') {
-                        doorTexture = textures.sorting;
+                    // Select appropriate texture based on door type using config manager
+                    const doorType = configManager.getPuzzleDoorType(door.type);
+                    switch (doorType) {
+                        case 'ma':
+                            doorTexture = textures.ma;
+                            break;
+                        case 'we':
+                            doorTexture = textures.we;
+                            break;
+                        case 'nl':
+                            doorTexture = textures.nl;
+                            break;
+                        case 'ds':
+                            doorTexture = textures.ds;
+                            break;
+                        case 'dv':
+                            doorTexture = textures.dv;
+                            break;
+                        case 'mg':
+                            doorTexture = textures.mg;
+                            break;
+                        case 'nt':
+                            doorTexture = textures.nl; // Number triple uses same texture as number line
+                            break;
+                        case 'sorting':
+                            doorTexture = textures.sorting;
+                            break;
+                        default:
+                            doorTexture = null;
+                            break;
                     }
                     
-                    // Draw door texture or fallback color with symbol
+                    // Draw door texture or fallback color
                     if (textures.loaded && doorTexture && doorTexture.complete) {
                         // Simple direct positioning with thicker border
                         ctx.drawImage(doorTexture, door.x + 40, door.y + 40, 40, 40);
                     } else {
-                        // Fallback to original color system with symbols
+                        // Fallback to plain color only
                         ctx.fillStyle = door.color;
                         ctx.fillRect(door.x + 40, door.y + 40, 40, 40);
-                        
-                        // Only draw symbols when using fallback colors
-                        ctx.fillStyle = '#000';
-                        ctx.font = '20px Arial';
-                        ctx.textAlign = 'center';
-                        let symbol = '🔀'; // Default sorting symbol
-                        if (door.type.includes('math') || door.type.includes('number') || door.type.includes('groups')) symbol = '🪨';
-                        else if (door.type.includes('word') || door.type.includes('digraph') || door.type.includes('division')) symbol = '📚';
-                        ctx.fillText(symbol, door.x + 60, door.y + 65);
                     }
                 }
             });
@@ -2859,15 +2906,39 @@ PIG 🐖`;
                     );
                     if (blockingDoor && !game.puzzleActive) {
                         // Route to appropriate puzzle system based on door type
-                        if (blockingDoor.type === 'math_arithmetic') {
+                        if (blockingDoor.type === 'simple_arithmetic') {
                             // Use modular system for simple arithmetic
                             const usedModular = showSimpleMathPuzzle(blockingDoor);
                             if (!usedModular) {
                                 showPuzzle(blockingDoor.type, blockingDoor);
                             }
-                        } else if (blockingDoor.type === 'word_emoji') {
+                        } else if (blockingDoor.type === 'word_emoji_matching') {
                             // Use modular system for word-emoji matching
                             const usedModular = showWordEmojiPuzzle(blockingDoor);
+                            if (!usedModular) {
+                                showPuzzle(blockingDoor.type, blockingDoor);
+                            }
+                        } else if (blockingDoor.type === 'number_line') {
+                            // Use modular system for number line puzzles
+                            const usedModular = showNumberLinePuzzle(blockingDoor);
+                            if (!usedModular) {
+                                showPuzzle(blockingDoor.type, blockingDoor);
+                            }
+                        } else if (blockingDoor.type === 'digraph_sounds') {
+                            // Use modular system for digraph puzzles
+                            const usedModular = showDigraphPuzzle(blockingDoor);
+                            if (!usedModular) {
+                                showPuzzle(blockingDoor.type, blockingDoor);
+                            }
+                        } else if (blockingDoor.type === 'multiplication_groups') {
+                            // Use modular system for multiplication groups puzzles
+                            const usedModular = showMultiplicationGroupsPuzzle(blockingDoor);
+                            if (!usedModular) {
+                                showPuzzle(blockingDoor.type, blockingDoor);
+                            }
+                        } else if (blockingDoor.type === 'division_visual') {
+                            // Use modular system for division puzzles
+                            const usedModular = showDivisionPuzzle(blockingDoor);
                             if (!usedModular) {
                                 showPuzzle(blockingDoor.type, blockingDoor);
                             }
@@ -3225,557 +3296,6 @@ PIG 🐖`;
                 divisor: divisor,
                 answer: answer
             };
-        }
-        
-        // Interactive multiplication puzzle with synchronized squares
-        function showMultiplicationGroupsPuzzle(door) {
-            console.log('=== MULTIPLICATION PUZZLE INITIALIZATION ===');
-            console.log('showMultiplicationGroupsPuzzle called with door:', door);
-            console.log('Door before modification:', {
-                type: door.type,
-                multiplicationA: door.multiplicationA,
-                multiplicationB: door.multiplicationB,
-                mathAnswer: door.mathAnswer
-            });
-            
-            const modal = document.getElementById('puzzleModal');
-            const title = document.getElementById('puzzleTitle');
-            const question = document.getElementById('puzzleQuestion');
-            const options = document.getElementById('puzzleOptions');
-            
-            // Initialize tracking if not already done
-            if (!game.usedMultiplicationProblems) {
-                game.usedMultiplicationProblems = [];
-            }
-            
-            // Generate all valid multiplication pairs (A,B) where A and B are 1-10, A×B is 1-20
-            // Additional constraint: when A=1 or B=1, both A and B must be < 7
-            const allValidPairs = [];
-            for (let a = 1; a <= 10; a++) {
-                for (let b = 1; b <= 10; b++) {
-                    if (a * b <= 20) {
-                        // Apply constraint: when A=1 or B=1, both must be < 7
-                        if ((a === 1 && b >= 7) || (b === 1 && a >= 7)) {
-                            continue; // Skip this pair
-                        }
-                        allValidPairs.push([a, b]);
-                    }
-                }
-            }
-            
-            // Filter out used pairs
-            const availablePairs = allValidPairs.filter(pair => 
-                !game.usedMultiplicationProblems.some(used => used[0] === pair[0] && used[1] === pair[1])
-            );
-            
-            // If no pairs available, reset the used pairs (shouldn't happen as there are 46 pairs)
-            if (availablePairs.length === 0) {
-                console.log('All multiplication pairs used, resetting...');
-                game.usedMultiplicationProblems = [];
-                availablePairs.push(...allValidPairs);
-            }
-            
-            // Select a random pair from available pairs
-            const randomIndex = Math.floor(Math.random() * availablePairs.length);
-            const [A, B] = availablePairs[randomIndex];
-            
-            // Mark this pair as used
-            game.usedMultiplicationProblems.push([A, B]);
-            
-            const correctAnswer = A * B;
-            console.log(`Generated problem: ${A} × ${B} = ${correctAnswer}`);
-            console.log(`Used pairs so far: ${game.usedMultiplicationProblems.length}/46`);
-            
-            // Store puzzle data
-            door.multiplicationA = A;
-            door.multiplicationB = B;
-            door.mathAnswer = correctAnswer;
-            door.currentBoxes = 1;
-            door.currentDots = 0;
-            
-            // CRITICAL: Store reference to this specific door for submission
-            game.currentMultiplicationDoor = door;
-            
-            console.log('Door after setting values:', {
-                type: door.type,
-                multiplicationA: door.multiplicationA,
-                multiplicationB: door.multiplicationB,
-                mathAnswer: door.mathAnswer,
-                position: `(${door.x}, ${door.y})`
-            });
-            console.log('Stored door reference in game.currentMultiplicationDoor');
-            console.log('============================================');
-            
-            // Set up interface
-            title.innerHTML = `<span style="color: black; font-weight: bold; font-size: 32px;">${A} × ${B} = ?</span>`;
-            question.innerHTML = '';
-            
-            // Generate wrong answers within |W-R| < 4
-            const wrongAnswers = [];
-            
-            // Generate two unique wrong answers
-            while (wrongAnswers.length < 2) {
-                let wrongAnswer;
-                
-                // Try to find wrong answers within range
-                do {
-                    const offset = Math.floor(Math.random() * 6) - 3; // -3 to +3
-                    wrongAnswer = correctAnswer + offset;
-                } while (wrongAnswer === correctAnswer || wrongAnswer <= 0 || wrongAnswers.includes(wrongAnswer));
-                
-                // Ensure the wrong answer is within |W-R| < 4
-                if (Math.abs(wrongAnswer - correctAnswer) < 4 && wrongAnswer > 0) {
-                    wrongAnswers.push(wrongAnswer);
-                }
-            }
-            
-            // Create array of all answers and shuffle
-            const allAnswers = [correctAnswer, ...wrongAnswers];
-            for (let i = allAnswers.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [allAnswers[i], allAnswers[j]] = [allAnswers[j], allAnswers[i]];
-            }
-            
-            // Store the correct answer position for validation
-            door.correctAnswerPosition = allAnswers.indexOf(correctAnswer);
-            
-            options.innerHTML = `
-                <div id="multiplicationContainer" style="text-align: center; padding: 20px;">
-                    <!-- Red squares area (using exact division puzzle styling) -->
-                    <div id="squaresArea" style="margin: 20px 0; min-height: 160px; position: relative;">
-                        <div class="basket" data-square="0" style="
-                            width: 140px;
-                            height: 140px;
-                            border: 4px solid #DC143C;
-                            border-radius: 15px;
-                            background: #FFB6C1;
-                            display: inline-block;
-                            flex-direction: column;
-                            justify-content: center;
-                            align-items: center;
-                            position: relative;
-                            min-height: 140px;
-                            cursor: pointer;
-                            transition: all 0.2s ease;
-                            margin: 10px;
-                            vertical-align: top;
-                        ">
-                            <div class="basket-dots" style="
-                                display: flex;
-                                flex-wrap: wrap;
-                                gap: 4px;
-                                justify-content: center;
-                                align-items: center;
-                                height: 100%;
-                                width: 100%;
-                                padding: 8px;
-                                box-sizing: border-box;
-                            "></div>
-                        </div>
-                        <!-- Visual feedback area for squares -->
-                        <div id="visualFeedback" style="
-                            position: absolute; 
-                            top: -10px; 
-                            right: 10px; 
-                            font-size: 32px;
-                            z-index: 10;
-                        "></div>
-                    </div>
-                    
-                    <!-- Plus and Minus buttons -->
-                    <div style="margin: 20px 0;">
-                        <button onclick="removeRedSquare()" style="background: white; color: black; border: 3px solid black; padding: 15px 20px; border-radius: 50%; font-size: 24px; cursor: pointer; font-weight: bold; margin-right: 10px;">−</button>
-                        <button onclick="addRedSquare()" style="background: white; color: black; border: 3px solid black; padding: 15px 20px; border-radius: 50%; font-size: 24px; cursor: pointer; font-weight: bold;">+</button>
-                    </div>
-                    
-                    <!-- Multiple choice answers -->
-                    <div style="margin: 30px 0;">
-                        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                            ${allAnswers.map((answer, index) => `
-                                <button id="answerBtn${index}" onclick="checkMultiplicationAnswer(${index})" style="
-                                    background: #4CAF50;
-                                    color: white;
-                                    border: none;
-                                    padding: 15px 25px;
-                                    margin: 5px;
-                                    border-radius: 25px;
-                                    font-size: 20px;
-                                    cursor: pointer;
-                                    font-family: inherit;
-                                    min-width: 80px;
-                                    transition: all 0.2s ease;
-                                    position: relative;
-                                " onmouseover="this.style.background='#45a049'" onmouseout="this.style.background='#4CAF50'">${answer}</button>
-                            `).join('')}
-                        </div>
-                    </div>
-                    
-                    <!-- Result area for thumbs up/down feedback -->
-                    <div id="puzzleResult" style="margin-top: 20px; text-align: center;"></div>
-                </div>
-            `;
-            
-            // Add click handler to initial square
-            setupSquareHandlers();
-        }
-        
-        // Set up click handlers for red squares
-        function setupSquareHandlers() {
-            const squares = document.querySelectorAll('.basket[data-square]');
-            squares.forEach(square => {
-                // Remove ALL existing event listeners by cloning and replacing the element
-                const newSquare = square.cloneNode(true);
-                square.parentNode.replaceChild(newSquare, square);
-                
-                // Add single click handler for square (adds 1 dot to all squares)
-                newSquare.addEventListener('click', (e) => {
-                    if (e.target === newSquare || e.target.classList.contains('basket-dots')) {
-                        addDotToAllSquares();
-                    }
-                });
-                
-                // Re-setup dot click handlers in this square
-                const dots = newSquare.querySelectorAll('.multiplication-dot');
-                dots.forEach(dot => {
-                    dot.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        removeDotFromAllSquares();
-                    });
-                });
-            });
-        }
-        
-        // Add a dot to all red squares (SYNCHRONIZED)
-        function addDotToAllSquares() {
-            const door = game.doors.find(d => d.type.includes('math') || d.type.includes('groups'));
-            if (!door) return;
-            
-            door.currentDots++;
-            console.log(`Adding dot to all squares. New count: ${door.currentDots}`);
-            
-            const squares = document.querySelectorAll('.basket[data-square]');
-            console.log(`Found ${squares.length} squares to add dots to`);
-            
-            squares.forEach((square, index) => {
-                const dotsContainer = square.querySelector('.basket-dots');
-                
-                // Create new dot using exact division puzzle styling
-                const dot = document.createElement('div');
-                dot.className = 'dot multiplication-dot';
-                dot.style.cssText = `
-                    width: 30px;
-                    height: 30px;
-                    background: #8A2BE2;
-                    border-radius: 50%;
-                    cursor: pointer;
-                    border: 2px solid transparent;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 22px;
-                    transition: all 0.2s ease;
-                `;
-                dot.innerHTML = '🟣';
-                
-                // Add click handler to remove dot from all squares
-                dot.onclick = (e) => {
-                    e.stopPropagation();
-                    removeDotFromAllSquares();
-                };
-                
-                dotsContainer.appendChild(dot);
-                console.log(`Square ${index} now has ${dotsContainer.children.length} dots`);
-            });
-        }
-        
-        // Remove a dot from all red squares (SYNCHRONIZED)
-        function removeDotFromAllSquares() {
-            const door = game.doors.find(d => d.type.includes('math') || d.type.includes('groups'));
-            if (!door || door.currentDots <= 0) return;
-            
-            door.currentDots--;
-            console.log(`Removing dot from all squares. New count: ${door.currentDots}`);
-            
-            const squares = document.querySelectorAll('.basket[data-square]');
-            console.log(`Found ${squares.length} squares to remove dots from`);
-            
-            squares.forEach((square, index) => {
-                const dotsContainer = square.querySelector('.basket-dots');
-                const dots = dotsContainer.querySelectorAll('.multiplication-dot');
-                if (dots.length > 0) {
-                    // Remove the last dot
-                    dots[dots.length - 1].remove();
-                    console.log(`Square ${index} now has ${dotsContainer.querySelectorAll('.multiplication-dot').length} dots`);
-                }
-            });
-        }
-        
-        // Add a new red square (MUST come pre-filled with same dots as existing squares)
-        function addRedSquare() {
-            const door = game.doors.find(d => d.type.includes('math') || d.type.includes('groups'));
-            if (!door) return;
-            
-            // Get current dot count from existing squares to ensure synchronization
-            const existingSquares = document.querySelectorAll('.basket[data-square]');
-            const currentDotCount = existingSquares.length > 0 ? 
-                existingSquares[0].querySelectorAll('.multiplication-dot').length : 0;
-            
-            // Update the door's current dots to match reality
-            door.currentDots = currentDotCount;
-            door.currentBoxes++;
-            
-            console.log(`Adding new square: currentDots=${door.currentDots}, currentBoxes=${door.currentBoxes}`);
-            
-            const squaresArea = document.getElementById('squaresArea');
-            const newSquare = document.createElement('div');
-            newSquare.className = 'basket';
-            newSquare.setAttribute('data-square', door.currentBoxes - 1);
-            newSquare.style.cssText = `
-                width: 140px;
-                height: 140px;
-                border: 4px solid #DC143C;
-                border-radius: 15px;
-                background: #FFB6C1;
-                display: inline-block;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                position: relative;
-                min-height: 140px;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                margin: 10px;
-                vertical-align: top;
-            `;
-            
-            // Add dots container
-            const dotsContainer = document.createElement('div');
-            dotsContainer.className = 'basket-dots';
-            dotsContainer.style.cssText = `
-                display: flex;
-                flex-wrap: wrap;
-                gap: 4px;
-                justify-content: center;
-                align-items: center;
-                height: 100%;
-                width: 100%;
-                padding: 8px;
-                box-sizing: border-box;
-            `;
-            
-            // CRITICAL: Add existing dots to new square (must match other squares exactly)
-            for (let i = 0; i < door.currentDots; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'dot multiplication-dot';
-                dot.style.cssText = `
-                    width: 30px;
-                    height: 30px;
-                    background: #8A2BE2;
-                    border-radius: 50%;
-                    cursor: pointer;
-                    border: 2px solid transparent;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 22px;
-                    transition: all 0.2s ease;
-                `;
-                dot.innerHTML = '🟣';
-                
-                dot.onclick = (e) => {
-                    e.stopPropagation();
-                    removeDotFromAllSquares();
-                };
-                
-                dotsContainer.appendChild(dot);
-            }
-            
-            newSquare.appendChild(dotsContainer);
-            squaresArea.appendChild(newSquare);
-            setupSquareHandlers(); // Refresh handlers
-            
-            console.log(`New square added with ${dotsContainer.children.length} dots`);
-        }
-        
-        // Remove a red square
-        function removeRedSquare() {
-            const door = game.doors.find(d => d.type.includes('math') || d.type.includes('groups'));
-            if (!door || door.currentBoxes <= 1) return; // Always keep at least 1 square
-            
-            const squares = document.querySelectorAll('.basket[data-square]');
-            if (squares.length <= 1) return; // Safety check
-            
-            // Remove the last square
-            const lastSquare = squares[squares.length - 1];
-            lastSquare.remove();
-            
-            door.currentBoxes--;
-            console.log(`Removed square. Remaining squares: ${door.currentBoxes}`);
-            
-            // Re-setup handlers for remaining squares
-            setupSquareHandlers();
-        }
-        
-        // Check multiplication answer (both visual arrangement and selected answer)
-        function checkMultiplicationAnswer(selectedIndex) {
-            const door = game.currentMultiplicationDoor;
-            if (!door) {
-                console.error('No current multiplication door found!');
-                return;
-            }
-            
-            // First, check the visual arrangement
-            const squares = document.querySelectorAll('.basket[data-square]');
-            const userBoxes = squares.length;
-            
-            // Check dots in each square to ensure they're all the same
-            let userDotsPerBox = 0;
-            let allSquaresHaveSameDots = true;
-            
-            squares.forEach((square, index) => {
-                const dotsInThisSquare = square.querySelectorAll('.multiplication-dot').length;
-                if (index === 0) {
-                    userDotsPerBox = dotsInThisSquare;
-                } else if (dotsInThisSquare !== userDotsPerBox) {
-                    allSquaresHaveSameDots = false;
-                }
-            });
-            
-            const A = door.multiplicationA;
-            const B = door.multiplicationB;
-            
-            // Check if user created either A×B or B×A arrangement
-            const option1Check = (userBoxes === A && userDotsPerBox === B);
-            const option2Check = (userBoxes === B && userDotsPerBox === A);
-            const isCorrectArrangement = (option1Check || option2Check) && allSquaresHaveSameDots;
-            
-            // Check if selected answer is correct
-            const isCorrectAnswer = (selectedIndex === door.correctAnswerPosition);
-            
-            const result = document.getElementById('puzzleResult');
-            
-            // Clear all previous feedback
-            squares.forEach(square => {
-                const existing = square.querySelector('.square-feedback');
-                if (existing) existing.remove();
-            });
-            
-            // Clear button feedback
-            for (let i = 0; i < 3; i++) {
-                const btn = document.getElementById(`answerBtn${i}`);
-                if (btn) {
-                    const existing = btn.querySelector('.button-feedback');
-                    if (existing) existing.remove();
-                }
-            }
-            
-            // Add feedback based on what's wrong/right
-            if (!isCorrectArrangement) {
-                // Add thumbs down to each square
-                squares.forEach(square => {
-                    const feedback = document.createElement('div');
-                    feedback.className = 'square-feedback';
-                    feedback.innerHTML = '👎';
-                    feedback.style.cssText = `
-                        position: absolute;
-                        top: 5px;
-                        right: 5px;
-                        font-size: 24px;
-                        z-index: 20;
-                    `;
-                    square.appendChild(feedback);
-                });
-            } else {
-                // Add thumbs up to each square if arrangement is correct
-                squares.forEach(square => {
-                    const feedback = document.createElement('div');
-                    feedback.className = 'square-feedback';
-                    feedback.innerHTML = '👍';
-                    feedback.style.cssText = `
-                        position: absolute;
-                        top: 5px;
-                        right: 5px;
-                        font-size: 24px;
-                        z-index: 20;
-                    `;
-                    square.appendChild(feedback);
-                });
-            }
-            
-            // Add feedback to the selected button
-            const selectedBtn = document.getElementById(`answerBtn${selectedIndex}`);
-            if (selectedBtn) {
-                const feedback = document.createElement('div');
-                feedback.className = 'button-feedback';
-                feedback.innerHTML = isCorrectAnswer ? '👍' : '👎';
-                feedback.style.cssText = `
-                    position: absolute;
-                    top: -10px;
-                    right: -10px;
-                    font-size: 20px;
-                    z-index: 25;
-                `;
-                selectedBtn.appendChild(feedback);
-            }
-            
-            // Both must be correct to succeed
-            if (isCorrectArrangement && isCorrectAnswer) {
-                // Mark door as open
-                door.open = true;
-                door.color = '#B8F2B8';
-                
-                // Complete rocket boost movement if active
-                completeRocketBoostMovement();
-                
-                // Add 1 point
-                updateScore(1);
-                
-                // Close modal after brief delay
-                setTimeout(() => {
-                    document.getElementById('puzzleModal').style.display = 'none';
-                    game.puzzleActive = false;
-                    // Clear the multiplication door reference
-                    game.currentMultiplicationDoor = null;
-                }, 800);
-            } else {
-                // Deduct points based on difficulty
-                if (!door.currentProblemAttempts) door.currentProblemAttempts = 0;
-                door.currentProblemAttempts++;
-                
-                let pointsToDeduct = 0;
-                if (game.difficultyMode === 'easy') {
-                    pointsToDeduct = -1;
-                } else if (game.difficultyMode === 'medium') {
-                    pointsToDeduct = door.currentProblemAttempts === 1 ? -1 : -2;
-                } else {
-                    pointsToDeduct = door.currentProblemAttempts === 1 ? -1 : -3;
-                }
-                updateScore(pointsToDeduct);
-                
-                // Clear all feedback after 3 seconds
-                setTimeout(() => {
-                    squares.forEach(square => {
-                        const existing = square.querySelector('.square-feedback');
-                        if (existing) existing.remove();
-                    });
-                    
-                    for (let i = 0; i < 3; i++) {
-                        const btn = document.getElementById(`answerBtn${i}`);
-                        if (btn) {
-                            const existing = btn.querySelector('.button-feedback');
-                            if (existing) existing.remove();
-                        }
-                    }
-                }, 3000);
-                
-                // Generate new problem after 3 failures
-                if (door.currentProblemAttempts >= 3) {
-                    setTimeout(() => {
-                        door.currentProblemAttempts = 0;
-                        showMultiplicationGroupsPuzzle(door);
-                    }, 2500);
-                }
-            }
         }
         
         function showPuzzle(type, door) {
@@ -4316,9 +3836,10 @@ PIG 🐖`;
                 const gridLabel = document.getElementById(`grid-label-${i}`);
                 
                 if (gridCell && gridLabel) {
-                    // Reset to default - but preserve black for 0 in Level 4+ or test mode
-                    if (i === 0 && (game.selectedDifficulty >= 4 || game.testMode)) {
-                        gridCell.style.backgroundColor = 'black'; // Keep 0 black in Level 4+ or test mode
+                    // Reset to default - but preserve black for 0 in number line levels or test mode
+                    const hasNumberLine = configManager.getLevelConfig(game.selectedDifficulty)?.puzzles?.number_line;
+                    if (i === 0 && (hasNumberLine || game.testMode)) {
+                        gridCell.style.backgroundColor = 'black'; // Keep 0 black in number line levels or test mode
                         gridLabel.style.color = 'black'; // Make 0 label black too
                     } else {
                         gridCell.style.backgroundColor = '';
@@ -4334,9 +3855,10 @@ PIG 🐖`;
                 
                 if (gridCell && gridLabel) {
                     if (i === startPos) {
-                        // Start position coloring - but preserve black for 0 in Level 4+ or test mode
-                        if (i === 0 && (game.selectedDifficulty >= 4 || game.testMode)) {
-                            gridCell.style.backgroundColor = 'black'; // Keep 0 black in Level 4+ or test mode
+                        // Start position coloring - but preserve black for 0 in number line levels or test mode
+                        const hasNumberLine = configManager.getLevelConfig(game.selectedDifficulty)?.puzzles?.number_line;
+                        if (i === 0 && (hasNumberLine || game.testMode)) {
+                            gridCell.style.backgroundColor = 'black'; // Keep 0 black in number line levels or test mode
                             gridLabel.style.color = 'black'; // Keep 0 label black too
                         } else {
                             gridCell.style.backgroundColor = '#32CD32'; // Green for other levels
@@ -4399,7 +3921,8 @@ PIG 🐖`;
         
         function numberLineKeyHandler(e, door) {
             // Only handle if we're in a number line puzzle
-            if (!game.puzzleActive || game.selectedDifficulty < 4) return;
+            const hasNumberLine = configManager.getLevelConfig(game.selectedDifficulty)?.puzzles?.number_line;
+            if (!game.puzzleActive || !hasNumberLine) return;
             
             const modal = document.getElementById('puzzleModal');
             if (modal.style.display !== 'block') return;
@@ -4494,8 +4017,8 @@ PIG 🐖`;
         
         // Simple Math Puzzle Integration - Only for simple_arithmetic type
         function showSimpleMathPuzzle(door) {
-            // Only handle math_arithmetic door type (Levels 1-3)
-            if (door.type === 'math_arithmetic') {
+            // Only handle simple_arithmetic door type (Levels 1-3)
+            if (door.type === 'simple_arithmetic') {
                 console.log(`Using modular simple math puzzle for door type: ${door.type}`);
                 const puzzle = new SimpleMathPuzzle(door);
                 puzzle.render();
@@ -4507,11 +4030,60 @@ PIG 🐖`;
         
         // Word-Emoji Puzzle Integration - Only for word_emoji_matching type
         function showWordEmojiPuzzle(door) {
-            // Only handle word_emoji door type (Levels 1-2)
-            if (door.type === 'word_emoji') {
+            // Only handle word_emoji_matching door type (Levels 1-2)
+            if (door.type === 'word_emoji_matching') {
                 console.log(`Using modular word-emoji puzzle for door type: ${door.type}`);
                 const puzzle = new WordEmojiPuzzle(door);
                 puzzle.render();
+                return true; // Indicates modular system was used
+            }
+            
+            return false; // Fall back to original system
+        }
+        
+        // Number Line Puzzle Integration - Only for number_line type
+        function showNumberLinePuzzle(door) {
+            // Only handle number_line door type (Levels 4-9)
+            if (door.type === 'number_line') {
+                console.log(`Using modular number line puzzle for door type: ${door.type}`);
+                const puzzle = new NumberLinePuzzle(door);
+                puzzle.render();
+                return true; // Indicates modular system was used
+            }
+            
+            return false; // Fall back to original system
+        }
+
+        function showDivisionPuzzle(door) {
+            // Only handle division_visual door type (Levels 8-10)
+            if (door.type === 'division_visual') {
+                console.log(`Using modular division puzzle for door type: ${door.type}`);
+                const puzzle = new DivisionPuzzle(door);
+                puzzle.render();
+                return true; // Indicates modular system was used
+            }
+            
+            return false; // Fall back to original system
+        }
+        
+        function showDigraphPuzzle(door) {
+            // Only handle digraph_sounds door type (Levels 3-7)
+            if (door.type === 'digraph_sounds') {
+                console.log(`Using modular digraph puzzle for door type: ${door.type}`);
+                const puzzle = new DigraphPuzzle(door);
+                puzzle.render();
+                return true; // Indicates modular system was used
+            }
+            
+            return false; // Fall back to original system
+        }
+        
+        function showMultiplicationGroupsPuzzle(door) {
+            // Only handle multiplication_groups door type (Level 10)
+            if (door.type === 'multiplication_groups') {
+                console.log(`Using modular multiplication groups puzzle for door type: ${door.type}`);
+                const puzzle = new MultiplicationGroupsPuzzle(door);
+                puzzle.showModal();
                 return true; // Indicates modular system was used
             }
             
@@ -4534,8 +4106,9 @@ PIG 🐖`;
                 // Complete rocket boost movement if active
                 completeRocketBoostMovement();
                 
-                // For Levels 3, 4, 5, 6, 7 digraph puzzles, speak the emoji word name
-                if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) && (type === 'digraph_sounds') && selectedEmoji) {
+                // For digraph puzzles, speak the emoji word name
+                const hasDigraphPuzzle = configManager.getLevelConfig(game.selectedDifficulty)?.puzzles?.digraph_sounds;
+                if (hasDigraphPuzzle && (type === 'digraph_sounds') && selectedEmoji) {
                     setTimeout(() => {
                         speakEmojiWord(selectedEmoji);
                     }, 300); // Slight delay after showing thumbs up
@@ -4564,8 +4137,9 @@ PIG 🐖`;
                 result.innerHTML = '👎';
                 result.style.color = 'red';
                 
-                // For Levels 3, 4, 5, 6, 7 digraph puzzles, speak the emoji word name even for wrong answers
-                if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) && (type === 'digraph_sounds') && selectedEmoji) {
+                // For digraph puzzles, speak the emoji word name even for wrong answers
+                const hasDigraphPuzzle = configManager.getLevelConfig(game.selectedDifficulty)?.puzzles?.digraph_sounds;
+                if (hasDigraphPuzzle && (type === 'digraph_sounds') && selectedEmoji) {
                     setTimeout(() => {
                         speakEmojiWord(selectedEmoji);
                     }, 300); // Slight delay after showing thumbs down
@@ -4631,7 +4205,8 @@ PIG 🐖`;
             
             // Update button text - now always shows "Choose Next Level" unless all levels completed
             const playAgainBtn = document.getElementById('playAgainBtn');
-            if (game.gameSession.completedLevels.size >= 10) {
+            const totalPlayableLevels = configManager.getPlayableLevels().length;
+            if (game.gameSession.completedLevels.size >= totalPlayableLevels) {
                 playAgainBtn.textContent = 'Show Final Score';
             } else {
                 playAgainBtn.textContent = 'Choose Next Level';
@@ -4678,9 +4253,10 @@ PIG 🐖`;
                     offsetX, offsetY, scaledWidth, scaledHeight // Destination (scaled and centered)
                 );
                 
-                // Update frame counter (slower for Level 3)
+                // Update frame counter using config-based delay
                 game.celebrationTimer++;
-                const frameDelay = game.selectedDifficulty === 3 ? 40 : 25; // Slower for Level 3
+                const animationConfig = configManager.getAnimationConfig(game.selectedDifficulty);
+                const frameDelay = animationConfig.frameDelay || 25;
                 if (game.celebrationTimer >= frameDelay) {
                     game.celebrationFrame = (game.celebrationFrame + 1) % totalFrames;
                     game.celebrationTimer = 0;
@@ -4704,9 +4280,13 @@ PIG 🐖`;
                 game.testMode = false;
             }
             
-            // Set starting hearts based on level configuration and difficulty mode
-            const configStartingHearts = configManager.getStartingHearts(game.selectedDifficulty);
-            const startingHearts = (game.difficultyMode === 'easy' || game.difficultyMode === 'medium') ? 5 : configStartingHearts;
+            // Set starting hearts based on difficulty mode (not level-specific)
+            let startingHearts;
+            if (game.difficultyMode === 'easy' || game.difficultyMode === 'medium') {
+                startingHearts = 5;
+            } else { // hard mode
+                startingHearts = 3;
+            }
             game.score = startingHearts;
             
             // Only add starting hearts to cumulative score if we haven't already for this level attempt
@@ -4735,7 +4315,7 @@ PIG 🐖`;
             game.doors.forEach(door => {
                 door.open = false;
                 // Set door color based on type category
-                if (door.type.includes('math') || door.type.includes('number') || door.type.includes('groups')) {
+                if (door.type.includes('arithmetic') || door.type.includes('number') || door.type.includes('multiplication')) {
                     door.color = '#FF6B6B'; // Red for math doors
                 } else {
                     door.color = '#4ECDC4'; // Teal for reading doors
@@ -4750,14 +4330,15 @@ PIG 🐖`;
             document.getElementById('celebrationScreen').style.display = 'none';
             
             // Check if all levels are completed
-            if (game.gameSession.completedLevels.size >= 10) {
+            const totalPlayableLevels = configManager.getPlayableLevels().length;
+            if (game.gameSession.completedLevels.size >= totalPlayableLevels) {
                 // All levels completed, show final score
                 console.log('All levels completed, showing final score');
                 showFinalScore();
             } else {
                 // Show level selection screen so player can choose next level
                 console.log('Showing level selection for next level choice');
-                showLevelSelection();
+                showLevelSelection().catch(console.error);
             }
         }
         
@@ -4766,8 +4347,12 @@ PIG 🐖`;
             const container = document.getElementById('levelScoresContainer');
             container.innerHTML = '';
             
+            // Use dynamic level loading from JSON config
+            const playableLevels = configManager.getPlayableLevels();
+            const levelsToShow = maxLevel ? playableLevels.filter(level => level <= maxLevel) : playableLevels;
+            
             // Add each level score
-            for (let level = 1; level <= maxLevel; level++) {
+            for (const level of levelsToShow) {
                 const score = game.levelScores[level];
                 const levelItem = document.createElement('div');
                 levelItem.className = 'level-score-item';
@@ -4820,8 +4405,8 @@ PIG 🐖`;
         }
         
         function showFinalScore() {
-            // Use common component to generate level score display (levels 1-10)
-            generateLevelScoreDisplay(10);
+            // Use common component to generate level score display (all playable levels)
+            generateLevelScoreDisplay();
             
             // Hide total score section (we're showing it inline now)
             document.getElementById('totalScoreSection').style.display = 'none';
@@ -4854,8 +4439,8 @@ PIG 🐖`;
             // Update the title
             document.getElementById('finalScoreTitle').textContent = 'Your Scores';
             
-            // Use common component to generate level score display (levels 1-10, with death level indicator)
-            generateLevelScoreDisplay(10, game.deathLevel);
+            // Use common component to generate level score display (all playable levels, with death level indicator)
+            generateLevelScoreDisplay(null, game.deathLevel);
             
             // Hide total score section
             document.getElementById('totalScoreSection').style.display = 'none';

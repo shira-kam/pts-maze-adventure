@@ -7,7 +7,7 @@ class SimpleMathPuzzle {
         
         // Get puzzle configuration for this level
         const level = game.selectedDifficulty;
-        const config = configManager.getPuzzleConfig(level, 'math');
+        const config = configManager.getPuzzleConfig(level, 'simple_arithmetic');
         
         // Use configurable limits or fall back to original values
         this.limits = config.limits || {

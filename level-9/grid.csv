@@ -1,21 +1,21 @@
 ,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T
-1,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,nt,nt,nt
-2,,,,,,,,,,nt, ,,,,,,,,,h
-3,dv,dv,dv,o,o,o,o,o,o,o,o,o,o,o,o,nt,nt,nt,,h
+1,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,nl,nl,nl
+2,,,,,,,,,,nl, ,,,,,,,,,h
+3,dv,dv,dv,o,o,o,o,o,o,o,o,o,o,o,o,nl,nl,nl,,h
 4,h,,,,,,,,,dv, ,,,,,,,h,,h
-5,h,,dv,dv,dv,o,o,o,o,o,o,o,o,nt,nt,nt,,h,,h
-6,h,,h,,,,,,,nt, ,,,,,h,,h,,h
-7,h,,h,,dv,dv,dv,o,o,o,o,nt,nt,nt,,h,,h,,h
+5,h,,dv,dv,dv,o,o,o,o,o,o,o,o,nl,nl,nl,,h,,h
+6,h,,h,,,,,,,nl, ,,,,,h,,h,,h
+7,h,,h,,dv,dv,dv,o,o,o,o,nl,nl,nl,,h,,h,,h
 8,h,,h,,h,,,,,, ,,,h,,h,,h,,h
-9,h,,h,,h,,dv,o,o,o,o,nt,,h,,h,,h,,h
-10,h,,h,,h,,h,,dv,nt,dv,h,,h,,h,,h,,h
-11,h,,h,,h,,h,,nt,w,nt,h,,h,,h,,h,,h
-12,h,,h,,h,,h,,dv,nt,dv,h,,h,,h,,h,,h
+9,h,,h,,h,,dv,o,o,o,o,nl,,h,,h,,h,,h
+10,h,,h,,h,,h,,dv,nl,dv,h,,h,,h,,h,,h
+11,h,,h,,h,,h,,nl,w,nl,h,,h,,h,,h,,h
+12,h,,h,,h,,h,,dv,nl,dv,h,,h,,h,,h,,h
 13,h,,h,,h,,h,,,, ,,,h,,h,,h,,h
-14,h,,h,,h,,nt,nt,o,o,o,dv,dv,dv,,h,,h,,h
+14,h,,h,,h,,nl,nl,o,o,o,dv,dv,dv,,h,,h,,h
 15,h,,h,,h,,,,,dv, ,,,,,h,,h,,h
-16,h,,h,,nt,nt,nt,o,o,o,o,o,o,dv,dv,dv,,h,,h
-17,h,,h,,,,,,,nt, ,,,,,,,h,,h
-18,h,,nt,nt,nt,o,o,o,o,o,o,o,o,o,o,dv,dv,dv,,h
+16,h,,h,,nl,nl,nl,o,o,o,o,o,o,dv,dv,dv,,h,,h
+17,h,,h,,,,,,,nl, ,,,,,,,h,,h
+18,h,,nl,nl,nl,o,o,o,o,o,o,o,o,o,o,dv,dv,dv,,h
 19,h,,,,,,,,,dv, ,,,,,,,,,h
-20,nt,nt,nt,o,o,o,o,o,o,b,o,o,o,o,o,o,dv,dv,dv,h
+20,nl,nl,nl,o,o,o,o,o,o,b,o,o,o,o,o,o,dv,dv,dv,h

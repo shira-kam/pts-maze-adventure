@@ -3,7 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-"PT's Maze Adventure" is a sophisticated educational HTML5 Canvas maze game featuring PT the elephant. The game spans 10 levels with progressive difficulty, incorporating multiple educational puzzle types, advanced movement mechanics, comprehensive scoring systems, and extensive debug capabilities. Built as a single-page application with no external dependencies.
+"PT's Maze Adventure" is an educational HTML5 Canvas maze game featuring PT the elephant. The game provides a dynamic level system with configurable educational puzzles, comprehensive scoring, and extensive debug capabilities. Built as a single-page application with no external dependencies.
 
 ## Running the Game
 **IMPORTANT**: This game requires a local HTTP server to function properly due to browser security restrictions on loading local files (CSV, text files, images). The game dynamically loads level data from CSV files and educational content from text files, which browsers block when opening HTML files directly from the file system.
@@ -19,395 +19,361 @@ Then navigate to `http://localhost:8000` (or appropriate port) to play the game.
 ## Architecture Overview
 
 ### Core Files Structure
-- **`index.html`**: Complete game implementation (4000+ lines) containing all HTML, CSS, JavaScript, and game logic
-- **`maze-generator.js`**: Development utility for CSV-to-JavaScript maze conversion
-- **Level directories** (`level-1/` through `level-10/`): Each contains complete asset sets
+- **`index.html`**: Complete game implementation containing all HTML, CSS, JavaScript, and game logic
+- **`game-config.json`**: Main configuration file (currently being refactored)
+- **Level directories**: Each contains complete asset sets and configuration
 - **Educational data files**: `digraph-sounds.txt`, `digraph-emojis.txt`, `distractors.txt`, `emoji-names.txt`
+- **Modular puzzle files**: Individual JavaScript files for each puzzle type
 
-### Game States and Flow
-1. **Difficulty Selection**: Easy/Medium (5 hearts) vs Hard (3 hearts)
-2. **Level Selection**: Interactive grid showing all levels with texture previews
+### Game Flow
+1. **Difficulty Selection**: Easy Peasy/Neutral (5 hearts) vs Hard Mode (3 hearts)
+2. **Level Selection**: Dynamic grid showing configured levels
 3. **Level Progression**: Player-driven level selection after each completion
 4. **Puzzle Interactions**: Modal-based educational challenges
-5. **Special Mechanics**: Rocket boost, heart collection, bonus systems
-6. **Completion Screens**: Level celebrations, level selection, final scoring when all complete
-7. **Debug Mode**: Comprehensive testing interface (Shift+Ctrl+D activation)
+5. **Special Mechanics**: Heart collection, bonus/boost system
+6. **Completion Screens**: Level celebrations, level selection, final scoring
 
-## Level Structure and Progression
+## Configuration-Driven System
 
-### Current Levels (1-10)
-- **Levels 1-3**: Foundation - Basic math (addition/subtraction) and word-emoji matching
-- **Levels 4-7**: Intermediate - Number line puzzles and digraph sound recognition  
-- **Levels 8-9**: Advanced - Triple addition math and division with basket manipulation
-- **Level 10**: Debug/Multiplication - Interactive groups puzzle with dual validation
+### Main Configuration File
+The game is designed to be fully configurable through a main JSON configuration file. This allows:
+- Adding new levels by creating level folders and updating config
+- Removing levels by removing them from config
+- Configuring puzzle difficulties and constraints per level
+- Setting celebration animation frame counts
+- Controlling level availability (game vs debug-only)
 
-### Level Assets and Texture Mapping
+### Dynamic Level System
+- **Level folders**: Each level has its own directory with required assets
+- **Asset loading**: Textures and data loaded dynamically from level folders
+- **Level discovery**: Game reads configuration to determine available levels
+- **Fallback handling**: Graceful degradation when assets are missing
 
-#### **Standard Assets (all levels 1-10)**
-- **`grid.csv`**: Maze layout with encoded door types and special items
-- **`Word-List.txt`**: Educational content (word-emoji pairs, format: `WORD EMOJI,`)
-- **Core textures**: `wall.png`, `open.png`, `math.png`, `reading.png`, `endpoint.png`
-- **`celebrate.png`**: Level-specific celebration animation sprite
+## Difficulty Settings
 
-#### **Progressive Asset Introduction**
-- **Levels 1-5**: Standard assets only (basic gameplay)
-- **Levels 6-8**: Standard assets + `heart.png` (heart collectibles)
-- **Levels 9-10**: Standard assets + `heart.png` + `bonus.png` + `PT-Bonus-Sprite.svg` (full bonus system)
+### User Selection
+Chosen at session start and applied to all levels completed during the session:
 
-#### **Global Assets (root directory)**
-- **`PT-sprite.svg`**: Main movement sprite (960x160, 6 frames)
-- **`game-over.png`**: Game over animation sprite
-- **`celebrate.png`**: Fallback celebration sprite
+- **Easy Peasy**: Start with 5 lives, lose 1 point per wrong answer
+- **Neutral**: Start with 5 lives, lose 1 point for first wrong answer, 2 points for second
+- **Hard Mode**: Start with 3 lives, lose 2 points per wrong answer
 
-## Educational Puzzle System
+### Implementation Status
+✅ **WORKING CORRECTLY** - Only modify if necessary due to refactoring
 
-Each level features two distinct educational challenges accessed through door types in the maze grid:
-- **Math Doors (`m`)**: Red doors triggering mathematical puzzles
-- **Reading Doors (`r`)**: Teal doors triggering language/reading puzzles
+## Scoring System
 
-### Level-by-Level Puzzle Breakdown
+### Score Tracking
+- **Level Score**: Red heart (❤️) - current level progress
+- **Cumulative Score**: Black heart (🖤) - session-wide total
+- **Display**: Top-left corner during gameplay
+- **Game Over**: At 0 level score, shows score breakdown with skull emoji for death level
+- **Completion**: After all levels, shows final score breakdown
 
-#### **Level 1: Foundation Building**
-**Math Doors (`m`)**:
-- **Mechanics**: Simple addition and subtraction with answers 1-12
-- **UI**: Multiple choice with 3 answer buttons
-- **Examples**: "3 + 4 = ?", "8 - 2 = ?", "5 + 6 = ?"
-- **Validation**: Immediate visual feedback with green/red button styling
-- **Educational Goal**: Basic arithmetic fluency and number recognition
+### Implementation Status
+✅ **WORKING CORRECTLY** - Only modify to make screens dynamic
 
-**Reading Doors (`r`)**:
-- **Mechanics**: Word-to-emoji matching for sight word recognition
-- **UI**: Word displayed in title, 3 emoji choice buttons below
-- **Vocabulary**: Basic 3-letter words (BAG 💼, CAT 🐈, DOG 🐕, HAT 🎩, etc.)
-- **Strategy**: Wrong answers prioritize words with same first letter for challenge
-- **Educational Goal**: Sight word vocabulary and visual word recognition
+## Level Structure
 
-#### **Level 2: Skill Reinforcement**
-**Math Doors (`m`)**:
-- **Mechanics**: Identical to Level 1 - addition/subtraction with answers 1-12
-- **UI**: Same multiple choice interface with 3 buttons
-- **Educational Goal**: Continued arithmetic practice and fluency building
+### Level Assets
+Each level directory contains:
+- **`grid.csv`**: Maze layout with texture codes
+- **`Word-List.txt`**: Educational content for word-emoji puzzles
+- **Texture files**: `open.png`, `wall.png`, `endpoint.png`, etc.
+- **`celebrate.png`**: Level-specific celebration animation
+- **Special textures**: `heart.png`, `bonus.png`, puzzle-specific textures
 
-**Reading Doors (`r`)**:
-- **Mechanics**: Same word-to-emoji matching system as Level 1
-- **Vocabulary**: Same basic word set with consistent emoji pairings
-- **Educational Goal**: Reinforcement of sight word recognition skills
+### Texture System
+Dynamic texture loading based on grid CSV and configuration:
+- **Path**: `open.png` (denoted by "o" in grid)
+- **Wall**: `wall.png` (denoted by empty space in grid)
+- **Endpoint**: `endpoint.png` (denoted by "w" in grid)
+- **Hearts**: `heart.png` (denoted by "h" in grid)
+- **Bonus**: `bonus.png` (denoted by "b" in grid)
+- **Puzzles**: Various textures based on puzzle type codes
 
-#### **Level 3: Word Recognition Reinforcement** 
-**Math Doors (`ma`)**:
-- **Mechanics**: Simple arithmetic (answers 0-20)
-- **UI**: Multiple choice button interface
-- **Educational Goal**: Expanding arithmetic range and maintaining fluency
+### Implementation Status
+🔄 **IN PROGRESS** - Creating dynamic texture loading system
 
-**Reading Doors (`we`)**:
-- **Mechanics**: **WORD-EMOJI MATCHING** - continued sight word practice
-- **UI**: Word displayed in title, 3 emoji choice buttons below
-- **Vocabulary**: Extended word set including 4-letter words and more complex vocabulary
-- **Strategy**: Same-letter distractor system to prevent guessing
-- **Educational Goal**: Advanced sight word recognition and vocabulary expansion
+### Future Texture System Enhancements
+**Note**: Current texture system works well. These improvements are for future consideration:
 
-#### **Level 4: Visual Math Introduction**
-**Math Doors (`m`)**:
-- **Mechanics**: **NUMBER LINE PUZZLES** - interactive visual mathematics
-- **UI**: 13-cell grid (positions 0-12) with animated PT elephant
-- **Features**: PT starts at black zero cell, players click or use arrow keys to move
-- **Problems**: Simple addition/subtraction visualized on the number line
-- **Keyboard Support**: Arrow keys for movement, Enter key for answer submission
-- **Educational Goal**: Visual number sense and spatial understanding of arithmetic
+1. **Better Texture Fallback System**
+   - Config-specified fallback levels when textures fail to load
+   - Robust error handling for missing assets
+   - Asset validation during development
 
-**Reading Doors (`r`)**:
-- **Mechanics**: Same digraph phonics game as Level 3
-- **UI**: Digraph display with audio pronunciation support
-- **Educational Goal**: Continued phonics mastery and sound recognition
+2. **Grid-Based Texture Discovery**
+   - Scan grid.csv to determine which puzzle textures are actually needed
+   - Eliminate loading unused puzzle textures per level
+   - Dynamic texture requirements based on actual maze content
 
-#### **Level 5: Number Line Reinforcement**
-**Math Doors (`m`)**:
-- **Mechanics**: Continued number line puzzles identical to Level 4
-- **UI**: Same interactive 13-cell grid with PT movement
-- **Educational Goal**: Reinforcement of visual arithmetic concepts
+3. **Asset Bundle Validation**
+   - Development-time checking for level completeness
+   - Missing asset detection and reporting
+   - Minimum asset requirements for level playability
 
-**Reading Doors (`r`)**:
-- **Mechanics**: Same digraph phonics game as Levels 3-4
-- **Educational Goal**: Phonics skill reinforcement and sound pattern recognition
+4. **Enhanced Error Handling**
+   - Graceful degradation when texture files are missing
+   - Better logging and debugging for texture loading issues
+   - Automatic fallback to color-based rendering when needed
 
-#### **Level 6: Heart Collection Introduction**
-**Math Doors (`m`)**:
-- **Mechanics**: Same number line puzzles (A+B, A-B operations)
-- **UI**: Interactive 13-cell grid with PT movement
-- **Educational Goal**: Continued visual arithmetic practice
+These improvements maintain the current `level-${number}` folder structure and numbered level system that works well for pre-literate users.
 
-**Reading Doors (`r`)**:
-- **Mechanics**: Same digraph phonics game with audio support
-- **Educational Goal**: Phonics mastery and automatic sound recognition
+## Special Features
 
-**Special Feature**: **Heart items (`h`)** appear in maze for health/score bonuses
+### Heart Collection
+- **Grid Code**: "h"
+- **Texture**: `heart.png`
+- **Behavior**: Adds 1 point to score, texture changes to open path
+- **Implementation**: ✅ Working correctly
 
-#### **Level 7: Skill Consolidation**
-**Math Doors (`m`)**:
-- **Mechanics**: Same number line puzzles as previous levels
-- **Educational Goal**: Arithmetic fluency with visual support systems
+### Bonus/Boost System
+- **Grid Code**: "b"
+- **Texture**: `bonus.png`
+- **Activation Sequence**:
+  1. Modal opens with bonus sprite animation and start button
+  2. Background changes to red/yellow/orange gradient
+  3. PT sprite changes to bonus version
+  4. 30-second countdown begins
+  5. Half of maze walls disappear
+  6. Timer stops during puzzle modals
+  7. Final 5 seconds: background flashes as warning
+  8. End modal with return button
+  9. PT returns to starting position, walls restore
 
-**Reading Doors (`r`)**:
-- **Mechanics**: Same digraph phonics game with text-to-speech
-- **Educational Goal**: Phonics reinforcement and sound-symbol correspondence
+### Implementation Status
+✅ **WORKING CORRECTLY** - Do not change UI or functionality
 
-**Special Feature**: Heart collection continues for bonus scoring
+## Educational Puzzles
 
-#### **Level 8: Advanced Mathematics**
-**Math Doors (`m`)**:
-- **Mechanics**: **TRIPLE ADDITION** number line puzzles (A+B+C format)
-- **UI**: Same 13-cell grid, but with 3-term colored equations
-- **Examples**: "3 + 4 + 2 = ?" with distinct color coding for each term
-- **Constraints**: Total sum ≤ 12, algorithms reduce zero values in problems
-- **Educational Goal**: Multi-term addition with visual scaffolding
+### Puzzle Framework
+All puzzles share common characteristics:
+- **Modal-based**: Stay open until correct answer submitted
+- **Timer suspension**: Bonus countdown pauses during puzzles
+- **Accessibility**: Designed for pre-literate users with limited motor skills
+- **Feedback**: Visual thumbs up/down, no text instructions
+- **Scoring**: Based on selected difficulty setting
 
-**Reading Doors (`r`)**:
-- **Mechanics**: **DIVISION PUZZLES** - major shift to advanced mathematical concepts
-- **UI**: Drag-and-drop interface with dots and basket containers
-- **Interaction**: Player drags individual dots into equal groups/baskets
-- **Examples**: "12 ÷ 3 = ?" solved by distributing 12 dots into 3 equal baskets
-- **Features**: Touch and mouse support, submit button activation when complete
-- **Constraints**: Avoids duplicate problems, limits A÷1 and answer=1 cases
-- **Educational Goal**: Visual division understanding through equal grouping
+### Current Puzzle Types
 
-#### **Level 9: Advanced Operations**
-**Math Doors (`m`)**:
-- **Mechanics**: Same triple addition (A+B+C) as Level 8
-- **Educational Goal**: Multi-term arithmetic mastery and mental math skills
+#### 1. Word Emoji Matching
+- **Grid Code**: "we"
+- **Texture**: `we.png`
+- **Configuration**: `Word-List.txt` in level folder
+- **Mechanics**: Show word, select matching emoji from 3 options
+- **Wrong Answers**: Must start with same letter/sound as correct answer
+- **Fallback**: Uses `distractors.txt` when insufficient options
 
-**Reading Doors (`r`)**:
-- **Mechanics**: Same division puzzles as Level 8 with drag-and-drop interface
-- **UI**: Dots and baskets with visual distribution validation
-- **Educational Goal**: Division fluency through hands-on grouping activities
+#### 2. Simple Math Puzzle
+- **Grid Code**: "ma"
+- **Texture**: `ma.png`
+- **Configuration**: Main config file
+- **Mechanics**: A+B=? or A-B=? with 3 answer options
+- **Constraints**: |R-W|<4 for wrong answers to prevent guessing
+- **Ranges**: A, B, and C ranges configurable per level
 
-**Special Features**: Hearts + **Bonus items (`b`)** for rocket boost activation
+#### 3. Digraph Puzzle
+- **Grid Code**: "ds"
+- **Texture**: `ds.png`
+- **Configuration**: Main config file + root directory data files
+- **Mechanics**: Show 2-letter combination, select emoji with that sound
+- **Audio**: Speaker button for pronunciation hints
+- **Data Sources**: `digraph-sounds.txt`, `digraph-emojis.txt`, `emoji-names.txt`
+- **Logic**: Avoids similar-sounding wrong answers (e.g., PH vs F sounds)
 
-#### **Level 10: Multiplication Mastery**
-**Math Doors (`m`)**:
-- **Mechanics**: **MULTIPLICATION GROUPS PUZZLE** - most sophisticated math interface
-- **UI**: Interactive red squares with +/- control buttons and multiple choice answers
-- **Interaction**: Player creates visual groups by adding squares and dots to represent multiplication
-- **Examples**: "3 × 4 = ?" solved by creating 3 squares with 4 dots each
-- **Validation**: Dual verification - correct visual arrangement AND correct numerical answer
-- **Constraints**: A×B where A and B are 1-10, A×B ≤ 20 (46 total unique ordered pairs)
-- **Problem Generation**: No repetition within a level using `game.usedMultiplicationProblems` tracking array
-- **Unique Pair System**: Pre-generates all valid (A,B) combinations, shuffles for random selection
-- **Wrong Answers**: Generated within |W-R| < 4 constraint for appropriate challenge
-- **Educational Goal**: Multiplication as repeated addition and visual grouping
+#### 4. Number Line Puzzle
+- **Grid Code**: "nl"
+- **Texture**: `nl.png`
+- **Configuration**: Main config file
+- **Mechanics**: A+B=? or A-B=? with visual number line for calculation
+- **Extended Form**: Three-term problems (A+B+C, A-B+C, A+B-C)
+- **Interaction**: Move PT along number line to calculate answer
+- **Answer Options**: 3 choices with same wrong answer constraints as simple math
 
-**Reading Doors (`r`)**:
-- **Mechanics**: Same division puzzles as Levels 8-9
-- **Educational Goal**: Division mastery and mathematical problem-solving
+#### 5. Division Puzzle
+- **Grid Code**: "dv"
+- **Texture**: `dv.png`
+- **Configuration**: Main config file
+- **Mechanics**: A÷B=? with two-part completion requirement
+- **Visual Part**: Distribute A purple dots into B red squares equally
+- **Answer Part**: Select correct numerical answer from 3 options
+- **Audio**: Speaker button says "[A] divided by [B]"
+- **Feedback**: Independent thumbs up/down for each part
+- **Constraints**: A÷A limited to A>6, A÷1 limited to A>5
 
-**Special Features**: Hearts + Bonus items, most complex maze layouts
+#### 6. Multiplication Puzzle
+- **Grid Code**: "mg"
+- **Texture**: `mg.png`
+- **Configuration**: Main config file
+- **Mechanics**: A×B=? with two-part completion requirement
+- **Visual Part**: Create A groups of B dots OR B groups of A dots
+- **Answer Part**: Select correct numerical answer from 3 options
+- **Audio**: Speaker button says "[A] groups of [B]"
+- **Feedback**: Independent thumbs up/down for each part
+- **Constraints**: A×1 limited to A>6
 
-### Educational Progression Framework
+### Implementation Status
+🔄 **PARTIALLY MODULARIZED** - Remove legacy unused puzzles, complete configuration system
 
-#### **Mathematical Learning Path**:
-1. **Foundation (Levels 1-3)**: Basic arithmetic operations (answers 0-10, 0-15, 0-20)
-2. **Visualization (Levels 4-7)**: Number line spatial reasoning (A+B, A-B)
-3. **Complex Operations (Levels 8-9)**: Multi-term addition (A+B+C)
-4. **Advanced Concepts (Level 10)**: Multiplication through grouping models
+## Debug Mode
 
-#### **Reading/Language Learning Path**:
-1. **Sight Words (Levels 1-3)**: Visual word recognition and vocabulary building
-2. **Phonics (Levels 4-7)**: Digraph sound recognition with audio support
-3. **Mathematical Reading (Levels 8-10)**: Division problem comprehension and solving
+### Activation
+- **Hotkey**: Ctrl+Shift+D
+- **Features**:
+  - Jump to any level button
+  - Play celebration animations
+  - Access debug-only levels
+  - Level testing capabilities
 
-#### **Cognitive Skill Development**:
-- **Visual Processing**: Number lines, grouping models, spatial reasoning
-- **Auditory Processing**: Text-to-speech integration for phonics
-- **Motor Skills**: Drag-and-drop interactions, precise clicking
-- **Problem Solving**: Multi-step puzzle completion and validation
+### Implementation Status
+✅ **FULLY CONFIG-DRIVEN** - All level references now use configuration file
 
-### Puzzle Mechanics and Technical Features
-- **Modal-based UI**: Centralized puzzle display system with consistent interactions
-- **Adaptive Difficulty**: Scoring penalties based on difficulty mode and attempt counts
-- **Usage Tracking**: Prevents problem repetition within individual levels
-- **Audio Integration**: Text-to-speech synthesis for pronunciation modeling
-- **Visual Feedback**: Thumbs up/down indicators with position-specific placement
-- **Input Validation**: Keyboard and mouse support with accessibility considerations
+## Refactoring Goals
 
-## Advanced Game Features
+### Refactoring Status: ✅ **COMPLETE**
+The major refactoring goals have been achieved:
+- ✅ Removed old, unused code and obsolete files
+- ✅ Updated terminology to reflect config-driven architecture  
+- ✅ Configuration file fully functional and comprehensive
+- ✅ All systems now use configuration for level determination
+- ✅ Eliminated legacy hardcoded values and level-specific logic
 
-### Level Selection System
-- **Access**: Shown after difficulty selection and after each level completion
-- **Interface**: 5x2 grid displaying all 10 levels with texture previews
-- **Visual Format**: "Level X [wall][endpoint][wall]" with actual texture images
-- **Completion Tracking**: Completed levels show large checkmark overlay and are unclickable
-- **Navigation**: Back button to return to difficulty selection
-- **Progressive Unlocking**: Only incomplete levels remain selectable
-- **Final Score**: Only shown when all 10 levels are completed
+### Target State
+- **Dynamic Configuration**: JSON-driven level and puzzle configuration
+- **Modular Puzzles**: Each puzzle type in separate, configurable modules
+- **Clean Codebase**: Remove all legacy and unused code
+- **Flexible Level System**: Add/remove levels by folder + config changes only
+- **Consistent Architecture**: All systems refer to main configuration file
 
-### Rocket Boost System (Levels 9-10)
-#### **Activation Process**
-- **Trigger**: Collecting bonus items (`b` in maze grid) activates boost modal
-- **Modal Interface**: Interactive transition screen with animated 200x200px PT sprite
-- **User Control**: Player clicks "START BOOST!" button to begin (no automatic activation)
+### Priority Areas
+1. **Main Configuration File**: Create properly structured JSON config
+2. **Puzzle Modularization**: Complete transition to configurable puzzle modules
+3. **Dynamic Screens**: Level selection, scoring, debug mode all read from config
+4. **Asset Management**: Robust dynamic loading with proper fallbacks
+5. **Code Cleanup**: Remove hardcoded values, outdated concepts, unused code
 
-#### **Boost Mechanics**
-- **Wall Removal**: Randomly removes half of maze walls for easier navigation
-- **Duration**: 30-second timer with countdown display
-- **Movement**: Normal speed (not triple-speed) with enhanced maze traversal
-- **Visual State**: Orange gradient background (`#FF4500` to `#FFD700`) with rocket styling
+## Development Guidelines
 
-#### **Enhanced Features**
-- **Sprite System**: Switches to PT-Bonus-Sprite.svg during boost mode
-- **UI Adaptations**: Black text overlay for visibility during orange background
-- **Final Warning**: Blinking animation in final 5 seconds of countdown
-- **Safe Return**: Modal-based transition back to normal with "RETURN TO NORMAL" button
-- **Teleportation**: Returns PT to original starting position when boost ends
-- **Wall Restoration**: All walls restored to original maze state after boost
+### What Not to Change
+- **Difficulty UI/Functionality**: Working correctly
+- **Scoring UI/Functionality**: Working correctly  
+- **Bonus/Boost UI/Mechanics**: Carefully designed, working correctly
+- **Puzzle UI/Mechanics**: Designed for accessibility, don't change without permission
+- **Visual Feedback**: Thumbs up/down system, timing, colors
 
-### Heart Collection System (Levels 6-10)
-- **Placement**: Hearts (`h`) embedded in maze paths for collection
-- **Scoring**: Integrated with main scoring system for bonus points
-- **Display**: Single heart emoji with count (prevents UI expansion)
-
-### Dual Score Display System
-The game features a comprehensive scoring system with both level-specific and cumulative tracking:
-
-#### **Level Score (Red Heart ❤️)**
-- **Reset Behavior**: Resets to starting hearts (3 for hard, 5 for easy/medium) at each level start
-- **Real-time Updates**: Changes immediately as player gains/loses hearts during gameplay
-- **Purpose**: Shows current health/progress within the active level
-
-#### **Cumulative Score (Black Heart 🖤)**
-- **Session Tracking**: Accumulates all hearts gained/lost across entire browser session
-- **Continuous Updates**: Updates in real-time alongside level score changes
-- **Reset Behavior**: Resets to 0 only on browser refresh/restart (no localStorage persistence)
-- **Starting Hearts**: Includes initial hearts when starting each new level (once per level attempt)
-- **Purpose**: Shows total progress across all levels played in current session
-
-#### **Display Format**
-- **Location**: Top-left of game area in blue text (`#4169E1`) matching level indicator
-- **Format**: `❤️ 5 | 🖤 23` (level score | cumulative score)
-- **Updates**: Both scores update simultaneously when hearts are gained/lost
-
-### Scoring and Progression
-- **Base System**: Lives-based (hearts) with difficulty-dependent starting amounts
-- **Level Completion**: Tracks final score for each completed level
-- **Session Tracking**: Completed levels stored in Set, prevents re-selection
-- **Comprehensive Data**: Session data, completion times, death levels
-- **Final Scoring**: Visual summary with level-by-level breakdown shown only when all levels complete
-
-## Technical Architecture
-
-### Sprite and Animation System
-- **Movement sprites**: SVG-based (PT-sprite.svg) with 6 frames (160x160 each)
-- **Direction mapping**: Right (1-2), Left (3-4), Up/Down (5-6)
-- **Celebration animations**: Per-level PNG sheets with variable frame counts
-  - **Level 10**: 53 frames for extended celebration sequence
-  - **Other levels**: Variable frame counts based on sprite sheet dimensions
-- **Game over**: 13-frame horizontal sequence (436x436 frames)
-- **Scaling**: Dynamic sizing with aspect ratio preservation
-
-### Content Loading System
-- **Dynamic CSV parsing**: Maze layouts loaded via `loadMazeFromCSV()`
-- **Asynchronous loading**: Promise.all() coordination in `initializeGame()`
-- **Cache busting**: Timestamp-based parameter injection
-- **Fallback system**: Embedded data when file loading fails
-- **Educational content**: Dynamic word list and digraph data loading
-
-### Collision and Movement
-- **Grid-based**: 40x40 pixel tile system with path validation
-- **Character size**: 45x45 pixels (larger than tiles for visual overlap)
-- **Collision detection**: `isOnPath()` validation against maze data
-- **Special movement**: Rocket boost with triple-speed mechanics
-
-## Debug and Testing Features
-
-### Debug Mode (Shift+Ctrl+D)
-- **Level jumping**: Direct access to any level 1-10
-- **Test variants**: Alternative starting positions (e.g., level 4 test mode)
-- **Animation preview**: Individual celebration sprite testing with controls
-- **Visual indicators**: Real-time level display and debugging information
-
-### Testing Capabilities
-- **Manual testing workflow**: Level progression, puzzle validation, sprite loading
-- **Performance testing**: Animation frame rates, texture loading times
-- **Educational testing**: Puzzle generation, content validation, speech synthesis
-
-## CSV Maze Format
-
-### Cell Type Encoding
-- **`o`**: Open path (traversable)
-- **`m`**: Math door - triggers math puzzles
-- **`r`**: Reading door - triggers reading puzzles
-- **`s`**: Sorting door - not implemented
-- **`w`**: Watering hole (goal) - level completion trigger
-- **`h`**: Heart collectible (levels 6-10) - bonus scoring
-- **`b`**: Bonus collectible (levels 9-10) - rocket boost activation
-- **Empty cell**: Wall (non-traversable)
-
-## Development Workflows
+### What Can Be Modified
+- **Configuration methods**: How puzzles and levels are configured
+- **Code organization**: Modularization and cleanup
+- **Asset loading**: Dynamic systems and fallbacks
+- **Legacy code**: Remove outdated and unused code
+- **Hardcoded values**: Replace with configuration-driven values
 
 ### Adding New Levels
-1. **Create directory**: `level-X/` with all required assets
-2. **Design maze**: Create `grid.csv` using encoding system above
-3. **Educational content**: Add `Word-List.txt` with format: `WORD EMOJI,`
-4. **Assets**: Include all texture files and celebration sprites
-5. **Code updates**: Modify difficulty selection logic and level bounds
-6. **Testing**: Use debug mode for rapid iteration and validation
+Target workflow:
+1. Create level folder with required assets
+2. Add level entry to main configuration file
+3. Level automatically appears in game
 
-### Modifying Puzzle Types
-- **Math puzzles**: Update `showPuzzle()` case handling and generation logic
-- **Reading puzzles**: Modify content loading and validation systems
-- **New types**: Extend CSV encoding and add corresponding puzzle logic
+### Removing Levels
+Target workflow:
+1. Remove level entry from main configuration file
+2. Level automatically removed from all game screens
 
-### Performance Considerations
-- **Texture loading**: Coordinate with game initialization flow
-- **Animation performance**: Use requestAnimationFrame for smooth rendering
-- **Memory management**: Proper cleanup of event listeners and timers
-- **Mobile compatibility**: Touch event handling and responsive design
+## Future Development Goals
 
-## Educational Framework
+### Phase 1: Web Deployment & Distribution
+**Status**: Planned | **Feasibility**: ⭐⭐⭐⭐⭐ (Excellent)
 
-### Learning Objectives
-- **Mathematical thinking**: Number sense, arithmetic operations, visual math
-- **Reading comprehension**: Word recognition, phonics, emoji association
-- **Problem solving**: Multi-step puzzles, constraint satisfaction
-- **Motor skills**: Drag-and-drop interactions, precise navigation
+**Objective**: Deploy PT's Maze Adventure as a web-accessible game with both live URL access and downloadable distribution options for offline use.
 
-### Adaptive Features
-- **Difficulty scaling**: Progressive complexity across levels
-- **Mistake handling**: Constructive feedback with visual cues
-- **Usage tracking**: Prevents over-repetition of problems
-- **Multi-modal learning**: Visual, auditory, and kinesthetic elements
+**Implementation Approach**:
+- **GitHub Pages**: Free hosting directly from repository with automatic deployment
+- **Simple sharing**: Single URL that friends can click to play immediately  
+- **Offline distribution**: GitHub releases with downloadable ZIP files
+- **No installation required**: All dynamic file loading works seamlessly via HTTPS
 
-## Common Development Patterns
+**Technical Benefits**:
+- Eliminates local server requirement for end users
+- Same-origin policy allows all CSV/image/config loading to work normally
+- Automatic updates when repository is updated
+- Professional hosting with CDN performance
 
-### File Loading Pattern
-```javascript
-// Standard pattern for loading level assets
-const promises = [
-    loadMazeFromCSV(level),
-    loadWordListFromFile(level),
-    loadTextures(level)
-];
-Promise.all(promises).then(() => initializeLevel());
-```
+**Priority**: High - Enables easy sharing and distribution
 
-### Puzzle Validation Pattern
-```javascript
-// Standard validation with difficulty-based scoring
-if (isCorrect) {
-    updateScore(1);
-    door.open = true;
-    completeRocketBoostMovement(); // If rocket boost active
-} else {
-    handleIncorrectAnswer(door, attempts);
-}
-```
+### Phase 2: Multi-Character System
+**Status**: Planned | **Feasibility**: ⭐⭐⭐⭐ (Very Good)
 
-### Debug Feature Pattern
-```javascript
-// Consistent debug mode activation and testing
-document.addEventListener('keydown', (e) => {
-    if (e.shiftKey && e.ctrlKey && e.key === 'D') {
-        toggleDebugMode();
-    }
-});
-```
+**Objective**: Implement a multi-character system allowing selection of different animal characters, each with unique movement sprites, celebration animations, and bonus sprites, all configurable through the JSON system.
 
-This documentation reflects the current sophisticated state of PT's Maze Adventure as a comprehensive educational gaming platform with advanced features and extensive customization capabilities.
+**Implementation Approach**:
+- **Character selection screen**: Add character choice before difficulty selection
+- **Sprite system expansion**: Support multiple character sprite sets
+- **Configuration integration**: Extend existing `characters` section in game-config.json
+- **Asset organization**: `characters/[name]/` folders for sprite collections
+
+**Character System Features**:
+- **Movement sprites**: Character-specific PT-sprite.svg equivalents
+- **Celebration animations**: Unique celebrate.png sheets per character
+- **Bonus sprites**: Character-specific PT-Bonus-Sprite.svg files
+- **Personalization**: Different characters for different children/preferences
+
+**Technical Requirements**:
+- Extend texture loading system for character-specific assets
+- Update sprite animation system to use selected character
+- Add character persistence across game sessions
+- Maintain backward compatibility with existing PT assets
+
+**Priority**: Medium - Enhances personalization and engagement
+
+### Phase 3: Configuration Builder Tool
+**Status**: Planned | **Feasibility**: ⭐⭐⭐⭐⭐ (Excellent)
+
+**Objective**: Create a user-friendly configuration builder web application that generates game-config.json files through form-based input, with support for multiple saved configurations for different children and difficulty preferences.
+
+**Implementation Approach**:
+- **Web-based form interface**: HTML/JavaScript configuration builder
+- **JSON generation**: Real-time preview and export of game-config.json
+- **Configuration management**: Load, save, duplicate, and export multiple configs
+- **Child-specific presets**: Templates optimized for different ages/abilities
+
+**Builder Features**:
+- **Level configuration**: Add/remove levels, set puzzle types and difficulties
+- **Character management**: Select characters and associate sprite assets
+- **Puzzle customization**: Configure math ranges, word lists, and constraints
+- **Asset validation**: Check for required files and warn about missing assets
+- **Export options**: Download JSON, copy to clipboard, or save to browser storage
+
+**User Experience**:
+- **Non-technical interface**: Simple forms instead of JSON editing
+- **Configuration switching**: Easy swapping between child-specific setups
+- **Preview system**: Test configurations before deployment
+- **Import/export**: Share configurations with other educators
+
+**Technical Architecture**:
+- **Standalone web app**: Separate from main game for modularity
+- **Browser-based**: No server required, works offline
+- **JSON validation**: Ensure generated configs are valid and complete
+- **Integration ready**: Generated configs work seamlessly with main game
+
+**Priority**: Medium-High - Dramatically improves accessibility for non-technical users
+
+## Development Roadmap
+
+### Immediate (Current Session)
+- ✅ Complete core refactoring to configuration-driven architecture
+- ✅ Fix multiplication puzzle scoring and audio features  
+- ✅ Enhance debug mode with level navigation and difficulty selection
+
+### Next Steps (Phase 1)
+1. **Prepare for deployment**: Final testing, asset optimization
+2. **GitHub setup**: Repository creation, README documentation
+3. **Web hosting**: GitHub Pages deployment and URL sharing
+4. **Distribution**: Create downloadable releases for offline use
+
+### Future Enhancements (Phase 2-3)
+1. **Multi-character system**: Character selection and sprite management
+2. **Configuration builder**: User-friendly JSON generation tool
+3. **Advanced features**: Additional puzzle types, accessibility improvements
+
+This documentation reflects the current state and future development roadmap for PT's Maze Adventure as a comprehensive, configuration-driven educational gaming platform.

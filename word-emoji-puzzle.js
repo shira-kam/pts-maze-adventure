@@ -7,7 +7,7 @@ class WordEmojiPuzzle {
         
         // Get puzzle configuration for this level
         const level = game.selectedDifficulty;
-        const config = configManager.getPuzzleConfig(level, 'reading');
+        const config = configManager.getPuzzleConfig(level, 'word_emoji_matching');
         
         // Initialize tracking system if enabled
         this.tracking = config.tracking || {};
