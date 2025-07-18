@@ -254,9 +254,9 @@ class NumberLinePuzzle {
                 position: relative;
                 background: white;
             `;
-            
-            // Special styling for cell 0 in levels 4+ or test mode
-            if (i === 0 && (level >= 4 || game.testMode)) {
+
+            // Special styling for cell 0 in levels 0+ or test mode
+            if (i === 0 && (level >= 0 || game.testMode)) {
                 cell.style.background = 'black';
             }
             
@@ -287,9 +287,9 @@ class NumberLinePuzzle {
                 padding: 2px;
                 border-radius: 3px;
             `;
-            
-            // Special styling for label 0 in levels 4+ or test mode
-            if (i === 0 && (level >= 4 || game.testMode)) {
+
+            // Special styling for label 0 in levels 0+ or test mode
+            if (i === 0 && (level >= 0 || game.testMode)) {
                 label.style.background = 'black';
                 label.style.color = 'white';
             }
@@ -335,7 +335,7 @@ class NumberLinePuzzle {
         // Reset all grid cell colors
         const cells = document.querySelectorAll('#numberGrid > div');
         cells.forEach((cell, index) => {
-            if (index === 0 && (level >= 4 || game.testMode)) {
+            if (index === 0 && (level >= 0 || game.testMode)) {
                 cell.style.background = 'black'; // Preserve special cell 0 color
             } else {
                 cell.style.background = 'white';
@@ -351,7 +351,7 @@ class NumberLinePuzzle {
                 // Start position (green) - unless it's cell 0 which stays black
                 cell.style.background = '#32CD32';
             } else if (index === currentPos) {
-                if (index === 0 && (level >= 4 || game.testMode)) {
+                if (index === 0 && (level >= 0 || game.testMode)) {
                     // Keep cell 0 black but draw PT on it
                 } else if (currentPos < startPos) {
                     // Current position left of start (blue)
@@ -399,10 +399,10 @@ class NumberLinePuzzle {
      */
     numberLineKeyHandler(e) {
         const level = game.selectedDifficulty;
-        
-        // Only handle keys for levels 4+ and when puzzle is active
-        if (level < 4 || !game.puzzleActive) return;
-        
+
+        // Only handle keys for levels 0+ and when puzzle is active
+        if (level < 0 || !game.puzzleActive) return;
+
         // Check if modal is visible
         const modal = document.getElementById('puzzleModal');
         if (modal.style.display !== 'block') return;

@@ -88,9 +88,13 @@
     "1": {
       "playable": true,
       "puzzles": {
-        "simple_arithmetic": {
-          "limits": {
+       "number_line": {
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 10,
+            "minA": 1,
             "maxA": 9,
+            "minB": 1,
             "maxB": 9,
             "maxResult": 10
           }
@@ -120,11 +124,15 @@
     "2": {
       "playable": true,
       "puzzles": {
-        "simple_arithmetic": {
-          "limits": {
-            "maxA": 12,
-            "maxB": 12,
-            "maxResult": 15
+      "number_line": {
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 10,
+            "minA": 1,
+            "maxA": 9,
+            "minB": 1,
+            "maxB": 9,
+            "maxResult": 10
           }
         },
         "word_emoji_matching": {
@@ -152,12 +160,15 @@
     "3": {
       "playable": true,
       "puzzles": {
-        "simple_arithmetic": {
-          "limits": {
-            "maxA": 15,
-            "maxB": 15,
-            "maxResult": 20
-          }
+      "number_line": {
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 12,
+            "minA": 1,
+            "maxA": 11,
+            "minB": 1,
+            "maxB": 11,
+            "maxResult": 12          }
         },
         "word_emoji_matching": {
           "tracking": {
@@ -187,12 +198,12 @@
         "number_line": {
           "operations": ["addition", "subtraction"],
           "numberLine": {
-            "length": 12,
+            "length": 15,
             "minA": 1,
-            "maxA": 8,
+            "maxA": 14,
             "minB": 1,
-            "maxB": 8,
-            "maxResult": 12
+            "maxB": 14,
+            "maxResult": 15
           }
         }
       },
@@ -219,12 +230,12 @@
         "number_line": {
           "operations": ["addition", "subtraction"],
           "numberLine": {
-            "length": 12,
+            "length": 17,
             "minA": 1,
-            "maxA": 8,
+            "maxA": 16,
             "minB": 1,
-            "maxB": 8,
-            "maxResult": 12
+            "maxB": 16,
+            "maxResult": 17
           }
         }
       },
