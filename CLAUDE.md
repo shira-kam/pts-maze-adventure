@@ -523,17 +523,32 @@ Target workflow:
 - **NEW System**: Modular classes like `new NumberLinePuzzle(door)`, `new DivisionPuzzle(door)`, etc.
 
 **Cleanup Progress**:
-- ✅ **STEP 1 COMPLETED (Jan 19)**: Number Line Puzzles (~185 lines removed)
+- ✅ **STEP 1 COMPLETED**: Number Line Puzzles (~185 lines removed)
   - Commented out `createNumberLinePuzzle()` function and inline `mappedType === 'math'` code
   - All number line puzzles now use modular `NumberLinePuzzle` class exclusively
   - Tested working in levels 1-8, routing: `door.type='number_line'` → `showNumberLinePuzzle()` → `new NumberLinePuzzle()`
   - Commit: `96894f9` - "remove duplicate number line puzzle implementation (~185 lines)"
 
-**Next Steps** (In Priority Order):
-- **STEP 2**: Division Puzzles - Remove `createDivisionPuzzle()` function, ensure `door.type='division_visual'` uses modular system
-- **STEP 3**: Digraph Puzzles - Remove inline digraph code, ensure `door.type='digraph_sounds'` uses modular system  
-- **STEP 4**: Simple Math/Word Emoji - Verify remaining puzzles use modular system
-- **STEP 5**: Complete cleanup verification and remove all commented code blocks
+- ✅ **STEP 2 COMPLETED**: Division Puzzles (~241 lines removed)
+  - Commented out `createDivisionPuzzle()` function and inline division code
+  - Fixed syntax errors from orphaned else-if statements
+  - All division puzzles now use modular `DivisionPuzzle` class exclusively
+  - Tested working in levels 8-9, routing: `door.type='division_visual'` → `showDivisionPuzzle()` → `new DivisionPuzzle()`
+  - Commit: `e62004d` - "remove duplicate division puzzle implementation (~241 lines)"
+
+- ✅ **STEP 3 COMPLETED**: Digraph Puzzles (~94 lines removed)
+  - Commented out inline digraph puzzle code in `mappedType==='reading'` section
+  - Fixed syntax issues with orphaned else statements
+  - All digraph puzzles now use modular `DigraphPuzzle` class exclusively
+  - Tested working in levels 5-7, routing: `door.type='digraph_sounds'` → `showDigraphPuzzle()` → `new DigraphPuzzle()`
+  - Commit: `87eae92` - "remove duplicate digraph puzzle implementation (~94 lines)"
+
+**MAJOR CLEANUP COMPLETE**: ~520 lines of duplicate code removed (5000+ → 4888 lines)
+
+**Remaining Steps**:
+- **STEP 4**: Verify Simple Math/Word Emoji puzzles use modular system (already confirmed ✅)
+- **STEP 5**: Optional - Remove commented code blocks entirely vs keeping for reference
+- **STEP 6**: Final push to GitHub when ready
 
 **Testing Protocol**: Test each puzzle type in relevant levels after each step before committing
 
