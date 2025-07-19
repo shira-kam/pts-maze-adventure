@@ -2138,11 +2138,6 @@ PIG 🐖`;
             game.doors.forEach(door => {
                 door.open = false;
                 // Set door color based on type category
-                if (door.type.includes('arithmetic') || door.type.includes('number') || door.type.includes('multiplication')) {
-                    door.color = '#FF6B6B'; // Red for math doors
-                } else {
-                    door.color = '#4ECDC4'; // Teal for reading doors
-                }
                 door.currentProblemAttempts = 0;
                 door.failedAttempts = 0;
             });
@@ -2211,7 +2206,10 @@ PIG 🐖`;
             }
             
             const results = await Promise.all(loadPromises);
-            const [mazeData, wordList, distractors, digraphData] = results;
+            const mazeData = results[0];
+            const wordList = results[1];
+            const distractors = results[2];
+            const digraphData = results[3]; // Will be undefined if not loaded
             
             console.log(`Loaded maze data:`, mazeData);
             console.log(`Loaded word list:`, wordList);
@@ -2229,8 +2227,8 @@ PIG 🐖`;
             game.wordEmojiPairs = wordList;
             game.distractors = distractors;
             
-            // Store digraph data if Levels 3, 4, 5, 6, 7, or 8
-            if ((game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7 || game.selectedDifficulty === 8) && digraphData) {
+            // Store digraph data if this level has digraph puzzles and data was loaded
+            if (digraphConfig && digraphData) {
                 game.digraphEmojis = digraphData.digraphEmojis;
                 game.digraphSounds = digraphData.digraphSounds;
                 game.emojiNames = digraphData.emojiNames;
@@ -2644,6 +2642,12 @@ PIG 🐖`;
         
         function endBoostTransition() {
             if (game.selectedDifficulty !== 9 && game.selectedDifficulty !== 10) return;
+            
+            // Don't show boost end modal if level is already completed
+            if (game.celebrating) {
+                console.log('Level already completed, skipping boost end modal');
+                return;
+            }
             
             console.log('Ending rocket boost transition');
             game.boostTransitionState = 'ending';
@@ -3379,6 +3383,20 @@ PIG 🐖`;
         }
         
         function showCelebration() {
+            // If boost is active, end it properly
+            if (game.rocketCountdown > 0 || game.boostTransitionState !== 'normal') {
+                console.log('Level completed during boost - cleaning up boost state');
+                game.hasBonus = false;
+                game.rocketCountdown = 0;
+                game.boostTransitionState = 'normal';
+                currentMovementSprites = characterSprites.movement;
+                updateRocketDisplay();
+                
+                // Remove boost visual effects
+                const gameContainer = document.getElementById('gameContainer');
+                gameContainer.classList.remove('rocket-boost', 'blinking');
+            }
+            
             // Record score for this level
             game.levelScores[game.selectedDifficulty] = game.score;
             game.gameSession.levelsCompleted++;
@@ -3422,7 +3440,6 @@ PIG 🐖`;
             }
             requestAnimationFrame(gameLoop);
         }
-        
         
         // Initialize character selection screen on game start
         // Character selection -> difficulty selection -> level selection -> game start

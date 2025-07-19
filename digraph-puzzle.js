@@ -32,12 +32,51 @@ class DigraphPuzzle {
     }
 
     /**
+     * Validate that digraph data is fully loaded and properly structured
+     */
+    isDigraphDataValid() {
+        // Check basic existence
+        if (!game.digraphEmojis || !game.digraphSounds || !game.emojiNames) {
+            console.log('Missing digraph data objects');
+            return false;
+        }
+        
+        // Check that digraph data has content
+        const digraphKeys = Object.keys(game.digraphEmojis);
+        if (digraphKeys.length === 0) {
+            console.log('No digraphs loaded');
+            return false;
+        }
+        
+        // Verify critical digraphs for PH filtering are present
+        const requiredDigraphs = ['PH', 'FL', 'FR'];
+        const hasRequiredDigraphs = requiredDigraphs.every(digraph => 
+            game.digraphEmojis[digraph] && Array.isArray(game.digraphEmojis[digraph])
+        );
+        
+        if (!hasRequiredDigraphs) {
+            console.log('Missing required digraphs for PH filtering:', 
+                requiredDigraphs.filter(d => !game.digraphEmojis[d]));
+            return false;
+        }
+        
+        // Verify FL digraph contains flip flop emoji (🩴) - this is our test case
+        if (!game.digraphEmojis['FL'].includes('🩴')) {
+            console.log('FL digraph missing expected flip flop emoji - data may be incomplete');
+            return false;
+        }
+        
+        console.log('Digraph data validation passed');
+        return true;
+    }
+
+    /**
      * Generate a digraph puzzle with tracking
      */
     generatePuzzle() {
-        // Check if digraph data is loaded
-        if (!game.digraphEmojis || Object.keys(game.digraphEmojis).length === 0) {
-            console.error('Digraph data not loaded yet!');
+        // Check if digraph data is loaded and valid
+        if (!this.isDigraphDataValid()) {
+            console.error('Digraph data not loaded or invalid!');
             return null;
         }
         
@@ -116,6 +155,12 @@ class DigraphPuzzle {
      * Generate wrong answers for digraph puzzle
      */
     generateWrongAnswers(selectedDigraph, correctEmoji) {
+        // Double-check data validity before filtering
+        if (!this.isDigraphDataValid()) {
+            console.error('Cannot generate wrong answers - digraph data invalid');
+            return []; // Return empty array as fallback
+        }
+        
         const wrongEmojis = [];
         
         // Get all available emojis from all digraphs
@@ -138,6 +183,7 @@ class DigraphPuzzle {
         };
         
         // Filter out emojis from digraphs that sound too similar to avoid confusion
+        let filteredCount = 0;
         const nonConfusingEmojis = allAvailableEmojis.filter(emoji => {
             if (emoji === correctEmoji) return false;
             
@@ -146,16 +192,24 @@ class DigraphPuzzle {
                 if (game.digraphEmojis[digraph].includes(emoji)) {
                     // Avoid SK/SC pairs
                     if (isConfusingPair(selectedDigraph, digraph)) {
+                        console.log(`Filtered ${emoji} from ${digraph} (SK/SC confusion with ${selectedDigraph})`);
+                        filteredCount++;
                         return false;
                     }
                     // Avoid PH vs F-starting digraphs
                     if (isPHvsF(selectedDigraph, digraph)) {
+                        console.log(`Filtered ${emoji} from ${digraph} (PH vs F-sound confusion with ${selectedDigraph})`);
+                        filteredCount++;
                         return false;
                     }
                 }
             }
             return true;
         });
+        
+        if (selectedDigraph === 'PH' && filteredCount > 0) {
+            console.log(`PH filtering active: removed ${filteredCount} confusing emojis`);
+        }
         
         // Pick 2 random wrong emojis
         const emojiPool = nonConfusingEmojis.length >= 2 ? nonConfusingEmojis : allAvailableEmojis;
@@ -364,16 +418,17 @@ class DigraphPuzzle {
         const question = document.getElementById('puzzleQuestion');
         const options = document.getElementById('puzzleOptions');
         
-        // Show modal and set puzzle active state
-        game.puzzleActive = true;
-        modal.style.display = 'block';
-        
-        // Generate the puzzle
+        // Generate the puzzle FIRST - before showing modal
         const puzzle = this.generatePuzzle();
         if (!puzzle) {
-            console.error('Failed to generate digraph puzzle');
+            console.error('Failed to generate digraph puzzle - data may not be loaded yet');
+            // Don't show modal or set puzzle active if generation failed
             return;
         }
+        
+        // Only show modal and set puzzle active state if puzzle generation succeeded
+        game.puzzleActive = true;
+        modal.style.display = 'block';
         
         // Set title and generate HTML
         title.innerHTML = puzzle.title;
