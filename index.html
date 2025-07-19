@@ -3478,8 +3478,8 @@ PIG 🐖`;
             }
         }
         
-        // Reusable division puzzle generator
-        function createDivisionPuzzle(door) {
+        // [REMOVED] Old createDivisionPuzzle function - now using modular DivisionPuzzle class  
+        /*function createDivisionPuzzle(door) {
             let dividend, divisor, answer;
             
             // Generate division problem: A ÷ B = C where A ≤ 15
@@ -3682,7 +3682,7 @@ PIG 🐖`;
                 divisor: divisor,
                 answer: answer
             };
-        }
+        }*/
         
         function showPuzzle(type, door) {
             const modal = document.getElementById('puzzleModal');
@@ -3779,7 +3779,9 @@ PIG 🐖`;
                     
                     return; // Exit early for all number line levels
                 }*/
-            else if (mappedType === 'reading') {
+            
+            if (mappedType === 'reading') {
+                /* [REMOVED] Old inline division puzzle code - now using modular DivisionPuzzle class
                 // Check if this is Level 8, 9, or 10 - use division
                 if (game.selectedDifficulty === 8 || game.selectedDifficulty === 9 || game.selectedDifficulty === 10) {
                     // Clean up any existing keyboard handlers before starting division puzzle
@@ -3817,9 +3819,9 @@ PIG 🐖`;
                     }, 100);
                     
                     return; // Exit early for Level 8/9 reading (division)
-                }
+                }*/
                 // Check if this is Level 3, 4, 5, 6, or 7 - use digraph game instead of regular reading
-                else if (game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) {
+                if (game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) {
                     // Level 3 Digraph Game
                     if (!game.digraphEmojis || Object.keys(game.digraphEmojis).length === 0) {
                         console.error('Digraph data not loaded yet!');
