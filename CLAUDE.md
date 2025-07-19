@@ -515,42 +515,115 @@ Target workflow:
 6. **User experience polish**: Address visual inconsistencies and improve transitions
 7. **Distribution**: Create downloadable releases for offline use
 
-### Ongoing Cleanup (Major Code Reduction - Started 2025-01-19)
-**Objective**: Remove ~1000+ lines of duplicate puzzle implementations from index.html (~5000 lines → ~4000 lines)
+### Completed Function Cleanup & Analysis (2025-01-19)
+**Objective**: Clean up index.html by removing obsolete and duplicate functions
 
-**Problem Identified**: Two complete puzzle systems running in parallel:
-- **OLD System**: Inline functions like `createNumberLinePuzzle()`, `createDivisionPuzzle()`, etc.
-- **NEW System**: Modular classes like `new NumberLinePuzzle(door)`, `new DivisionPuzzle(door)`, etc.
+**Major Issues Identified & Fixed**:
+1. **Function Accessibility Errors**: Multiple JavaScript function hoisting issues resolved
+   - Fixed `resetGame()` function moved from line 3661 to line 2140 (before `initializeGame()`)
+   - Fixed `showCelebration()`, `animateCelebration()`, `playAgain()` function ordering
+   - All function reference errors resolved
 
-**Cleanup Progress**:
-- ✅ **STEP 1 COMPLETED**: Number Line Puzzles (~185 lines removed)
-  - Commented out `createNumberLinePuzzle()` function and inline `mappedType === 'math'` code
-  - All number line puzzles now use modular `NumberLinePuzzle` class exclusively
-  - Tested working in levels 1-8, routing: `door.type='number_line'` → `showNumberLinePuzzle()` → `new NumberLinePuzzle()`
-  - Commit: `96894f9` - "remove duplicate number line puzzle implementation (~185 lines)"
+2. **Cumulative Score Bug**: Fixed scoring logic to include starting hearts in cumulative score
+   - Problem: Cumulative score showing 0 instead of including starting hearts (3-5 hearts based on difficulty)
+   - Solution: Updated `resetGame()` to add starting hearts to cumulative score with level tracking
 
-- ✅ **STEP 2 COMPLETED**: Division Puzzles (~241 lines removed)
-  - Commented out `createDivisionPuzzle()` function and inline division code
-  - Fixed syntax errors from orphaned else-if statements
-  - All division puzzles now use modular `DivisionPuzzle` class exclusively
-  - Tested working in levels 8-9, routing: `door.type='division_visual'` → `showDivisionPuzzle()` → `new DivisionPuzzle()`
-  - Commit: `e62004d` - "remove duplicate division puzzle implementation (~241 lines)"
+3. **Comprehensive Function Analysis**: Analyzed all 80+ functions in index.html
+   - Created complete function inventory with dependencies and purposes
+   - Identified 8 duplicate/obsolete functions for removal
+   - User removed ~454 lines of outdated code
 
-- ✅ **STEP 3 COMPLETED**: Digraph Puzzles (~94 lines removed)
-  - Commented out inline digraph puzzle code in `mappedType==='reading'` section
-  - Fixed syntax issues with orphaned else statements
-  - All digraph puzzles now use modular `DigraphPuzzle` class exclusively
-  - Tested working in levels 5-7, routing: `door.type='digraph_sounds'` → `showDigraphPuzzle()` → `new DigraphPuzzle()`
-  - Commit: `87eae92` - "remove duplicate digraph puzzle implementation (~94 lines)"
+**Functions Successfully Deleted**:
+- `speakDigraph()` - duplicate of digraph-puzzle.js implementation
+- `speakEmojiWord()` - duplicate of digraph-puzzle.js implementation  
+- `unlockNextLevel()` - obsolete function
+- `initializeNumberLine()` - duplicate of number-line-puzzle.js
+- `initializeNumberLineLevel8()` - duplicate of number-line-puzzle.js
+- `movePTToPosition()` - duplicate of number-line-puzzle.js
+- `numberLineKeyHandler()` - duplicate of number-line-puzzle.js
+- `checkNumberLineAnswer()` - duplicate of number-line-puzzle.js
 
-**MAJOR CLEANUP COMPLETE**: ~520 lines of duplicate code removed (5000+ → 4888 lines)
+**Outdated Terminology Cleanup**:
+- ✅ **IDENTIFIED**: Found outdated "math doors" vs "reading doors" concept still in codebase
+- ✅ **REMOVED**: Deleted hardcoded door color assignment in `resetGame()` function:
+  ```javascript
+  // REMOVED - outdated math/reading door categorization
+  if (door.type.includes('arithmetic') || door.type.includes('number') || door.type.includes('multiplication')) {
+      door.color = '#FF6B6B'; // Red for math doors
+  } else {
+      door.color = '#4ECDC4'; // Teal for reading doors
+  }
+  ```
+- **Reasoning**: Puzzle modules define their own door colors; this centralized fallback contradicts modular architecture
 
-**Remaining Steps**:
-- **STEP 4**: Verify Simple Math/Word Emoji puzzles use modular system (already confirmed ✅)
-- **STEP 5**: Optional - Remove commented code blocks entirely vs keeping for reference
-- **STEP 6**: Final push to GitHub when ready
+**Code Reduction Results**: 
+- Successfully removed ~454 lines of duplicate/obsolete functions
+- Fixed all function accessibility and scoring bugs
+- Eliminated outdated door categorization concept
+- Current index.html: 4000+ lines (down from ~4500 lines)
 
-**Testing Protocol**: Test each puzzle type in relevant levels after each step before committing
+### Planned Index.html Modularization (Next Phase)
+**Objective**: Further reduce index.html size by extracting functional modules (~4000 → ~1500-2000 lines)
+
+**Current Issues**:
+- 4000+ lines in single file makes debugging and maintenance difficult
+- CSS embedded in `<style>` tags (~300-500 lines)
+- Multiple functional areas mixed together
+- Hard to navigate specific functionality
+
+**Proposed Extraction Plan**:
+
+**Phase 1: CSS Extraction (Immediate Impact)**
+- Create `styles.css` and move all CSS from `<style>` blocks
+- **Estimated reduction**: 300-500 lines
+- **Risk**: Very Low - pure CSS extraction
+- **Benefit**: High - immediate readability improvement
+
+**Phase 2: JavaScript Module Extraction (Medium Impact)**
+Extract these functional areas to separate files:
+
+**A. UI Management (`ui-manager.js`)**
+- Character selection functions
+- Level selection functions  
+- Modal management
+- Screen transitions
+- **~500-800 lines**
+
+**B. Game Rendering (`game-renderer.js`)**
+- `drawGame()` function and helpers
+- Canvas drawing utilities
+- Animation functions
+- **~300-500 lines**
+
+**C. Debug System (`debug-manager.js`)**
+- All debug mode functions
+- Debug UI generation
+- Testing utilities
+- **~400-600 lines**
+
+**D. Score & Progress (`progress-manager.js`)**
+- Score calculation and display
+- Level completion handling
+- Progress tracking
+- **~200-300 lines**
+
+**Phase 3: Core Game Logic (Keep in index.html)**
+- Game initialization
+- Main game loop
+- Core state management
+- Event handlers
+- Puzzle integration points
+
+**Implementation Strategy**:
+1. **Phase 1**: CSS extraction with no functionality changes
+2. **Phase 2**: Low-risk JS modules (debug system, UI management)
+3. **Phase 3**: Core rendering (most complex but highest impact)
+
+**Expected Results**:
+- Reduce index.html from ~4000 to ~1500-2000 lines
+- Organized by functionality
+- Easier debugging and maintenance
+- Maintained single-page app functionality
 
 ### Future Enhancements (Phase 3)
 1. **Configuration builder**: User-friendly JSON generation tool
