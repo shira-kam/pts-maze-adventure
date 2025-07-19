@@ -3820,6 +3820,7 @@ PIG 🐖`;
                     
                     return; // Exit early for Level 8/9 reading (division)
                 }*/
+                /* [REMOVED] Old inline digraph puzzle code - now using modular DigraphPuzzle class
                 // Check if this is Level 3, 4, 5, 6, or 7 - use digraph game instead of regular reading
                 if (game.selectedDifficulty === 3 || game.selectedDifficulty === 4 || game.selectedDifficulty === 5 || game.selectedDifficulty === 6 || game.selectedDifficulty === 7) {
                     // Level 3 Digraph Game
@@ -3914,7 +3915,10 @@ PIG 🐖`;
                         button.onclick = () => checkAnswer(emoji === correctEmoji, type, door, button, emoji);
                         options.appendChild(button);
                     });
-                } else {
+                }*/
+                
+                // Regular reading game (word-emoji puzzles)
+                {
                     // Regular reading game for Levels 1 and 2
                     const wordEmojiPairs = game.wordEmojiPairs;
                     
