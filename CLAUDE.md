@@ -509,10 +509,11 @@ Target workflow:
 ### Next Steps (Improvements & Polish)
 1. **Loading states**: Implement proper loading screens to hide texture fallbacks during asset loading
 2. **Boost mode modal fix**: Prevent boost end modal from showing if user reaches level endpoint during/before timer expiry (conflicts with celebration animation)
-3. **Config cleanup**: Remove redundant celebration frame data (currently duplicated in assets.celebration.frames and animation.celebrationFrames)
-4. **Asset optimization**: Optimize images and loading performance
-5. **User experience polish**: Address visual inconsistencies and improve transitions
-6. **Distribution**: Create downloadable releases for offline use
+3. ~~**Config cleanup**: Remove redundant celebration frame data (currently duplicated in assets.celebration.frames and animation.celebrationFrames)~~ ✅ **COMPLETED**
+4. **Design system**: Create unified design system for buttons, text styles, colors, and implement throughout UI
+5. **Asset optimization**: Optimize images and loading performance
+6. **User experience polish**: Address visual inconsistencies and improve transitions
+7. **Distribution**: Create downloadable releases for offline use
 
 ### Future Enhancements (Phase 3)
 1. **Configuration builder**: User-friendly JSON generation tool

@@ -3354,8 +3354,8 @@ PIG 🐖`;
             }
         });
         
-        // Flexible number line puzzle generator
-        function createNumberLinePuzzle(door, equationType = 'simple') {
+        // [REMOVED] Old createNumberLinePuzzle function - now using modular NumberLinePuzzle class
+        /*function createNumberLinePuzzle(door, equationType = 'simple') {
             let num1, num2, num3, answer;
             let equation, title;
             
@@ -3463,7 +3463,7 @@ PIG 🐖`;
                 allAnswers: allAnswers,
                 equation: equation
             };
-        }
+        }*/
         
         // Helper function to determine baskets per row based on divisor
         function getBasketsPerRow(divisor) {
@@ -3701,6 +3701,7 @@ PIG 🐖`;
                 mappedType = 'reading';
             }
             
+            /* [REMOVED] Old inline number line puzzle code - now using modular NumberLinePuzzle class
             if (mappedType === 'math') {
                     // Determine equation type based on level
                     let equationType;
@@ -3777,7 +3778,7 @@ PIG 🐖`;
                     initializeNumberLine(door);
                     
                     return; // Exit early for all number line levels
-                }
+                }*/
             else if (mappedType === 'reading') {
                 // Check if this is Level 8, 9, or 10 - use division
                 if (game.selectedDifficulty === 8 || game.selectedDifficulty === 9 || game.selectedDifficulty === 10) {
