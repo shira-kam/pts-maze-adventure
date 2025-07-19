@@ -3637,22 +3637,6 @@ PIG 🐖`;
         
         
         
-        function playAgain() {
-            game.celebrating = false;
-            document.getElementById('celebrationScreen').style.display = 'none';
-            
-            // Check if all levels are completed
-            const totalPlayableLevels = configManager.getPlayableLevels().length;
-            if (game.gameSession.completedLevels.size >= totalPlayableLevels) {
-                // All levels completed, show final score
-                console.log('All levels completed, showing final score');
-                showFinalScore();
-            } else {
-                // Show level selection screen so player can choose next level
-                console.log('Showing level selection for next level choice');
-                showLevelSelection().catch(console.error);
-            }
-        }
         
         // Common component for generating level score displays
         function generateLevelScoreDisplay(maxLevel, deathLevel = null) {
@@ -3826,6 +3810,23 @@ PIG 🐖`;
             }
             
             requestAnimationFrame(animateCelebration);
+        }
+        
+        function playAgain() {
+            game.celebrating = false;
+            document.getElementById('celebrationScreen').style.display = 'none';
+            
+            // Check if all levels are completed
+            const totalPlayableLevels = configManager.getPlayableLevels().length;
+            if (game.gameSession.completedLevels.size >= totalPlayableLevels) {
+                // All levels completed, show final score
+                console.log('All levels completed, showing final score');
+                showFinalScore();
+            } else {
+                // Show level selection screen so player can choose next level
+                console.log('Showing level selection for next level choice');
+                showLevelSelection().catch(console.error);
+            }
         }
         
         function showCelebration() {
