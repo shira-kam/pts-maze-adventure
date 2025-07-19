@@ -126,20 +126,32 @@ class DigraphPuzzle {
             }
         }
         
-        // Avoid confusing SK/SC pairs
+        // Avoid confusing SK/SC pairs and PH vs F-starting sounds
         const confusingPairs = ['SK', 'SC'];
         const isConfusingPair = (d1, d2) => {
             return confusingPairs.includes(d1) && confusingPairs.includes(d2);
         };
         
-        // Filter out potentially confusing emojis
+        // Special case: If correct digraph is PH, avoid emojis from F-starting digraphs
+        const isPHvsF = (correctDigraph, wrongDigraph) => {
+            return correctDigraph === 'PH' && ['FL', 'FR'].includes(wrongDigraph);
+        };
+        
+        // Filter out emojis from digraphs that sound too similar to avoid confusion
         const nonConfusingEmojis = allAvailableEmojis.filter(emoji => {
             if (emoji === correctEmoji) return false;
             
             // Check if this emoji comes from a confusing digraph
             for (const digraph in game.digraphEmojis) {
                 if (game.digraphEmojis[digraph].includes(emoji)) {
-                    return !isConfusingPair(selectedDigraph, digraph);
+                    // Avoid SK/SC pairs
+                    if (isConfusingPair(selectedDigraph, digraph)) {
+                        return false;
+                    }
+                    // Avoid PH vs F-starting digraphs
+                    if (isPHvsF(selectedDigraph, digraph)) {
+                        return false;
+                    }
                 }
             }
             return true;
