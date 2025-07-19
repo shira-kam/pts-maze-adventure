@@ -117,7 +117,6 @@
         "bonus": false
       },
       "animation": {
-        "celebrationFrames": 9,
         "frameDelay": 25
       }
     },
@@ -153,7 +152,6 @@
         "bonus": false
       },
       "animation": {
-        "celebrationFrames": 62,
         "frameDelay": 25
       }
     },
@@ -188,7 +186,6 @@
         "bonus": false
       },
       "animation": {
-        "celebrationFrames": 41,
         "frameDelay": 25
       }
     },
@@ -217,7 +214,6 @@
         "bonus": false
       },
       "animation": {
-        "celebrationFrames": 62,
         "frameDelay": 25
       }
     },
@@ -249,7 +245,6 @@
         "bonus": false
       },
       "animation": {
-        "celebrationFrames": 52,
         "frameDelay": 25
       }
     },
@@ -281,7 +276,6 @@
         "bonus": false
       },
       "animation": {
-        "celebrationFrames": 30,
         "frameDelay": 25
       }
     },
@@ -313,7 +307,6 @@
         "bonus": false
       },
       "animation": {
-        "celebrationFrames": 28,
         "frameDelay": 25
       }
     },
@@ -354,7 +347,6 @@
         "bonus": false
       },
       "animation": {
-        "celebrationFrames": 24,
         "frameDelay": 25
       }
     },
@@ -393,7 +385,6 @@
         "bonus": true
       },
       "animation": {
-        "celebrationFrames": 27,
         "frameDelay": 25
       }
     },
@@ -427,7 +418,6 @@
         "bonus": true
       },
       "animation": {
-        "celebrationFrames": 53,
         "frameDelay": 25
       }
     }
