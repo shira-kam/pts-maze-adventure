@@ -515,6 +515,28 @@ Target workflow:
 6. **User experience polish**: Address visual inconsistencies and improve transitions
 7. **Distribution**: Create downloadable releases for offline use
 
+### Ongoing Cleanup (Major Code Reduction - Started 2025-01-19)
+**Objective**: Remove ~1000+ lines of duplicate puzzle implementations from index.html (~5000 lines → ~4000 lines)
+
+**Problem Identified**: Two complete puzzle systems running in parallel:
+- **OLD System**: Inline functions like `createNumberLinePuzzle()`, `createDivisionPuzzle()`, etc.
+- **NEW System**: Modular classes like `new NumberLinePuzzle(door)`, `new DivisionPuzzle(door)`, etc.
+
+**Cleanup Progress**:
+- ✅ **STEP 1 COMPLETED (Jan 19)**: Number Line Puzzles (~185 lines removed)
+  - Commented out `createNumberLinePuzzle()` function and inline `mappedType === 'math'` code
+  - All number line puzzles now use modular `NumberLinePuzzle` class exclusively
+  - Tested working in levels 1-8, routing: `door.type='number_line'` → `showNumberLinePuzzle()` → `new NumberLinePuzzle()`
+  - Commit: `96894f9` - "remove duplicate number line puzzle implementation (~185 lines)"
+
+**Next Steps** (In Priority Order):
+- **STEP 2**: Division Puzzles - Remove `createDivisionPuzzle()` function, ensure `door.type='division_visual'` uses modular system
+- **STEP 3**: Digraph Puzzles - Remove inline digraph code, ensure `door.type='digraph_sounds'` uses modular system  
+- **STEP 4**: Simple Math/Word Emoji - Verify remaining puzzles use modular system
+- **STEP 5**: Complete cleanup verification and remove all commented code blocks
+
+**Testing Protocol**: Test each puzzle type in relevant levels after each step before committing
+
 ### Future Enhancements (Phase 3)
 1. **Configuration builder**: User-friendly JSON generation tool
 2. **Advanced features**: Additional puzzle types, accessibility improvements
