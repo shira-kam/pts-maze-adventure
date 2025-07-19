@@ -3632,36 +3632,6 @@ PIG 🐖`;
                 if (!door.failedAttempts) door.failedAttempts = 0;
                 door.failedAttempts++;
         
-        function showCelebration() {
-            // Record score for this level
-            game.levelScores[game.selectedDifficulty] = game.score;
-            game.gameSession.levelsCompleted++;
-            game.gameSession.totalScore += game.score;
-            
-            // Mark level as completed
-            game.gameSession.completedLevels.add(game.selectedDifficulty);
-            
-            console.log(`Level ${game.selectedDifficulty} completed with ${game.score} lives remaining`);
-            
-            // Unlock next level
-            unlockNextLevel();
-            
-            game.celebrating = true;
-            game.celebrationFrame = 0;
-            game.celebrationTimer = 0;
-            
-            // Update button text - now always shows "Choose Next Level" unless all levels completed
-            const playAgainBtn = document.getElementById('playAgainBtn');
-            const totalPlayableLevels = configManager.getPlayableLevels().length;
-            if (game.gameSession.completedLevels.size >= totalPlayableLevels) {
-                playAgainBtn.textContent = 'Show Final Score';
-            } else {
-                playAgainBtn.textContent = 'Choose Next Level';
-            }
-            
-            document.getElementById('celebrationScreen').style.display = 'flex';
-            animateCelebration();
-        }
         
         function animateCelebration() {
             if (!game.celebrating) return;
@@ -3856,6 +3826,37 @@ PIG 🐖`;
         }
         } // Missing brace 1
         } // Missing brace 2
+        
+        function showCelebration() {
+            // Record score for this level
+            game.levelScores[game.selectedDifficulty] = game.score;
+            game.gameSession.levelsCompleted++;
+            game.gameSession.totalScore += game.score;
+            
+            // Mark level as completed
+            game.gameSession.completedLevels.add(game.selectedDifficulty);
+            
+            console.log(`Level ${game.selectedDifficulty} completed with ${game.score} lives remaining`);
+            
+            // Unlock next level
+            unlockNextLevel();
+            
+            game.celebrating = true;
+            game.celebrationFrame = 0;
+            game.celebrationTimer = 0;
+            
+            // Update button text - now always shows "Choose Next Level" unless all levels completed
+            const playAgainBtn = document.getElementById('playAgainBtn');
+            const totalPlayableLevels = configManager.getPlayableLevels().length;
+            if (game.gameSession.completedLevels.size >= totalPlayableLevels) {
+                playAgainBtn.textContent = 'Show Final Score';
+            } else {
+                playAgainBtn.textContent = 'Choose Next Level';
+            }
+            
+            document.getElementById('celebrationScreen').style.display = 'flex';
+            animateCelebration();
+        }
         
         // Game loop
         function gameLoop() {
