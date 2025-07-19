@@ -3633,55 +3633,6 @@ PIG 🐖`;
                 door.failedAttempts++;
         
         
-        function animateCelebration() {
-            if (!game.celebrating) return;
-            
-            const canvas = document.getElementById('celebrationSprite');
-            const ctx = canvas.getContext('2d');
-            
-            if (currentCelebrationSprites.complete) {
-                // Clear canvas
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Calculate frame properties using configuration-based approach
-                const frameProps = calculateFrameProperties(currentCelebrationSprites, game.selectedDifficulty);
-                const { frameWidth, frameHeight, framesPerRow, totalFrames } = frameProps;
-                
-                // Calculate frame position
-                const row = Math.floor(game.celebrationFrame / framesPerRow);
-                const col = game.celebrationFrame % framesPerRow;
-                const frameX = col * frameWidth;
-                const frameY = row * frameHeight;
-                
-                // Scale to fit canvas while maintaining aspect ratio
-                const scaleX = canvas.width / frameWidth;
-                const scaleY = canvas.height / frameHeight;
-                const scale = Math.min(scaleX, scaleY) * 0.9; // 90% of canvas size for padding
-                
-                const scaledWidth = frameWidth * scale;
-                const scaledHeight = frameHeight * scale;
-                const offsetX = (canvas.width - scaledWidth) / 2;
-                const offsetY = (canvas.height - scaledHeight) / 2;
-                
-                // Draw current frame (scaled to fit)
-                ctx.drawImage(
-                    currentCelebrationSprites,
-                    frameX, frameY, frameWidth, frameHeight, // Source frame
-                    offsetX, offsetY, scaledWidth, scaledHeight // Destination (scaled and centered)
-                );
-                
-                // Update frame counter using config-based delay
-                game.celebrationTimer++;
-                const animationConfig = configManager.getAnimationConfig(game.selectedDifficulty);
-                const frameDelay = animationConfig.frameDelay || 25;
-                if (game.celebrationTimer >= frameDelay) {
-                    game.celebrationFrame = (game.celebrationFrame + 1) % totalFrames;
-                    game.celebrationTimer = 0;
-                }
-            }
-            
-            requestAnimationFrame(animateCelebration);
-        }
         
         
         
@@ -3826,6 +3777,56 @@ PIG 🐖`;
         }
         } // Missing brace 1
         } // Missing brace 2
+        
+        function animateCelebration() {
+            if (!game.celebrating) return;
+            
+            const canvas = document.getElementById('celebrationSprite');
+            const ctx = canvas.getContext('2d');
+            
+            if (currentCelebrationSprites.complete) {
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Calculate frame properties using configuration-based approach
+                const frameProps = calculateFrameProperties(currentCelebrationSprites, game.selectedDifficulty);
+                const { frameWidth, frameHeight, framesPerRow, totalFrames } = frameProps;
+                
+                // Calculate frame position
+                const row = Math.floor(game.celebrationFrame / framesPerRow);
+                const col = game.celebrationFrame % framesPerRow;
+                const frameX = col * frameWidth;
+                const frameY = row * frameHeight;
+                
+                // Scale to fit canvas while maintaining aspect ratio
+                const scaleX = canvas.width / frameWidth;
+                const scaleY = canvas.height / frameHeight;
+                const scale = Math.min(scaleX, scaleY) * 0.9; // 90% of canvas size for padding
+                
+                const scaledWidth = frameWidth * scale;
+                const scaledHeight = frameHeight * scale;
+                const offsetX = (canvas.width - scaledWidth) / 2;
+                const offsetY = (canvas.height - scaledHeight) / 2;
+                
+                // Draw current frame (scaled to fit)
+                ctx.drawImage(
+                    currentCelebrationSprites,
+                    frameX, frameY, frameWidth, frameHeight, // Source frame
+                    offsetX, offsetY, scaledWidth, scaledHeight // Destination (scaled and centered)
+                );
+                
+                // Update frame counter using config-based delay
+                game.celebrationTimer++;
+                const animationConfig = configManager.getAnimationConfig(game.selectedDifficulty);
+                const frameDelay = animationConfig.frameDelay || 25;
+                if (game.celebrationTimer >= frameDelay) {
+                    game.celebrationFrame = (game.celebrationFrame + 1) % totalFrames;
+                    game.celebrationTimer = 0;
+                }
+            }
+            
+            requestAnimationFrame(animateCelebration);
+        }
         
         function showCelebration() {
             // Record score for this level
