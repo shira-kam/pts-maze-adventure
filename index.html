@@ -2158,9 +2158,11 @@ PIG 🐖`;
             }
             game.score = startingHearts;
             
-            // DON'T add starting hearts to cumulative score - cumulative should only track puzzle points
-            // (Starting hearts are level-specific, cumulative should be session-wide puzzle performance)
-            game.currentLevelStartingHeartsAdded = true;
+            // Add starting hearts to cumulative score for this level
+            if (!game.currentLevelStartingHeartsAdded) {
+                game.cumulativeScore += startingHearts;
+                game.currentLevelStartingHeartsAdded = true;
+            }
             
             // Update display
             const scoreText = `❤️ ${Math.max(0, game.score)} | 🖤 ${Math.max(0, game.cumulativeScore)}`;
