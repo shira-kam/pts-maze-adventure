@@ -625,6 +625,22 @@ Extract these functional areas to separate files:
 - Easier debugging and maintenance
 - Maintained single-page app functionality
 
+**Implementation Status**: 🔄 **PLANNED** - Will implement after completing current bug fixes
+
+### Current Development Priority (January 2025)
+**Strategy**: Fix functional bugs first, then tackle structural improvements
+
+**Immediate Tasks**:
+1. ✅ **Fix digraph puzzle similar sounds filtering** - Address ph/f/fl sound confusion in wrong answer generation
+2. ✅ **Fix boost mode modal conflict** - Prevent boost end modal from showing when user reaches endpoint during/before timer expiry (conflicts with celebration animation)
+
+**Next Phase** (After bug fixes):
+3. **Create unified design system** - Standardize buttons, text styles, colors, and modal components throughout UI
+4. **Extract CSS to styles.css** - Move all embedded CSS to external file (enhanced by design system)
+5. **Extract JS modules** - Modularize UI management, rendering, debug system, and progress tracking
+
+**Rationale**: Design system work before modularization ensures cleaner CSS extraction and better organized module boundaries. Bug fixes first prevent regressions during structural changes.
+
 ### Future Enhancements (Phase 3)
 1. **Configuration builder**: User-friendly JSON generation tool
 2. **Advanced features**: Additional puzzle types, accessibility improvements
