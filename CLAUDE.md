@@ -49,7 +49,7 @@ The game features a fully dynamic character system that supports multiple playab
 - **Movement sprite**: 6-frame sprite sheet (960x160 pixels, SVG or PNG)
 - **Celebration sprites**: Per-level celebration animations (PNG sprite sheets)
 - **Game over sprite**: Character-specific game over animation
-- **Bonus sprites**: Rocket boost mode sprites for levels 9-10
+- **Bonus sprites**: Rocket boost mode sprites for levels with bonus features (configured in game-config.json)
 
 ### Adding New Characters
 To add a new character, simply:
@@ -206,6 +206,8 @@ All puzzles share common characteristics:
 
 ### Current Puzzle Types
 
+**Important**: Puzzle types are **dynamically assigned to levels** via `game-config.json`. There are no hardcoded level-to-puzzle mappings. Each level's `grid.csv` file contains puzzle type codes that determine which puzzles appear in that level.
+
 #### 1. Word Emoji Matching
 - **Grid Code**: "we"
 - **Texture**: `we.png`
@@ -229,7 +231,7 @@ All puzzles share common characteristics:
 - **Mechanics**: Show 2-letter combination, select emoji with that sound
 - **Audio**: Speaker button for pronunciation hints
 - **Data Sources**: `digraph-sounds.txt`, `digraph-emojis.txt`, `emoji-names.txt`
-- **Logic**: Avoids similar-sounding wrong answers (e.g., PH vs F sounds)
+- **Logic**: Avoids similar-sounding wrong answers (SK/SC pairs, PH vs FL/FR sounds)
 
 #### 4. Number Line Puzzle
 - **Grid Code**: "nl"
@@ -269,7 +271,7 @@ All puzzles share common characteristics:
 
 ### Debug Mode (Shift+Ctrl+D)
 - **Dynamic Character Selection**: Choose any character from config for testing
-- **Level jumping**: Direct access to any level 1-10
+- **Level jumping**: Direct access to any configured level
 - **Celebration Animation Testing**: Preview and control celebration sprites for all levels
 - **Difficulty Selection**: Test with Easy, Neutral, or Hard mode settings
 - **Real-time Testing**: All debug features respect selected character and difficulty
@@ -454,7 +456,7 @@ Target workflow:
 **Character System Features Implemented**:
 - ✅ **Movement sprites**: Character-specific sprite loading (SVG and PNG support)
 - ✅ **Celebration animations**: Unique celebrate.png sheets per character per level
-- ✅ **Bonus sprites**: Character-specific bonus sprites for levels 9-10
+- ✅ **Bonus sprites**: Character-specific bonus sprites for levels with bonus features
 - ✅ **Debug integration**: Character selection in debug mode with celebration testing
 - ✅ **Personalization**: Different characters available (PT the Elephant, Enderman)
 
