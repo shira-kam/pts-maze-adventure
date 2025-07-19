@@ -2606,9 +2606,18 @@ PIG 🐖`;
                     console.log('Rocket boost active - walls removed');
                 } else {
                     // End boost mode
-                    game.player.x = game.playerStartPosition.x;
-                    game.player.y = game.playerStartPosition.y;
+                    // Store current position
+                    const currentX = game.player.x;
+                    const currentY = game.player.y;
+                    
+                    // Restore walls first
                     restoreWalls();
+                    
+                    // Then find best position for PT (current position if valid, or nearest open square)
+                    const newPosition = findNearestOpenSquareAfterRestore(currentX, currentY);
+                    game.player.x = newPosition.x;
+                    game.player.y = newPosition.y;
+                    
                     currentMovementSprites = characterSprites.movement;
                     
                     const gameContainer = document.getElementById('gameContainer');
@@ -2620,7 +2629,10 @@ PIG 🐖`;
                     game.boostTransitionState = 'normal';
                     updateRocketDisplay();
                     
-                    console.log('Rocket boost ended - walls restored, player teleported to start');
+                    const movedText = (newPosition.x === game.playerStartPosition.x && newPosition.y === game.playerStartPosition.y) 
+                        ? 'player teleported to start' 
+                        : `player moved to nearest open square (${newPosition.x}, ${newPosition.y})`;
+                    console.log(`Rocket boost ended - walls restored, ${movedText}`);
                 }
             };
             
@@ -2706,6 +2718,51 @@ PIG 🐖`;
                 }
                 return true;
             });
+        }
+        
+        function isPositionWalkable(x, y) {
+            // Check if a position is currently walkable (has a path)
+            const gridX = Math.round(x / 40) * 40;
+            const gridY = Math.round(y / 40) * 40;
+            
+            return game.paths.some(path => path.x === gridX && path.y === gridY);
+        }
+        
+        function findNearestOpenSquareAfterRestore(startX, startY) {
+            // Snap to grid
+            const gridStartX = Math.round(startX / 40) * 40;
+            const gridStartY = Math.round(startY / 40) * 40;
+            
+            // If current position is walkable after wall restoration, stay there
+            if (isPositionWalkable(gridStartX, gridStartY)) {
+                console.log(`PT staying at current position: (${gridStartX}, ${gridStartY})`);
+                return { x: gridStartX, y: gridStartY };
+            }
+            
+            // Otherwise, search in expanding squares for nearest walkable position
+            const maxDistance = Math.max(game.originalMaze.length, game.originalMaze[0]?.length || 0);
+            
+            for (let distance = 1; distance <= maxDistance; distance++) {
+                // Check all positions at this distance
+                for (let dx = -distance; dx <= distance; dx++) {
+                    for (let dy = -distance; dy <= distance; dy++) {
+                        // Only check positions on the border of this distance square
+                        if (Math.abs(dx) !== distance && Math.abs(dy) !== distance) continue;
+                        
+                        const checkX = gridStartX + (dx * 40);
+                        const checkY = gridStartY + (dy * 40);
+                        
+                        if (isPositionWalkable(checkX, checkY)) {
+                            console.log(`Found nearest open square at distance ${distance}: (${checkX}, ${checkY})`);
+                            return { x: checkX, y: checkY };
+                        }
+                    }
+                }
+            }
+            
+            // Fallback to start position if no open square found
+            console.warn('No open square found, falling back to start position');
+            return { x: game.playerStartPosition.x, y: game.playerStartPosition.y };
         }
         
         
