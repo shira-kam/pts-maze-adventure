@@ -2940,6 +2940,16 @@ PIG 🐖`;
             }
         });
         
+        // Design system keyboard listener (Shift + Ctrl + S)
+        document.addEventListener('keydown', (e) => {
+            if (e.shiftKey && e.ctrlKey && (e.key === 'S' || e.key === 's')) {
+                e.preventDefault();
+                window.open('design-system.html', '_blank');
+                console.log('🎨 Design System opened in new tab');
+                return;
+            }
+        });
+        
         // Global arrow key prevention to stop page scrolling
         document.addEventListener('keydown', (e) => {
             // Always prevent arrow keys from scrolling the page
