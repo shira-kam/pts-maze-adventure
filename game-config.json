@@ -86,7 +86,6 @@
     "letter_identification": {
       "doorType": "li",
       "texture": "li.png",
-      "letters": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
       "tracking": {
         "preventRepetition": true,
         "maxAttempts": 3,
@@ -425,10 +424,9 @@
       }
     },
     "11": {
-      "playable": true,
+      "playable": false,
       "puzzles": {
         "letter_identification": {
-          "letters": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
           "tracking": {
             "preventRepetition": true,
             "usedLetters": [],
@@ -447,7 +445,7 @@
       },
       "assets": {
         "celebration": {
-          "frames": 40,
+          "frames": 53,
           "frameWidth": 200,
           "frameHeight": 200
         },

@@ -52,12 +52,63 @@ class LetterIdentificationPuzzle {
             'Z': { sound: 'zuh', lowercase: 'z' }
         };
         
-        // Get letters to use for this level (fallback to all letters if not specified)
-        this.availableLetters = config.letters || Object.keys(this.letterData);
+        // Get letters to use for this level - start with all 26 letters by default
+        const allLetters = Object.keys(this.letterData);
+        
+        if (config.excludeLetters && Array.isArray(config.excludeLetters)) {
+            // Remove excluded letters
+            this.availableLetters = allLetters.filter(letter => 
+                !config.excludeLetters.includes(letter)
+            );
+            console.log(`Excluding letters: ${config.excludeLetters.join(', ')}`);
+        } else if (config.letters && Array.isArray(config.letters)) {
+            // Legacy support: if specific letters are configured, use those
+            this.availableLetters = config.letters;
+            console.log(`Using legacy letter list: ${config.letters.join(', ')}`);
+        } else {
+            // Default: use all 26 letters
+            this.availableLetters = allLetters;
+            console.log('Using all 26 letters by default');
+        }
+        
+        // Initialize selection state
+        this.selectedLowercase = null;
+        this.selectedSound = null;
+        
+        // Audio cache for better performance
+        this.audioCache = {};
+        this.preloadAudio();
         
         console.log(`Level ${level} letter identification puzzle initialized`);
         console.log(`Letter tracking enabled: ${this.preventRepetition}`);
         console.log(`Available letters: ${this.availableLetters.length}`);
+    }
+
+    /**
+     * Preload audio files for better performance
+     * Load all 26 letters since wrong answers can come from full alphabet
+     */
+    preloadAudio() {
+        // Always preload all 26 letters, not just the level's available letters
+        const allLetters = Object.keys(this.letterData);
+        
+        allLetters.forEach(letter => {
+            const audio = new Audio(`Phonics/${letter.toLowerCase()}.mp3`);
+            audio.preload = 'auto';
+            
+            // Add error handling to detect loading issues
+            audio.addEventListener('canplaythrough', () => {
+                console.log(`Audio loaded successfully: ${letter}.mp3`);
+            });
+            
+            audio.addEventListener('error', (e) => {
+                console.error(`Failed to load audio: ${letter}.mp3`, e);
+            });
+            
+            this.audioCache[letter] = audio;
+        });
+        
+        console.log('Preloading audio for all 26 letters');
     }
 
     /**
@@ -71,11 +122,22 @@ class LetterIdentificationPuzzle {
                 !this.usedLetters.includes(letter)
             );
             
-            // If all letters have been used, reset tracking
+            // If all letters have been used, reset tracking only after covering all 26 letters
             if (lettersToUse.length === 0) {
-                console.log('All letters used - resetting letter tracking for this level');
-                this.usedLetters.length = 0; // Clear array
-                lettersToUse = this.availableLetters;
+                if (this.usedLetters.length >= 26) {
+                    console.log('All 26 letters covered - resetting letter tracking for this level');
+                    this.usedLetters.length = 0; // Clear array
+                    lettersToUse = this.availableLetters;
+                } else {
+                    // If we haven't covered all 26 letters, expand to full alphabet
+                    console.log('Expanding to full alphabet to ensure complete coverage');
+                    const allLetters = Object.keys(this.letterData);
+                    lettersToUse = allLetters.filter(letter => !this.usedLetters.includes(letter));
+                    if (lettersToUse.length === 0) {
+                        this.usedLetters.length = 0;
+                        lettersToUse = allLetters;
+                    }
+                }
             }
         }
 
@@ -108,8 +170,7 @@ class LetterIdentificationPuzzle {
             lowercaseChoices: lowercaseChoices,
             soundChoices: soundChoices,
             correctLowercaseIndex: lowercaseChoices.indexOf(letterInfo.lowercase),
-            correctSoundIndex: soundChoices.indexOf(letterInfo.sound),
-            step: 1 // Start with step 1 (lowercase selection)
+            correctSoundIndex: soundChoices.indexOf(letterInfo.sound)
         };
     }
 
@@ -126,162 +187,236 @@ class LetterIdentificationPuzzle {
     }
 
     /**
-     * Generate wrong sound options
+     * Generate wrong sound options with similar sound filtering
      */
     generateWrongSoundOptions(correctSound, correctLetter) {
-        const allSounds = Object.values(this.letterData).map(data => data.sound);
-        const wrongSounds = allSounds.filter(sound => sound !== correctSound);
+        // Define letters with similar sounds that should be avoided
+        const similarSounds = {
+            'G': ['J'],
+            'C': ['S', 'K'], 
+            'K': ['C'],
+            'I': ['Y'],
+            'Y': ['I'],
+            'J': ['G'],
+            'S': ['C'],
+        };
+        
+        // Get letters to avoid for this correct letter
+        const avoidLetters = similarSounds[correctLetter] || [];
+        
+        // Get all available sounds, excluding the correct one and similar-sounding ones
+        const allSounds = [];
+        Object.keys(this.letterData).forEach(letter => {
+            const sound = this.letterData[letter].sound;
+            if (sound !== correctSound && !avoidLetters.includes(letter)) {
+                allSounds.push(sound);
+            }
+        });
         
         // Shuffle and pick 2 random wrong sounds
-        const shuffled = wrongSounds.sort(() => Math.random() - 0.5);
+        const shuffled = allSounds.sort(() => Math.random() - 0.5);
         return shuffled.slice(0, 2);
     }
 
     /**
-     * Speak the letter sound
+     * Play letter sound from audio file
      */
     speakSound(soundText) {
-        if ('speechSynthesis' in window) {
-            // Cancel any ongoing speech
-            window.speechSynthesis.cancel();
+        console.log('speakSound called with:', soundText);
+        
+        // Find the letter that corresponds to this sound
+        let letterForSound = null;
+        Object.keys(this.letterData).forEach(letter => {
+            if (this.letterData[letter].sound === soundText) {
+                letterForSound = letter;
+            }
+        });
+        
+        console.log('Letter for sound:', letterForSound);
+        console.log('Audio cache has letter:', letterForSound ? !!this.audioCache[letterForSound] : 'N/A');
+        
+        if (letterForSound && this.audioCache[letterForSound]) {
+            const audio = this.audioCache[letterForSound];
+            console.log('Audio readyState:', audio.readyState);
+            console.log('Audio networkState:', audio.networkState);
             
-            const utterance = new SpeechSynthesisUtterance(soundText);
-            utterance.rate = 0.8; // Slightly slower for clarity
-            utterance.pitch = 1.0;
-            utterance.volume = 1.0;
+            // Stop any currently playing audio
+            Object.values(this.audioCache).forEach(a => {
+                a.pause();
+                a.currentTime = 0;
+            });
             
-            window.speechSynthesis.speak(utterance);
-            console.log('Speaking letter sound:', soundText);
+            // Play the requested sound
+            audio.currentTime = 0;
+            audio.play().then(() => {
+                console.log('Audio playback started successfully for:', letterForSound);
+            }).catch(error => {
+                console.error('Audio playback failed for:', letterForSound, error);
+                // Fallback to speech synthesis
+                this.fallbackToSpeech(soundText);
+            });
         } else {
-            console.warn('Speech synthesis not supported in this browser');
-            alert(`Sound: ${soundText}`);
+            console.log('Using fallback speech synthesis - letterForSound:', letterForSound, 'audioCache entry exists:', !!this.audioCache[letterForSound]);
+            // Fallback to speech synthesis if audio file not found
+            this.fallbackToSpeech(soundText);
         }
     }
 
     /**
-     * Create the letter identification HTML for step 1 (lowercase selection)
+     * Fallback to speech synthesis if audio fails
      */
-    createStep1HTML(problem) {
-        return `
-            <div style="text-align: center; margin: 20px 0;">
-                <div style="font-size: 24px; margin-bottom: 20px; color: #2E8B57;">
-                    Select the lowercase letter:
-                </div>
-                
-                <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
-                    ${problem.lowercaseChoices.map(letter => `
-                        <button style="
-                            font-size: 48px;
-                            background: white;
-                            color: black;
-                            border: 3px solid #4CAF50;
-                            min-width: 120px;
-                            min-height: 100px;
-                            border-radius: 10px;
-                            cursor: pointer;
-                            transition: all 0.3s ease;
-                            font-family: 'Arial', sans-serif;
-                            font-weight: bold;
-                        " onmouseover="this.style.background='#4CAF50'; this.style.color='white';" 
-                           onmouseout="this.style.background='white'; this.style.color='black';"
-                           onclick="letterPuzzleInstance.checkStep1Answer('${letter}', this)">${letter}</button>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-    }
-
-    /**
-     * Create the letter identification HTML for step 2 (sound selection)
-     */
-    createStep2HTML(problem) {
-        return `
-            <div style="text-align: center; margin: 20px 0;">
-                <div style="font-size: 24px; margin-bottom: 20px; color: #2E8B57;">
-                    Now select the sound this letter makes:
-                </div>
-                
-                <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px;">
-                    ${problem.soundChoices.map(sound => `
-                        <div style="display: flex; flex-direction: column; align-items: center;">
-                            <button onclick="letterPuzzleInstance.speakSound('${sound}')" style="
-                                background: #2196F3;
-                                color: white;
-                                border: none;
-                                padding: 10px 15px;
-                                font-size: 16px;
-                                border-radius: 20px;
-                                cursor: pointer;
-                                margin-bottom: 10px;
-                            ">🔊 ${sound}</button>
-                            <button style="
-                                font-size: 24px;
-                                background: white;
-                                color: black;
-                                border: 3px solid #4CAF50;
-                                min-width: 100px;
-                                min-height: 60px;
-                                border-radius: 10px;
-                                cursor: pointer;
-                                transition: all 0.3s ease;
-                                font-family: 'Arial', sans-serif;
-                            " onmouseover="this.style.background='#4CAF50'; this.style.color='white';" 
-                               onmouseout="this.style.background='white'; this.style.color='black';"
-                               onclick="letterPuzzleInstance.checkStep2Answer('${sound}', this)">${sound}</button>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-    }
-
-    /**
-     * Check step 1 answer (lowercase letter selection)
-     */
-    checkStep1Answer(selectedLetter, buttonElement) {
-        const result = document.getElementById('puzzleResult');
-        const isCorrect = selectedLetter === this.currentProblem.correctLowercase;
-        
-        if (isCorrect) {
-            // Correct lowercase letter selected!
-            result.innerHTML = '👍';
-            result.style.color = 'green';
-            result.style.fontSize = '48px';
-            
-            // Mark step 1 as complete
-            this.step1Complete = true;
-            
-            // Move to step 2 after a short delay
-            setTimeout(() => {
-                result.innerHTML = '';
-                this.showStep2();
-            }, 1000);
+    fallbackToSpeech(soundText) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(soundText);
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            window.speechSynthesis.speak(utterance);
+            console.log('Fallback speech synthesis for:', soundText);
         } else {
-            // Wrong lowercase letter
-            result.innerHTML = '👎';
-            result.style.color = 'red';
+            console.warn('Audio and speech synthesis not available');
+        }
+    }
+
+    /**
+     * Handle lowercase letter selection (radio button behavior)
+     */
+    selectLowercase(selectedLetter, buttonElement) {
+        // Clear previous selection
+        document.querySelectorAll('.lowercase-button').forEach(btn => {
+            btn.style.background = 'white';
+            btn.style.color = 'black';
+        });
+        
+        // Select the clicked button
+        buttonElement.style.background = '#4CAF50';
+        buttonElement.style.color = 'white';
+        
+        // Store selection
+        this.selectedLowercase = selectedLetter;
+        
+        // Update submit button state
+        this.updateSubmitButton();
+        
+        console.log(`Selected lowercase: ${selectedLetter}`);
+    }
+
+    /**
+     * Handle sound selection (radio button behavior)
+     */
+    selectSound(soundIndex, buttonElement) {
+        // Play the sound
+        const sound = this.currentProblem.soundChoices[soundIndex];
+        this.speakSound(sound);
+        
+        // Clear previous selection
+        document.querySelectorAll('.sound-button').forEach(btn => {
+            btn.style.background = 'white';
+            btn.style.color = 'black';
+        });
+        
+        // Select the clicked button
+        buttonElement.style.background = '#4CAF50';
+        buttonElement.style.color = 'white';
+        
+        // Store selection
+        this.selectedSound = sound;
+        
+        // Update submit button state
+        this.updateSubmitButton();
+        
+        console.log(`Selected sound: ${sound}`);
+    }
+
+    /**
+     * Update submit button enabled/disabled state
+     */
+    updateSubmitButton() {
+        const submitButton = document.querySelector('.submit-button');
+        if (submitButton) {
+            const bothSelected = this.selectedLowercase && this.selectedSound;
+            if (bothSelected) {
+                // Enable submit button
+                submitButton.style.background = '#FF9800';
+                submitButton.style.opacity = '1';
+                submitButton.style.cursor = 'pointer';
+                submitButton.disabled = false;
+            } else {
+                // Disable submit button
+                submitButton.style.background = '#CCCCCC';
+                submitButton.style.opacity = '0.5';
+                submitButton.style.cursor = 'not-allowed';
+                submitButton.disabled = true;
+            }
+        }
+    }
+
+    /**
+     * Submit answers and check results
+     */
+    submitAnswers() {
+        if (!this.selectedLowercase || !this.selectedSound) {
+            // Show message if not both selections made
+            const result = document.getElementById('puzzleResult');
+            result.innerHTML = '❓';
+            result.style.color = 'orange';
             result.style.fontSize = '48px';
             
-            // Deduct points based on difficulty mode
-            this.handleWrongAnswer();
-            
-            // Clear result after delay
             setTimeout(() => {
                 result.innerHTML = '';
                 result.style.fontSize = '';
-            }, 1500);
+            }, 2000);
+            return;
         }
-    }
 
-    /**
-     * Check step 2 answer (sound selection)
-     */
-    checkStep2Answer(selectedSound, buttonElement) {
-        const result = document.getElementById('puzzleResult');
-        const isCorrect = selectedSound === this.currentProblem.correctSound;
+        const lowercaseCorrect = this.selectedLowercase === this.currentProblem.correctLowercase;
+        const soundCorrect = this.selectedSound === this.currentProblem.correctSound;
         
-        if (isCorrect) {
-            // Correct sound selected! Puzzle complete!
+        // Show feedback on lowercase buttons and disable wrong ones
+        document.querySelectorAll('.lowercase-button').forEach(btn => {
+            const letter = btn.textContent;
+            if (letter === this.selectedLowercase) {
+                if (lowercaseCorrect) {
+                    // Show thumbs up for correct answer
+                    btn.innerHTML = `${letter} 👍`;
+                    btn.style.background = '#4CAF50';
+                } else {
+                    // For wrong answer: disable, make gray, remove thumbs down
+                    btn.innerHTML = letter; // Just the letter, no thumbs down
+                    btn.style.background = '#CCCCCC'; // Gray instead of red
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                    btn.onclick = null;
+                }
+            }
+        });
+        
+        // Show feedback on sound buttons and disable wrong ones
+        document.querySelectorAll('.sound-button').forEach((btn, index) => {
+            const sound = this.currentProblem.soundChoices[index];
+            if (sound === this.selectedSound) {
+                if (soundCorrect) {
+                    // Show thumbs up for correct answer
+                    btn.innerHTML = `${index + 1}🔊 👍`;
+                    btn.style.background = '#4CAF50';
+                } else {
+                    // For wrong answer: disable, make gray, remove thumbs down
+                    btn.innerHTML = `${index + 1}🔊`; // Just the number and speaker, no thumbs down
+                    btn.style.background = '#CCCCCC'; // Gray instead of red
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                    btn.onclick = null;
+                }
+            }
+        });
+
+        // Check if both are correct
+        if (lowercaseCorrect && soundCorrect) {
+            // Both correct! Puzzle complete!
+            const result = document.getElementById('puzzleResult');
             result.innerHTML = '👍';
             result.style.color = 'green';
             result.style.fontSize = '48px';
@@ -308,22 +443,54 @@ class LetterIdentificationPuzzle {
                 result.innerHTML = '';
                 result.style.fontSize = '';
                 game.puzzleActive = false;
-            }, 1500);
+            }, 2000);
         } else {
-            // Wrong sound
+            // One or both wrong
+            const result = document.getElementById('puzzleResult');
             result.innerHTML = '👎';
             result.style.color = 'red';
             result.style.fontSize = '48px';
             
-            // Deduct points based on difficulty mode
+            // Handle wrong answer scoring
             this.handleWrongAnswer();
             
-            // Clear result after delay
+            // Clear feedback and reset after delay
             setTimeout(() => {
                 result.innerHTML = '';
                 result.style.fontSize = '';
-            }, 1500);
+                this.resetSelections();
+            }, 3000);
         }
+    }
+
+    /**
+     * Reset selections and button states
+     */
+    resetSelections() {
+        this.selectedLowercase = null;
+        this.selectedSound = null;
+        
+        // Reset lowercase buttons (except disabled ones)
+        document.querySelectorAll('.lowercase-button').forEach((btn, index) => {
+            if (!btn.disabled) {
+                const letter = this.currentProblem.lowercaseChoices[index];
+                btn.innerHTML = letter;
+                btn.style.background = 'white';
+                btn.style.color = 'black';
+            }
+        });
+        
+        // Reset sound buttons (except disabled ones)
+        document.querySelectorAll('.sound-button').forEach((btn, index) => {
+            if (!btn.disabled) {
+                btn.innerHTML = `${index + 1}🔊`;
+                btn.style.background = 'white';
+                btn.style.color = 'black';
+            }
+        });
+        
+        // Update submit button state
+        this.updateSubmitButton();
     }
 
     /**
@@ -354,11 +521,71 @@ class LetterIdentificationPuzzle {
     }
 
     /**
-     * Show step 2 (sound selection)
+     * Create the complete puzzle HTML
      */
-    showStep2() {
-        const options = document.getElementById('puzzleOptions');
-        options.innerHTML = this.createStep2HTML(this.currentProblem);
+    createPuzzleHTML(problem) {
+        return `
+            <div style="text-align: center; margin: 20px 0;">
+                <!-- Lowercase letter options -->
+                <div style="margin-bottom: 30px;">
+                    <div style="display: flex; gap: 20px; justify-content: center;">
+                        ${problem.lowercaseChoices.map(letter => `
+                            <button class="lowercase-button" style="
+                                font-size: 48px;
+                                background: white;
+                                color: black;
+                                border: 3px solid #4CAF50;
+                                min-width: 120px;
+                                min-height: 100px;
+                                border-radius: 10px;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                font-family: 'Arial', sans-serif;
+                                font-weight: bold;
+                            " onclick="letterPuzzleInstance.selectLowercase('${letter}', this)">${letter}</button>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <!-- Sound options -->
+                <div style="margin-bottom: 30px;">
+                    <div style="display: flex; gap: 20px; justify-content: center;">
+                        ${problem.soundChoices.map((sound, index) => `
+                            <button class="sound-button" style="
+                                font-size: 32px;
+                                background: white;
+                                color: black;
+                                border: 3px solid #2196F3;
+                                min-width: 120px;
+                                min-height: 80px;
+                                border-radius: 10px;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                font-family: 'Arial', sans-serif;
+                                font-weight: bold;
+                            " onclick="letterPuzzleInstance.selectSound(${index}, this)">${index + 1}🔊</button>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <!-- Submit button -->
+                <div style="margin-top: 30px;">
+                    <button class="submit-button" onclick="letterPuzzleInstance.submitAnswers()" disabled style="
+                        font-size: 24px;
+                        background: #CCCCCC;
+                        opacity: 0.5;
+                        color: white;
+                        border: none;
+                        padding: 15px 30px;
+                        border-radius: 25px;
+                        cursor: not-allowed;
+                        font-weight: bold;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                    ">Submit</button>
+                </div>
+            </div>
+        `;
     }
 
     /**
@@ -377,7 +604,10 @@ class LetterIdentificationPuzzle {
         
         // Generate the problem
         this.currentProblem = this.generateProblem();
-        this.step1Complete = false;
+        
+        // Reset selections
+        this.selectedLowercase = null;
+        this.selectedSound = null;
         
         // Set title to the uppercase letter
         title.innerHTML = `<div style="font-size: 72px; font-weight: bold; color: #2E8B57; margin-bottom: 15px;">${this.currentProblem.letter}</div>`;
@@ -385,8 +615,8 @@ class LetterIdentificationPuzzle {
         // Clear question area
         question.innerHTML = '';
         
-        // Start with step 1 (lowercase selection)
-        options.innerHTML = this.createStep1HTML(this.currentProblem);
+        // Render the complete puzzle
+        options.innerHTML = this.createPuzzleHTML(this.currentProblem);
         
         // Store global reference for onclick handlers
         window.letterPuzzleInstance = this;
