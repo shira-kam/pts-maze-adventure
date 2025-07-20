@@ -425,7 +425,7 @@
       }
     },
     "11": {
-      "playable": false,
+      "playable": true,
       "puzzles": {
         "letter_identification": {
           "tracking": {
