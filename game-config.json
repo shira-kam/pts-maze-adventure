@@ -82,6 +82,16 @@
         "maxAttempts": 3,
         "trackingScope": "level"
       }
+    },
+    "letter_identification": {
+      "doorType": "li",
+      "texture": "li.png",
+      "letters": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
+      "tracking": {
+        "preventRepetition": true,
+        "maxAttempts": 3,
+        "trackingScope": "level"
+      }
     }
   },
   "levels": {
@@ -413,6 +423,40 @@
       "animation": {
         "frameDelay": 25
       }
+    },
+    "11": {
+      "playable": true,
+      "puzzles": {
+        "letter_identification": {
+          "letters": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        },
+        "multiplication_groups": {
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 25,
+            "minFactor": 2,
+            "maxFactor": 12,
+            "excludeOne": true
+          }
+        }
+      },
+      "assets": {
+        "celebration": {
+          "frames": 40,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": true
+      },
+      "animation": {
+        "frameDelay": 25
+      }
     }
   },
   "characters": {
@@ -423,7 +467,8 @@
       "gameOver": "PT-game-over.png",
       "bonus": {
         "9": "level-9/PT-Bonus-Sprite.svg",
-        "10": "level-10/PT-Bonus-Sprite.svg"
+        "10": "level-10/PT-Bonus-Sprite.svg",
+        "11": "level-11/PT-Bonus-Sprite.svg"
       },
       "description": "A friendly elephant who loves solving puzzles"
     },
@@ -434,7 +479,8 @@
       "gameOver": "Enderman-game-over.png",
       "bonus": {
         "9": "level-9/Enderman-Bonus-Sprite.svg",
-        "10": "level-10/Enderman-Bonus-Sprite.svg"
+        "10": "level-10/Enderman-Bonus-Sprite.svg",
+        "11": "level-11/Enderman-Bonus-Sprite.svg"
       },
       "description": "A mysterious dark figure from another dimension"
     }

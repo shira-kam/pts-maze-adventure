@@ -940,6 +940,7 @@
     <script src="division-puzzle.js"></script>
     <script src="digraph-puzzle.js"></script>
     <script src="multiplication-groups-puzzle.js"></script>
+    <script src="letter-identification.js"></script>
     
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -1034,6 +1035,11 @@
                             break;
                         case 'mg':
                             doors.push({ x, y, type: 'multiplication_groups', open: false, color: '#FF6B6B' });
+                            // Add path under door for walkability
+                            paths.push({ x, y, width: 40, height: 40 });
+                            break;
+                        case 'li':
+                            doors.push({ x, y, type: 'letter_identification', open: false, color: '#4ECDC4' });
                             // Add path under door for walkability
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
@@ -2860,6 +2866,9 @@ PIG 🐖`;
                         case 'mg':
                             doorTexture = textures.mg;
                             break;
+                        case 'li':
+                            doorTexture = textures.li;
+                            break;
                         default:
                             doorTexture = null;
                             break;
@@ -3066,6 +3075,12 @@ PIG 🐖`;
                             if (!usedModular) {
                                 showPuzzle(blockingDoor.type, blockingDoor);
                             }
+                        } else if (blockingDoor.type === 'letter_identification') {
+                            // Use modular system for letter identification puzzles
+                            const usedModular = showLetterIdentificationPuzzle(blockingDoor);
+                            if (!usedModular) {
+                                showPuzzle(blockingDoor.type, blockingDoor);
+                            }
                         } else if (blockingDoor.type === 'division_visual') {
                             // Use modular system for division puzzles
                             const usedModular = showDivisionPuzzle(blockingDoor);
@@ -3167,6 +3182,18 @@ PIG 🐖`;
                 console.log(`Using modular multiplication groups puzzle for door type: ${door.type}`);
                 const puzzle = new MultiplicationGroupsPuzzle(door);
                 puzzle.showModal();
+                return true; // Indicates modular system was used
+            }
+            
+            return false; // Fall back to original system
+        }
+
+        function showLetterIdentificationPuzzle(door) {
+            // Only handle letter_identification door type
+            if (door.type === 'letter_identification') {
+                console.log(`Using modular letter identification puzzle for door type: ${door.type}`);
+                const puzzle = new LetterIdentificationPuzzle(door);
+                puzzle.render();
                 return true; // Indicates modular system was used
             }
             
