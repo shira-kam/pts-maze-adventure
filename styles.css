@@ -9,14 +9,14 @@
   /* === COLOR PALETTE === */
   
   /* Primary Brand Colors */
-  --color-primary: #4CAF50;           /* Main green */
-  --color-primary-hover: #45a049;     /* Hover green */
-  --color-primary-dark: #2E8B57;      /* Dark green for headers */
-  --color-primary-light: #81C784;     /* Light green variant */
+  --color-primary: #005F0A;           /* Main green */
+  --color-primary-hover: #002D04;     /* Hover green */
+  --color-primary-dark: #FC4000;      /* Orange for headers */
+  --color-primary-light: #FFAF1C;     /* Light yellow variant */
   
   /* Secondary Colors */
-  --color-secondary: #2196F3;         /* Blue for special actions */
-  --color-secondary-hover: #1976D2;   /* Blue hover */
+  --color-secondary: #013089;         /* Blue for special actions */
+  --color-secondary-hover: #00215F;   /* Blue hover */
   
   /* Status Colors */
   --color-success: #4CAF50;           /* Success green */
@@ -48,7 +48,7 @@
   /* === TYPOGRAPHY === */
   
   /* Font Families */
-  --font-family-primary: 'Comic Sans MS', cursive, sans-serif;
+  --font-family-primary: 'Helvetica', 'Arial', sans-serif;
   --font-family-monospace: 'Courier New', monospace;
   
   /* Font Sizes */

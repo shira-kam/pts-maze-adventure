@@ -360,18 +360,11 @@
             "maxAnswer": 10
           }
         },
-        "number_line": {
-          "operations": ["addition", "subtraction"],
-          "numberLine": {
-            "length": 12,
-            "minA": 1,
-            "maxA": 8,
-            "minB": 1,
-            "maxB": 10,
-            "minC": 1,
-            "maxC": 11,
-            "maxResult": 12,
-            "equationType": "triple_add"
+        "word_emoji_matching": {
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
           }
         }
       },
