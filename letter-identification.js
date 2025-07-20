@@ -193,12 +193,11 @@ class LetterIdentificationPuzzle {
         // Define letters with similar sounds that should be avoided
         const similarSounds = {
             'G': ['J'],
-            'C': ['S', 'K'], 
-            'K': ['C'],
+            'C': ['S', 'K', 'Q'], 
+            'K': ['C', 'Q'],
             'I': ['Y'],
             'Y': ['I'],
-            'J': ['G'],
-            'S': ['C'],
+            'Q': ['C', 'K'],
         };
         
         // Get letters to avoid for this correct letter

@@ -175,7 +175,8 @@
             "maxA": 11,
             "minB": 1,
             "maxB": 11,
-            "maxResult": 12          }
+            "maxResult": 12
+          }
         },
         "word_emoji_matching": {
           "tracking": {
@@ -432,28 +433,19 @@
             "usedLetters": [],
             "trackingScope": "level"
           }
-        },
-        "multiplication_groups": {
-          "operations": ["multiplication"],
-          "multiplication": {
-            "maxProduct": 25,
-            "minFactor": 2,
-            "maxFactor": 12,
-            "excludeOne": true
-          }
         }
       },
       "assets": {
         "celebration": {
-          "frames": 53,
+          "frames": 54,
           "frameWidth": 200,
           "frameHeight": 200
         },
         "hearts": true,
-        "bonus": true
+        "bonus": false
       },
       "animation": {
-        "frameDelay": 25
+        "frameDelay": 20
       }
     }
   },
@@ -465,8 +457,7 @@
       "gameOver": "PT-game-over.png",
       "bonus": {
         "9": "level-9/PT-Bonus-Sprite.svg",
-        "10": "level-10/PT-Bonus-Sprite.svg",
-        "11": "level-11/PT-Bonus-Sprite.svg"
+        "10": "level-10/PT-Bonus-Sprite.svg"
       },
       "description": "A friendly elephant who loves solving puzzles"
     },
@@ -477,8 +468,7 @@
       "gameOver": "Enderman-game-over.png",
       "bonus": {
         "9": "level-9/Enderman-Bonus-Sprite.svg",
-        "10": "level-10/Enderman-Bonus-Sprite.svg",
-        "11": "level-11/Enderman-Bonus-Sprite.svg"
+        "10": "level-10/Enderman-Bonus-Sprite.svg"
       },
       "description": "A mysterious dark figure from another dimension"
     }
