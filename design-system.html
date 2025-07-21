@@ -370,10 +370,56 @@
             
             <h3 class="text-lg font-bold mb-md">Game-Specific Cards</h3>
             
-            <!-- Level Selection Cards (Current Game Style) -->
-            <h4 class="text-base font-bold mb-md mt-lg">Level Selection Cards (Current Game Style)</h4>
+            <!-- New Level Selection Design -->
+            <h4 class="text-base font-bold mb-md mt-lg">New Level Selection Design (200x200px)</h4>
             <div class="interactive-demo">
-                <p class="text-sm text-secondary mb-md">These show exactly how level cards look in the current game:</p>
+                <p class="text-sm text-secondary mb-md">New level button design with white top half for level number and bottom half showing puzzle textures:</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; justify-items: center;">
+                    <button class="level-button-new">
+                        <div class="level-button-top">
+                            <div class="level-number">1</div>
+                        </div>
+                        <div class="level-button-bottom">
+                            <div class="puzzle-texture" style="background-image: url('level-1/nl.png');"></div>
+                            <div class="puzzle-texture" style="background-image: url('level-1/we.png');"></div>
+                        </div>
+                    </button>
+                    <button class="level-button-new">
+                        <div class="level-button-top">
+                            <div class="level-number">2</div>
+                        </div>
+                        <div class="level-button-bottom">
+                            <div class="puzzle-texture" style="background-image: url('level-2/nl.png');"></div>
+                            <div class="puzzle-texture" style="background-image: url('level-2/we.png');"></div>
+                        </div>
+                    </button>
+                    <button class="level-button-new">
+                        <div class="level-button-top">
+                            <div class="level-number">11</div>
+                        </div>
+                        <div class="level-button-bottom">
+                            <div class="puzzle-texture" style="background-image: url('level-11/li.png');"></div>
+                            <div class="puzzle-texture" style="background-image: url('level-11/li.png');"></div>
+                        </div>
+                    </button>
+                    <button class="level-button-new completed">
+                        <div class="level-button-top">
+                            <div class="level-number">5</div>
+                        </div>
+                        <div class="level-button-bottom">
+                            <div class="puzzle-texture" style="background-image: url('level-5/ds.png');"></div>
+                            <div class="puzzle-texture" style="background-image: url('level-5/nl.png');"></div>
+                        </div>
+                        <div class="completion-checkmark">✓</div>
+                    </button>
+                </div>
+                <p class="text-sm text-secondary mt-md">Features: 200x200px size, rounded corners, white top half with level number, bottom half shows two puzzle textures side by side</p>
+            </div>
+            
+            <!-- Current Level Selection Design for Comparison -->
+            <h4 class="text-base font-bold mb-md mt-lg">Current Level Selection Design (For Comparison)</h4>
+            <div class="interactive-demo">
+                <p class="text-sm text-secondary mb-md">Current level button design for comparison:</p>
                 <div class="grid-4">
                     <button class="level-button">
                         <div style="font-size: 18px; margin-bottom: 8px; color: #2E8B57;">Level 1</div>
@@ -519,6 +565,90 @@
                     background-size: 120px 120px;
                     background-repeat: no-repeat;
                     background-position: center;
+                }
+                
+                /* New Level Selection Button Design */
+                .level-button-new {
+                    width: 200px;
+                    height: 200px;
+                    border: 6px solid #1565C0;
+                    border-radius: 20px;
+                    padding: 0;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    font-family: inherit;
+                    background: none;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                    position: relative;
+                }
+                
+                .level-button-new:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+                    border-color: #0D47A1;
+                }
+                
+                .level-button-new:active {
+                    transform: translateY(-2px);
+                }
+                
+                .level-button-top {
+                    width: 100%;
+                    height: 100px;
+                    background: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                
+                .level-number {
+                    font-size: 40px;
+                    font-weight: bold;
+                    color: #1565C0;
+                }
+                
+                .level-button-bottom {
+                    width: 100%;
+                    height: 94px;
+                    display: flex;
+                    background: #f8f9fa;
+                }
+                
+                .puzzle-texture {
+                    width: 50%;
+                    height: 100%;
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                }
+                
+                .level-button-new.completed {
+                    opacity: 0.8;
+                }
+                
+                .level-button-new.completed .level-button-top,
+                .level-button-new.completed .level-button-bottom {
+                    opacity: 0.6;
+                }
+                
+                .completion-checkmark {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    font-size: 70px;
+                    color: #000000;
+                    font-weight: bold;
+                    z-index: 10;
+                    pointer-events: none;
+                }
+                
+                .level-button-new.completed:hover {
+                    transform: none;
+                    box-shadow: none;
+                    cursor: not-allowed;
                 }
                 </style>
             </div>
