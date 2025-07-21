@@ -4,76 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elephant Maze Adventure</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=4">
     <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background: linear-gradient(135deg, #87CEEB, #98FB98);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
         
-        h1 {
-            color: #2E8B57;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 10px;
-        }
-        
-        #gameContainer {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            min-height: 600px;
-            transition: background 0.3s ease;
-        }
-        
-        #gameContainer.rocket-boost {
-            background: linear-gradient(135deg, #FF4500, #FF8C00, #FFD700);
-        }
-        
-        #gameContainer.rocket-boost.blinking {
-            animation: rocketBlink 0.5s infinite alternate;
-        }
-        
-        @keyframes rocketBlink {
-            0% { background: linear-gradient(135deg, #FF4500, #FF8C00, #FFD700); }
-            100% { background: white; }
-        }
-        
-        #gameCanvas {
-            border: 3px solid #2E8B57;
-            border-radius: 10px;
-            display: block;
-        }
-        
-        #gameInfo {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        #score {
-            color: #4169E1;
-        }
-        
-        #level {
-            color: #4169E1;
-        }
-        
-        /* Black text during rocket boost for better visibility */
-        #gameContainer.rocket-boost #score {
-            color: #000000;
-        }
-        
-        #gameContainer.rocket-boost #level {
-            color: #000000;
-        }
         
         #puzzleModal {
             display: none;
@@ -153,323 +86,8 @@
         }
         
         
-        #celebrationScreen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #87CEEB;
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        #celebrationContent {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        #celebrationSprite {
-            margin-top: 20px;
-        }
-        
-        #playAgainBtn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            font-family: inherit;
-            font-weight: bold;
-        }
-        
-        #playAgainBtn:hover {
-            background: #45a049;
-        }
         
         
-        #debugScreen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 4000;
-            overflow-y: auto;
-            color: white;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-        }
-        
-        #debugContent {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        #debugTitle {
-            font-size: 32px;
-            color: #FFD700;
-            text-align: center;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        
-        .debug-section {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 2px solid #FFD700;
-        }
-        
-        .debug-section h3 {
-            color: #FFD700;
-            margin-top: 0;
-            font-size: 24px;
-        }
-        
-        .celebration-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .celebration-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            border: 1px solid #666;
-        }
-        
-        .celebration-item h4 {
-            color: #FFD700;
-            margin-top: 0;
-        }
-        
-        .celebration-preview {
-            width: 200px;
-            height: 200px;
-            border: 2px solid #FFD700;
-            margin: 10px auto;
-            background: #333;
-        }
-        
-        .debug-button {
-            background: #FFD700;
-            color: black;
-            border: none;
-            padding: 10px 20px;
-            margin: 5px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        .debug-button:hover {
-            background: #FFA500;
-        }
-        
-        #debugCloseBtn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #F44336;
-            color: white;
-            border: none;
-            padding: 15px 20px;
-            border-radius: 25px;
-            font-size: 18px;
-            cursor: pointer;
-            font-weight: bold;
-            z-index: 4001;
-        }
-        
-        #debugCloseBtn:hover {
-            background: #D32F2F;
-        }
-        
-        
-        #gameOverScreen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000000;
-            z-index: 3000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        #gameOverContent {
-            text-align: center;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
-        
-        #gameOverContent h1 {
-            font-size: 48px;
-            margin: 0;
-        }
-        
-        #gameOverSprite {
-            border: 2px solid #fff;
-            border-radius: 10px;
-        }
-        
-        #gameOverBtn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 25px 50px;
-            font-size: 28px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: bold;
-            min-width: 250px;
-        }
-        
-        #gameOverBtn:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-        }
-        
-        #seeScoreBtn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 25px 50px;
-            font-size: 28px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: bold;
-            min-width: 250px;
-        }
-        
-        #seeScoreBtn:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-        }
-        
-        #finalScoreScreen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #87CEEB, #98FB98);
-            z-index: 3500;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        #finalScoreContent {
-            text-align: center;
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            max-width: 600px;
-            min-width: 500px;
-        }
-        
-        #finalScoreTitle {
-            font-size: 36px;
-            color: #2E8B57;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .level-score-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            margin: 5px 0;
-            background: #f0f8ff;
-            border-radius: 10px;
-            border-left: 5px solid #4CAF50;
-        }
-        
-        .level-wall-block {
-            width: 30px;
-            height: 30px;
-            background-size: cover;
-            background-repeat: no-repeat;
-            border-radius: 3px;
-            margin-right: 10px;
-        }
-        
-        .level-score-item.special {
-            background: #fffacd;
-            border-left-color: #FFD700;
-        }
-        
-        .level-score-number {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2E8B57;
-        }
-        
-        .level-score-hearts {
-            font-size: 16px;
-        }
-        
-        #totalScoreSection {
-            margin-top: 30px;
-            padding: 20px;
-            background: #e6f3ff;
-            border-radius: 15px;
-            border: 3px solid #4CAF50;
-        }
-        
-        #totalScoreText {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2E8B57;
-            margin-bottom: 10px;
-        }
-        
-        #finalScoreBtn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 20px 40px;
-            font-size: 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            margin-top: 20px;
-            font-family: inherit;
-            font-weight: bold;
-        }
-        
-        #finalScoreBtn:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-        }
         
         
         
@@ -584,6 +202,14 @@
                     <!-- Celebration items will be generated dynamically by generateDebugCelebrationItems() -->
                 </div>
             </div>
+            
+            <div class="debug-section">
+                <h3>📊 Score Screen Testing</h3>
+                <p>Test final score screens without completing all levels:</p>
+                <button class="debug-button" onclick="closeDebugMode(); showFinalScore();" style="margin-right: 10px;">🏆 Test Final Score Screen</button>
+                <button class="debug-button" onclick="closeDebugMode(); showGameOverScore();">💀 Test Game Over Score</button>
+                <p style="font-size: 14px; color: #ccc; margin-top: 10px;">Note: These use current session data for score display</p>
+            </div>
         </div>
     </div>
     
@@ -603,10 +229,6 @@
                 <!-- Level scores will be populated here -->
             </div>
             
-            <div id="totalScoreSection">
-                <div id="totalScoreText">Total Score: 0 ♥️</div>
-                <p style="font-size: 16px; color: #666; margin: 5px 0;">Lives remaining across all levels</p>
-            </div>
             
             <button id="finalScoreBtn" onclick="restartFromFinalScore()">Play Again</button>
         </div>
@@ -2042,8 +1664,21 @@ PIG 🐖`;
         }
         
         function restartGame() {
-            // Stop game over animation
+            // Stop game over animation and any celebrations
             game.gameOverActive = false;
+            game.celebrating = false;
+            document.getElementById('celebrationScreen').style.display = 'none';
+            
+            // Reset all game data including cumulative score
+            game.levelScores = {};
+            game.deathLevel = null;
+            game.cumulativeScore = 0; // Reset cumulative score
+            game.gameSession = {
+                startTime: Date.now(),
+                levelsCompleted: 0,
+                totalScore: 0,
+                completedLevels: new Set()
+            };
             
             // Hide game over screen and show character selection
             document.getElementById('gameOverScreen').style.display = 'none';
@@ -2993,6 +2628,11 @@ PIG 🐖`;
         
         
         // Common component for generating level score displays
+        
+        } // Closes 'else' block from line 2690 (wrong answer handling)
+        } // Closes checkAnswer() function from line 2647
+        
+        // Score screen functions - moved to global scope for onclick accessibility
         function generateLevelScoreDisplay(maxLevel, deathLevel = null) {
             const container = document.getElementById('levelScoresContainer');
             container.innerHTML = '';
@@ -3055,11 +2695,13 @@ PIG 🐖`;
         }
         
         function showFinalScore() {
+            // Hide any other screens that might be showing
+            document.getElementById('celebrationScreen').style.display = 'none';
+            document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('levelSelectionScreen').style.display = 'none';
+            
             // Use common component to generate level score display (all playable levels)
             generateLevelScoreDisplay();
-            
-            // Hide total score section (we're showing it inline now)
-            document.getElementById('totalScoreSection').style.display = 'none';
             
             // Show the final score screen
             document.getElementById('finalScoreScreen').style.display = 'flex';
@@ -3069,13 +2711,19 @@ PIG 🐖`;
             // Hide final score screen
             document.getElementById('finalScoreScreen').style.display = 'none';
             
-            // Reset game session data
+            // Stop any celebration animations
+            game.celebrating = false;
+            document.getElementById('celebrationScreen').style.display = 'none';
+            
+            // Reset all game data including cumulative score
             game.levelScores = {};
             game.deathLevel = null;
+            game.cumulativeScore = 0; // Reset cumulative score
             game.gameSession = {
                 startTime: Date.now(),
                 levelsCompleted: 0,
-                totalScore: 0
+                totalScore: 0,
+                completedLevels: new Set()
             };
             
             // Show character selection to start over
@@ -3092,9 +2740,6 @@ PIG 🐖`;
             // Use common component to generate level score display (all playable levels, with death level indicator)
             generateLevelScoreDisplay(null, game.deathLevel);
             
-            // Hide total score section
-            document.getElementById('totalScoreSection').style.display = 'none';
-            
             // Change the button to "Try Again"
             const finalScoreBtn = document.getElementById('finalScoreBtn');
             finalScoreBtn.textContent = 'Try Again';
@@ -3105,7 +2750,6 @@ PIG 🐖`;
                 
                 // Restore original title and button for future use
                 document.getElementById('finalScoreTitle').textContent = '🎉 Congratulations! 🎉';
-                document.getElementById('totalScoreSection').style.display = 'block';
                 finalScoreBtn.textContent = 'Play Again';
                 finalScoreBtn.onclick = restartFromFinalScore;
             };
@@ -3113,8 +2757,6 @@ PIG 🐖`;
             // Show the final score screen
             document.getElementById('finalScoreScreen').style.display = 'flex';
         }
-        } // Missing brace 1
-        } // Missing brace 2
         
         function animateCelebration() {
             if (!game.celebrating) return;
