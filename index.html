@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elephant Maze Adventure</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             margin: 0;
@@ -217,12 +218,6 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
         
-        #difficultyTitle {
-            font-size: 36px;
-            color: #2E8B57;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
         
         .difficulty-button {
             background: #4CAF50;
@@ -551,101 +546,94 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            max-width: 900px;
-            min-width: 600px;
+            width: calc(5 * 200px + 4 * 20px + 2 * 40px);
+            max-width: 95vw;
         }
         
-        #levelSelectionTitle {
-            font-size: 36px;
-            color: #2E8B57;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            font-weight: bold;
-        }
         
         #levelGrid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
+            gap: 20px;
             margin-bottom: 30px;
             padding: 20px;
+            justify-items: center;
         }
         
-        .level-button {
-            background: white;
-            border: 3px solid #4CAF50;
-            border-radius: 15px;
-            padding: 20px 10px;
+        .level-button-new {
+            width: 200px;
+            height: 200px;
+            border: 6px solid #1565C0;
+            border-radius: 20px;
+            padding: 0;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: inherit;
-            font-size: 14px;
-            font-weight: bold;
-            color: #2E8B57;
-            min-height: 100px;
+            background: none;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .level-button:hover {
-            background: #f0f8ff;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        }
-        
-        .level-button.completed {
-            background: #e8f5e8;
-            border-color: #45a049;
-            opacity: 0.7;
-            cursor: not-allowed;
             position: relative;
         }
         
-        .level-button.completed::before {
+        .level-button-new:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-color: #0D47A1;
+        }
+        
+        .level-button-new.completed::before {
             content: '✓';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 48px;
-            color: #45a049;
+            font-size: 70px;
+            color: #000000;
             font-weight: bold;
-            z-index: 1;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 10;
+            pointer-events: none;
         }
         
-        .level-button.completed .level-button-number,
-        .level-button.completed .level-button-preview {
-            opacity: 0.4;
-        }
-        
-        .level-button.completed:hover {
-            background: #e8f5e8;
+        .level-button-new.completed:hover {
             transform: none;
             box-shadow: none;
+            cursor: not-allowed;
         }
         
-        .level-button-number {
-            font-size: 18px;
-            margin-bottom: 8px;
-            color: #2E8B57;
+        .level-button-new.completed .level-button-top,
+        .level-button-new.completed .level-button-bottom {
+            opacity: 0.6;
         }
         
-        .level-button-preview {
+        .level-button-top {
+            width: 100%;
+            height: 100px;
+            background: white;
             display: flex;
             align-items: center;
-            gap: 3px;
-            margin-bottom: 5px;
+            justify-content: center;
         }
         
-        .level-texture-preview {
-            width: 16px;
-            height: 16px;
+        .level-number {
+            font-size: 40px;
+            font-weight: bold;
+            color: #1565C0;
+        }
+        
+        .level-button-bottom {
+            width: 100%;
+            height: 94px;
+            display: flex;
+            background: #f8f9fa;
+        }
+        
+        .puzzle-texture {
+            width: 50%;
+            height: 100%;
             background-size: cover;
+            background-position: center;
             background-repeat: no-repeat;
-            border-radius: 2px;
         }
         
         #backToDifficultyBtn {
@@ -675,124 +663,6 @@
             transform: translateY(-2px);
         }
         
-        /* Character Selection Screen */
-        #characterSelectionScreen {
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #87CEEB, #98FB98);
-            z-index: 1000;
-        }
-        
-        #characterSelectionContent {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            text-align: center;
-            max-width: 600px;
-            width: 90%;
-        }
-        
-        #characterSelectionTitle {
-            font-size: 36px;
-            color: #2E8B57;
-            margin-bottom: 30px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        #characterButtons {
-            display: flex;
-            gap: 40px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .character-button {
-            background: #f0f8ff;
-            border: 3px solid #2E8B57;
-            border-radius: 15px;
-            padding: 20px;
-            width: 200px;
-            height: 250px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            font-size: 16px;
-            font-weight: bold;
-            color: #2E8B57;
-        }
-        
-        .character-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            border-color: #228B22;
-            background: #e6f3ff;
-        }
-        
-        .character-button:active {
-            transform: translateY(-2px);
-        }
-        
-        .character-sprite {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 15px;
-            border: none;
-            border-radius: 0;
-            background-size: 120px 120px;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-        
-        .character-name {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-        
-        .character-description {
-            font-size: 12px;
-            color: #666;
-            text-align: center;
-        }
-        
-        #backToCharacterBtn {
-            background: white;
-            color: black;
-            border: 2px solid #ddd;
-            padding: 0;
-            width: 64px;
-            height: 64px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: bold;
-            font-size: 32px;
-            transition: all 0.3s ease;
-            margin-top: 40px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        #backToCharacterBtn:hover {
-            background: #f5f5f5;
-            transform: translateY(-2px);
-        }
         
         
     </style>
@@ -1572,6 +1442,37 @@ PIG 🐖`;
             document.getElementById('levelSelectionScreen').style.display = 'flex';
         }
         
+        // Helper function to get puzzle textures for a level
+        function getPuzzleTexturesForLevel(level) {
+            // Use existing configManager function to get all required textures
+            const requiredTextures = configManager.getRequiredTextures(level);
+            
+            // Filter out basic maze textures, keep only puzzle door textures
+            // Note: getRequiredTextures returns texture names WITHOUT .png extension
+            const basicTextures = ['open', 'wall', 'endpoint', 'heart', 'bonus'];
+            const puzzleTextures = requiredTextures.filter(texture => 
+                !basicTextures.includes(texture)
+            );
+            
+            // Add .png extension to puzzle textures
+            const puzzleTexturesWithExt = puzzleTextures.map(texture => texture + '.png');
+            
+            console.log(`Level ${level} puzzle textures:`, puzzleTexturesWithExt);
+            
+            // If no puzzle textures found, fallback to known good textures
+            if (puzzleTexturesWithExt.length === 0) {
+                return ['we.png', 'we.png'];
+            }
+            
+            // If only one puzzle type, use it twice
+            if (puzzleTexturesWithExt.length === 1) {
+                return [puzzleTexturesWithExt[0], puzzleTexturesWithExt[0]];
+            }
+            
+            // If more than two, take first two
+            return puzzleTexturesWithExt.slice(0, 2);
+        }
+
         async function generateLevelButtons() {
             const levelGrid = document.getElementById('levelGrid');
             levelGrid.innerHTML = '';
@@ -1587,7 +1488,7 @@ PIG 🐖`;
             
             for (const level of playableLevels) {
                 const button = document.createElement('button');
-                button.className = 'level-button';
+                button.className = 'level-button-new';
                 
                 // Check if level is completed
                 const isCompleted = game.gameSession.completedLevels.has(level);
@@ -1598,36 +1499,37 @@ PIG 🐖`;
                     button.onclick = () => selectLevel(level);
                 }
                 
-                // Create level number
+                // Create top half (white background with level number)
+                const topHalf = document.createElement('div');
+                topHalf.className = 'level-button-top';
+                
                 const levelNumber = document.createElement('div');
-                levelNumber.className = 'level-button-number';
-                levelNumber.textContent = `Level ${level}`;
+                levelNumber.className = 'level-number';
+                levelNumber.textContent = level;
                 
-                // Create texture preview
-                const preview = document.createElement('div');
-                preview.className = 'level-button-preview';
+                topHalf.appendChild(levelNumber);
                 
-                // Add wall texture (dynamic path)
-                const wallTexture = document.createElement('div');
-                wallTexture.className = 'level-texture-preview';
-                wallTexture.style.backgroundImage = `url('level-${level}/wall.png')`;
+                // Create bottom half (puzzle textures side by side)
+                const bottomHalf = document.createElement('div');
+                bottomHalf.className = 'level-button-bottom';
                 
-                // Add endpoint texture (dynamic path)
-                const endpointTexture = document.createElement('div');
-                endpointTexture.className = 'level-texture-preview';
-                endpointTexture.style.backgroundImage = `url('level-${level}/endpoint.png')`;
+                // Get puzzle textures for this level
+                const puzzleTextures = getPuzzleTexturesForLevel(level);
                 
-                // Add wall again for [wall][endpoint][wall] pattern
-                const wallTexture2 = document.createElement('div');
-                wallTexture2.className = 'level-texture-preview';
-                wallTexture2.style.backgroundImage = `url('level-${level}/wall.png')`;
+                // Create two texture previews
+                const texture1 = document.createElement('div');
+                texture1.className = 'puzzle-texture';
+                texture1.style.backgroundImage = `url('level-${level}/${puzzleTextures[0]}')`;
                 
-                preview.appendChild(wallTexture);
-                preview.appendChild(endpointTexture);
-                preview.appendChild(wallTexture2);
+                const texture2 = document.createElement('div');
+                texture2.className = 'puzzle-texture';
+                texture2.style.backgroundImage = `url('level-${level}/${puzzleTextures[1]}')`;
                 
-                button.appendChild(levelNumber);
-                button.appendChild(preview);
+                bottomHalf.appendChild(texture1);
+                bottomHalf.appendChild(texture2);
+                
+                button.appendChild(topHalf);
+                button.appendChild(bottomHalf);
                 
                 levelGrid.appendChild(button);
             }
