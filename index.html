@@ -69,67 +69,6 @@
         </div>
     </div>
     
-    <div id="debugScreen">
-        <button id="debugCloseBtn" onclick="closeDebugMode()">✕ Close Debug</button>
-        <div id="debugContent">
-            <div id="debugTitle">🐛 DEBUG MODE 🐛</div>
-            
-            <div class="debug-section">
-                <h3>👤 Character Selection</h3>
-                <p>Select character for level testing:</p>
-                <div id="debugCharacterSelection" style="display: flex; flex-direction: column; gap: 15px; margin: 15px 0; align-items: flex-start;">
-                    <!-- Character radio buttons will be generated dynamically -->
-                </div>
-            </div>
-            
-            <div class="debug-section">
-                <h3>⚙️ Difficulty Settings</h3>
-                <p>Select difficulty for level testing:</p>
-                <div style="display: flex; flex-direction: column; gap: 15px; margin: 15px 0; align-items: flex-start;">
-                    <label style="display: flex; align-items: center; gap: 10px; color: #fff; font-size: 18px; cursor: pointer;">
-                        <input type="radio" name="debugDifficulty" value="easy" checked style="transform: scale(1.5);">
-                        <span style="color: #fff; font-weight: bold;">Easy Peasy 🫛 (5 ❤️)</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 10px; color: #fff; font-size: 18px; cursor: pointer;">
-                        <input type="radio" name="debugDifficulty" value="medium" style="transform: scale(1.5);">
-                        <span style="color: #fff; font-weight: bold;">Neutral 😐 (5 ❤️)</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 10px; color: #fff; font-size: 18px; cursor: pointer;">
-                        <input type="radio" name="debugDifficulty" value="hard" style="transform: scale(1.5);">
-                        <span style="color: #fff; font-weight: bold;">Hard Mode 🙀 (3 ❤️)</span>
-                    </label>
-                </div>
-            </div>
-            
-            <div class="debug-section">
-                <h3>🎮 Level Selection</h3>
-                <p>Jump to any level for testing:</p>
-                <div id="debugLevelButtons" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
-                    <!-- Level buttons will be generated dynamically -->
-                </div>
-                <p style="margin-top: 10px; font-size: 14px; color: #ccc;">Current Level: <span id="debugCurrentLevel">1</span></p>
-            </div>
-            
-            
-            <div class="debug-section">
-                <h3>🎉 Celebration Animations</h3>
-                <p>View all celebration sprites from each level:</p>
-                <button class="debug-button" onclick="generateDebugCelebrationItems(); loadDebugCelebrationSprites();" style="margin-bottom: 15px;">🔄 Reload All Sprites</button>
-                <div id="debugCelebrationGrid" class="celebration-grid">
-                    <!-- Celebration items will be generated dynamically by generateDebugCelebrationItems() -->
-                </div>
-            </div>
-            
-            <div class="debug-section">
-                <h3>📊 Score Screen Testing</h3>
-                <p>Test final score screens without completing all levels:</p>
-                <button class="debug-button" onclick="closeDebugMode(); showFinalScore();" style="margin-right: 10px;">🏆 Test Final Score Screen</button>
-                <button class="debug-button" onclick="closeDebugMode(); showGameOverScore();">💀 Test Game Over Score</button>
-                <p style="font-size: 14px; color: #ccc; margin-top: 10px;">Note: These use current session data for score display</p>
-            </div>
-        </div>
-    </div>
-    
     <div id="gameOverScreen">
         <div id="gameOverContent">
             <h1>GAME OVER</h1>
@@ -151,6 +90,35 @@
         </div>
     </div>
     
+    <!-- Debug Screen (Dynamic HTML Generation) -->
+    <div id="debugScreen">
+        <button id="debugCloseBtn" onclick="debugManager.closeDebugMode()">Close Debug</button>
+        <div id="debugContent">
+            <h1 id="debugTitle">Debug Mode</h1>
+            <div class="debug-section">
+                <h3>Current Level: <span id="debugCurrentLevel">1</span></h3>
+            </div>
+            <div class="debug-section">
+                <h3>Character Selection</h3>
+                <div id="debugCharacterSelection"></div>
+            </div>
+            <div class="debug-section">
+                <h3>Difficulty Selection</h3>
+                <label style="color: #fff; margin-right: 20px;"><input type="radio" name="debugDifficulty" value="easy" checked> Easy</label>
+                <label style="color: #fff; margin-right: 20px;"><input type="radio" name="debugDifficulty" value="medium"> Medium</label>
+                <label style="color: #fff;"><input type="radio" name="debugDifficulty" value="hard"> Hard</label>
+            </div>
+            <div class="debug-section">
+                <h3>Level Jump</h3>
+                <div id="debugLevelButtons"></div>
+            </div>
+            <div class="debug-section">
+                <h3>Celebration Sprites</h3>
+                <div id="debugCelebrationGrid" class="celebration-grid"></div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Configuration System -->
     <script src="config-manager.js"></script>
     <script src="simple-math-puzzle.js"></script>
@@ -160,6 +128,7 @@
     <script src="digraph-puzzle.js"></script>
     <script src="multiplication-groups-puzzle.js"></script>
     <script src="letter-identification.js"></script>
+    <script src="debug-manager.js"></script>
     
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -685,6 +654,7 @@ PIG 🐖`;
             selectedCharacter: 'PT', // Default character
             maxUnlockedLevel: parseInt(localStorage.getItem('ptMazeMaxLevel')) || 1, // Track highest level unlocked
             gameLoopRunning: false, // Track if game loop is already running
+            debugMode: false, // Debug mode toggle
             player: {
                 x: 0,
                 y: 0,
@@ -709,7 +679,6 @@ PIG 🐖`;
             distractors: {}, // Will be populated from distractors.txt
             usedWords: [], // Track words used in current level to prevent repetition
             difficultyMode: 'hard', // easy, medium, hard
-            debugMode: false, // Debug mode toggle
             testMode: false, // Test mode for alternative starting positions
             tileSize: 40,
             puzzleActive: false,
@@ -1016,332 +985,6 @@ PIG 🐖`;
             document.getElementById('characterSelectionScreen').style.display = 'flex';
         }
         
-        // Debug mode variables
-        const debugState = {
-            celebrationSprites: {},
-            animationFrames: {},
-            animationTimers: {},
-            isAnimating: {}
-        };
-        
-        // Debug mode toggle function
-        async function toggleDebugMode() {
-            game.debugMode = !game.debugMode;
-            if (game.debugMode) {
-                console.log('🐛 Debug mode enabled');
-                document.getElementById('debugScreen').style.display = 'block';
-                
-                // Ensure config is loaded before generating debug content
-                if (!configManager.isConfigLoaded()) {
-                    console.log('Loading config for debug mode...');
-                    await configManager.loadConfig();
-                }
-                
-                generateDebugCharacterSelection();
-                generateDebugLevelButtons();
-                generateDebugCelebrationItems();
-                loadDebugCelebrationSprites();
-                updateDebugCurrentLevel();
-            } else {
-                console.log('🐛 Debug mode disabled');
-                document.getElementById('debugScreen').style.display = 'none';
-                stopAllDebugAnimations();
-            }
-        }
-        
-        // Update debug current level display
-        function updateDebugCurrentLevel() {
-            const debugCurrentLevel = document.getElementById('debugCurrentLevel');
-            if (debugCurrentLevel) {
-                debugCurrentLevel.textContent = game.selectedDifficulty;
-            }
-        }
-        
-        // Jump to specific level function for debug mode
-        function jumpToLevel(level) {
-            // Use dynamic level validation from JSON config
-            const availableLevels = configManager.getAvailableLevels();
-            if (!availableLevels.includes(level)) {
-                console.error('Invalid level:', level);
-                return;
-            }
-            
-            console.log(`🐛 Jumping to level ${level} from debug mode`);
-            
-            // Hide all possible screens that might be showing
-            document.getElementById('characterSelectionScreen').style.display = 'none';
-            document.getElementById('difficultyScreen').style.display = 'none';
-            document.getElementById('levelSelectionScreen').style.display = 'none';
-            document.getElementById('gameOverScreen').style.display = 'none';
-            document.getElementById('finalScoreScreen').style.display = 'none';
-            
-            // Get selected character from debug mode radio buttons
-            const selectedCharacterRadio = document.querySelector('input[name="debugCharacter"]:checked');
-            if (selectedCharacterRadio) {
-                game.selectedCharacter = selectedCharacterRadio.value;
-                console.log(`🐛 Set character to ${game.selectedCharacter}`);
-            }
-            
-            // Get selected difficulty from debug mode radio buttons
-            const selectedDifficultyRadio = document.querySelector('input[name="debugDifficulty"]:checked');
-            if (selectedDifficultyRadio) {
-                game.difficultyMode = selectedDifficultyRadio.value;
-                // Set starting hearts based on difficulty
-                if (game.difficultyMode === 'hard') {
-                    game.score = 3;
-                    game.startingHearts = 3;
-                } else {
-                    game.score = 5;
-                    game.startingHearts = 5;
-                }
-                console.log(`🐛 Set difficulty to ${game.difficultyMode} with ${game.startingHearts} hearts`);
-            }
-            
-            // Update game state
-            game.selectedDifficulty = level;
-            game.currentLevelStartingHeartsAdded = false; // Reset flag for new level
-            
-            // Load celebration sprite for this level
-            currentCelebrationSprites = loadCelebrationSprite(level);
-            
-            // Close debug mode
-            closeDebugMode();
-            
-            // Initialize the new level
-            initializeGame();
-        }
-        
-        
-        // Close debug mode
-        function closeDebugMode() {
-            game.debugMode = false;
-            document.getElementById('debugScreen').style.display = 'none';
-            stopAllDebugAnimations();
-        }
-        
-        // Generate debug character selection radio buttons dynamically
-        async function generateDebugCharacterSelection() {
-            const container = document.getElementById('debugCharacterSelection');
-            if (!container) return;
-            
-            // Load config if not already loaded
-            if (!configManager.isConfigLoaded()) {
-                await configManager.loadConfig();
-            }
-            
-            // Get available characters from config
-            const availableCharacters = configManager.getAvailableCharacters();
-            console.log('Generating debug character selection for:', availableCharacters);
-            
-            // Clear existing buttons
-            container.innerHTML = '';
-            
-            // Generate radio buttons for each character
-            availableCharacters.forEach((characterName, index) => {
-                const characterConfig = configManager.getCharacterConfig(characterName);
-                
-                const label = document.createElement('label');
-                label.style.cssText = 'display: flex; align-items: center; gap: 10px; color: #fff; font-size: 18px; cursor: pointer;';
-                
-                const radio = document.createElement('input');
-                radio.type = 'radio';
-                radio.name = 'debugCharacter';
-                radio.value = characterName;
-                radio.checked = index === 0; // First character is checked by default
-                radio.style.transform = 'scale(1.5)';
-                radio.onchange = reloadDebugCelebrationSprites;
-                
-                const span = document.createElement('span');
-                span.style.cssText = 'color: #fff; font-weight: bold;';
-                span.textContent = characterConfig.name || characterName;
-                
-                label.appendChild(radio);
-                label.appendChild(span);
-                container.appendChild(label);
-            });
-        }
-        
-        // Reload debug celebration sprites when character changes
-        function reloadDebugCelebrationSprites() {
-            console.log('Reloading debug celebration sprites due to character change');
-            stopAllDebugAnimations();
-            loadDebugCelebrationSprites();
-        }
-        
-        // Load all celebration sprites for debug mode
-        function loadDebugCelebrationSprites() {
-            // Use dynamic level loading from JSON config
-            const availableLevels = configManager.getAvailableLevels();
-            
-            if (availableLevels.length === 0) {
-                console.warn('No levels available for sprite loading!');
-                return;
-            }
-            
-            // Get currently selected character from debug radio buttons
-            const selectedCharacterRadio = document.querySelector('input[name="debugCharacter"]:checked');
-            const characterName = selectedCharacterRadio ? selectedCharacterRadio.value : (game.selectedCharacter || 'PT');
-            
-            console.log(`Loading debug celebration sprites for character: ${characterName}`);
-            
-            for (const level of availableLevels) {
-                const sprite = new Image();
-                const cacheBuster = '?v=' + Date.now() + '_' + Math.random();
-                
-                // Use the level's own celebration sprite for current character
-                const spriteLevel = level;
-                const spritePath = configManager.getCharacterAssetPath(characterName, 'celebration', spriteLevel) + cacheBuster;
-                
-                sprite.src = spritePath;
-                
-                sprite.onload = () => {
-                    console.log(`✓ Debug sprite loaded for level ${level}: ${sprite.width}x${sprite.height}`);
-                };
-                
-                sprite.onerror = () => {
-                    console.error(`✗ Failed to load sprite for level ${level}: ${spritePath}`);
-                };
-                
-                debugState.celebrationSprites[level] = sprite;
-                debugState.animationFrames[level] = 0;
-                debugState.animationTimers[level] = 0;
-                debugState.isAnimating[level] = false;
-            }
-        }
-        
-        // Play celebration animation in debug mode
-        function debugPlayCelebration(level) {
-            debugState.isAnimating[level] = true;
-            debugState.animationFrames[level] = 0;
-            debugState.animationTimers[level] = 0;
-            animateDebugCelebration(level);
-        }
-        
-        // Stop celebration animation in debug mode
-        function debugStopCelebration(level) {
-            debugState.isAnimating[level] = false;
-        }
-        
-        // Stop all debug animations
-        function stopAllDebugAnimations() {
-            // Use dynamic level loading from JSON config
-            const availableLevels = configManager.getAvailableLevels();
-            for (const level of availableLevels) {
-                debugState.isAnimating[level] = false;
-            }
-        }
-        
-        // Generate debug level buttons dynamically
-        function generateDebugLevelButtons() {
-            const container = document.getElementById('debugLevelButtons');
-            container.innerHTML = '';
-            
-            const availableLevels = configManager.getAvailableLevels();
-            const playableLevels = configManager.getPlayableLevels();
-            
-            if (availableLevels.length === 0) {
-                console.warn('No levels found in config!');
-                container.innerHTML = '<p style="color: red;">No levels found in configuration file</p>';
-                return;
-            }
-            
-            for (const level of availableLevels) {
-                const button = document.createElement('button');
-                button.className = 'debug-button';
-                button.onclick = () => jumpToLevel(level);
-                
-                // Mark debug-only levels
-                const isPlayable = playableLevels.includes(level);
-                button.textContent = `Jump to Level ${level}${isPlayable ? '' : ' (Debug)'}`;
-                
-                container.appendChild(button);
-            }
-        }
-        
-        // Generate debug celebration items dynamically
-        function generateDebugCelebrationItems() {
-            const container = document.getElementById('debugCelebrationGrid');
-            container.innerHTML = '';
-            
-            const availableLevels = configManager.getAvailableLevels();
-            const playableLevels = configManager.getPlayableLevels();
-            
-            if (availableLevels.length === 0) {
-                console.warn('No levels found for celebration items!');
-                container.innerHTML = '<p style="color: red;">No levels found in configuration file</p>';
-                return;
-            }
-            
-            for (const level of availableLevels) {
-                const item = document.createElement('div');
-                item.className = 'celebration-item';
-                
-                const isPlayable = playableLevels.includes(level);
-                const debugSuffix = isPlayable ? '' : ' (Debug Only)';
-                
-                item.innerHTML = `
-                    <h4>Level ${level} - PT Celebration${debugSuffix}</h4>
-                    <canvas class="celebration-preview" id="debugCelebration${level}" width="200" height="200"></canvas>
-                    <br>
-                    <button class="debug-button" onclick="debugPlayCelebration(${level})">Play Animation</button>
-                    <button class="debug-button" onclick="debugStopCelebration(${level})">Stop</button>
-                `;
-                
-                container.appendChild(item);
-            }
-        }
-        
-        // Animate celebration in debug mode
-        function animateDebugCelebration(level) {
-            if (!debugState.isAnimating[level]) return;
-            
-            const canvas = document.getElementById(`debugCelebration${level}`);
-            const ctx = canvas.getContext('2d');
-            const sprite = debugState.celebrationSprites[level];
-            
-            if (sprite && sprite.complete) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Calculate frame properties using configuration-based approach
-                const frameProps = calculateFrameProperties(sprite, level);
-                const { frameWidth, frameHeight, framesPerRow, totalFrames } = frameProps;
-                
-                // Calculate frame position
-                const row = Math.floor(debugState.animationFrames[level] / framesPerRow);
-                const col = debugState.animationFrames[level] % framesPerRow;
-                const frameX = col * frameWidth;
-                const frameY = row * frameHeight;
-                
-                // Scale to fit debug canvas
-                const scaleX = canvas.width / frameWidth;
-                const scaleY = canvas.height / frameHeight;
-                const scale = Math.min(scaleX, scaleY) * 0.9;
-                
-                const scaledWidth = frameWidth * scale;
-                const scaledHeight = frameHeight * scale;
-                const offsetX = (canvas.width - scaledWidth) / 2;
-                const offsetY = (canvas.height - scaledHeight) / 2;
-                
-                // Draw current frame
-                ctx.drawImage(
-                    sprite,
-                    frameX, frameY, frameWidth, frameHeight,
-                    offsetX, offsetY, scaledWidth, scaledHeight
-                );
-                
-                // Update frame counter
-                debugState.animationTimers[level]++;
-                const frameDelay = configManager.getAnimationConfig(level).frameDelay;
-                if (debugState.animationTimers[level] >= frameDelay) {
-                    debugState.animationFrames[level] = (debugState.animationFrames[level] + 1) % totalFrames;
-                    debugState.animationTimers[level] = 0;
-                }
-            }
-            
-            if (debugState.isAnimating[level]) {
-                requestAnimationFrame(() => animateDebugCelebration(level));
-            }
-        }
         
         function resetGame() {
             game.player.x = 0;
@@ -2203,7 +1846,9 @@ PIG 🐖`;
         document.addEventListener('keydown', (e) => {
             if (e.shiftKey && e.ctrlKey && (e.key === 'D' || e.key === 'd')) {
                 e.preventDefault();
-                toggleDebugMode();
+                if (window.debugManager) {
+                    debugManager.toggleDebugMode();
+                }
                 return;
             }
         });
