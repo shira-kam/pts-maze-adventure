@@ -28,14 +28,48 @@ function toggleDebugMode() {
         game.debugMode = true;
         debugScreen.style.display = 'block';
         
+        console.log('🐛 Debug mode opening - generating content...');
+        
         // Generate dynamic debug content
+        if (configManager && !configManager.config) {
+            console.log('📋 Loading config first...');
+            configManager.loadConfig().then(() => {
+                console.log('✅ Config loaded successfully');
+                generateAllDebugContent();
+            }).catch(() => {
+                console.warn('⚠️ Config load failed, using fallbacks');
+                generateAllDebugContent();
+            });
+        } else {
+            generateAllDebugContent();
+        }
+    }
+}
+
+/**
+ * Generate all debug content (called after config is loaded or for fallback)
+ */
+function generateAllDebugContent() {
+    try {
         generateDebugCharacterSelection();
+        console.log('✓ Character selection generated');
+        
         generateDebugLevelButtons();
+        console.log('✓ Level buttons generated');
+        
         generateDebugCelebrationItems();
+        console.log('✓ Celebration items generated');
+        
         loadDebugCelebrationSprites();
+        console.log('✓ Sprites loading initiated');
         
         // Update current level display
         updateDebugCurrentLevel();
+        console.log('✓ Current level updated');
+        
+        console.log('🐛 Debug content generation complete');
+    } catch (error) {
+        console.error('❌ Error generating debug content:', error);
     }
 }
 
@@ -114,9 +148,18 @@ function closeDebugMode() {
  */
 function generateDebugCharacterSelection() {
     const container = document.getElementById('debugCharacterSelection');
-    if (!container) return;
+    if (!container) {
+        console.error('❌ debugCharacterSelection container not found');
+        return;
+    }
     
     container.innerHTML = '';
+    
+    console.log('🔍 Checking configManager:', {
+        configManager: !!configManager,
+        config: configManager?.config ? 'exists' : 'missing',
+        characters: configManager?.config?.characters ? Object.keys(configManager.config.characters) : 'missing'
+    });
     
     if (configManager && configManager.config && configManager.config.characters) {
         const characters = configManager.config.characters;
@@ -147,6 +190,33 @@ function generateDebugCharacterSelection() {
             container.appendChild(label);
             
             isFirst = false;
+        });
+    } else {
+        console.warn('⚠️  ConfigManager not available, using fallback characters');
+        // Fallback characters if configManager isn't available
+        const fallbackCharacters = ['PT', 'Enderman'];
+        
+        fallbackCharacters.forEach((characterKey, index) => {
+            const label = document.createElement('label');
+            label.style.cssText = 'display: flex; align-items: center; gap: 10px; color: #fff; font-size: 18px; cursor: pointer;';
+            
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = 'debugCharacter';
+            input.value = characterKey;
+            input.style.transform = 'scale(1.5)';
+            input.checked = index === 0; // Select first character by default
+            
+            // Add event listener to reload celebration sprites when character changes
+            input.addEventListener('change', reloadDebugCelebrationSprites);
+            
+            const span = document.createElement('span');
+            span.style.cssText = 'color: #fff; font-weight: bold;';
+            span.textContent = characterKey;
+            
+            label.appendChild(input);
+            label.appendChild(span);
+            container.appendChild(label);
         });
     }
 }
@@ -241,23 +311,40 @@ function stopAllDebugAnimations() {
  */
 function generateDebugLevelButtons() {
     const container = document.getElementById('debugLevelButtons');
-    if (!container || !configManager || !configManager.config) return;
+    if (!container) {
+        console.error('❌ debugLevelButtons container not found');
+        return;
+    }
     
     container.innerHTML = '';
     
-    const levels = configManager.config.levels || {};
-    Object.keys(levels)
-        .sort((a, b) => parseInt(a) - parseInt(b))
-        .forEach(levelKey => {
-            const level = levels[levelKey];
-            if (level.playable) {
-                const button = document.createElement('button');
-                button.className = 'debug-button';
-                button.textContent = `Level ${levelKey}`;
-                button.onclick = () => jumpToLevel(parseInt(levelKey));
-                container.appendChild(button);
-            }
+    if (configManager && configManager.config) {
+        const levels = configManager.config.levels || {};
+        Object.keys(levels)
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .forEach(levelKey => {
+                const level = levels[levelKey];
+                if (level.playable) {
+                    const button = document.createElement('button');
+                    button.className = 'debug-button';
+                    button.textContent = `Level ${levelKey}`;
+                    button.onclick = () => jumpToLevel(parseInt(levelKey));
+                    container.appendChild(button);
+                }
+            });
+    } else {
+        console.warn('⚠️  ConfigManager not available, using fallback levels');
+        // Fallback levels if configManager isn't available
+        const fallbackLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        
+        fallbackLevels.forEach(levelNum => {
+            const button = document.createElement('button');
+            button.className = 'debug-button';
+            button.textContent = `Level ${levelNum}`;
+            button.onclick = () => jumpToLevel(levelNum);
+            container.appendChild(button);
         });
+    }
 }
 
 /**
@@ -265,61 +352,70 @@ function generateDebugLevelButtons() {
  */
 function generateDebugCelebrationItems() {
     const container = document.getElementById('debugCelebrationGrid');
-    if (!container || !configManager || !configManager.config) return;
+    if (!container) {
+        console.error('❌ debugCelebrationGrid container not found');
+        return;
+    }
     
     container.innerHTML = '';
     
-    const levels = configManager.config.levels || {};
-    Object.keys(levels)
-        .sort((a, b) => parseInt(a) - parseInt(b))
-        .forEach(levelKey => {
-            const level = levels[levelKey];
-            if (level.playable) {
-                const item = document.createElement('div');
-                item.className = 'celebration-item';
-                
-                const title = document.createElement('h4');
-                title.textContent = `Level ${levelKey}`;
-                
-                const canvas = document.createElement('canvas');
-                canvas.className = 'celebration-preview';
-                canvas.width = 200;
-                canvas.height = 200;
-                canvas.id = `debugCanvas-${levelKey}`;
-                
-                const controls = document.createElement('div');
-                controls.style.marginTop = '10px';
-                
-                const playBtn = document.createElement('button');
-                playBtn.className = 'debug-button';
-                playBtn.textContent = '▶ Play';
-                playBtn.style.marginRight = '5px';
-                playBtn.onclick = () => {
-                    const selectedCharacterRadio = document.querySelector('input[name="debugCharacter"]:checked');
-                    if (selectedCharacterRadio) {
-                        debugPlayCelebration(selectedCharacterRadio.value, levelKey);
-                    }
-                };
-                
-                const stopBtn = document.createElement('button');
-                stopBtn.className = 'debug-button';
-                stopBtn.textContent = '⏸ Stop';
-                stopBtn.onclick = () => {
-                    const selectedCharacterRadio = document.querySelector('input[name="debugCharacter"]:checked');
-                    if (selectedCharacterRadio) {
-                        debugStopCelebration(selectedCharacterRadio.value, levelKey);
-                    }
-                };
-                
-                controls.appendChild(playBtn);
-                controls.appendChild(stopBtn);
-                
-                item.appendChild(title);
-                item.appendChild(canvas);
-                item.appendChild(controls);
-                container.appendChild(item);
+    let levelsToProcess = [];
+    
+    if (configManager && configManager.config) {
+        const levels = configManager.config.levels || {};
+        levelsToProcess = Object.keys(levels)
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .filter(levelKey => levels[levelKey].playable);
+    } else {
+        console.warn('⚠️  ConfigManager not available, using fallback levels');
+        levelsToProcess = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
+    }
+    
+    levelsToProcess.forEach(levelKey => {
+        const item = document.createElement('div');
+        item.className = 'celebration-item';
+        
+        const title = document.createElement('h4');
+        title.textContent = `Level ${levelKey}`;
+        
+        const canvas = document.createElement('canvas');
+        canvas.className = 'celebration-preview';
+        canvas.width = 200;
+        canvas.height = 200;
+        canvas.id = `debugCanvas-${levelKey}`;
+        
+        const controls = document.createElement('div');
+        controls.style.marginTop = '10px';
+        
+        const playBtn = document.createElement('button');
+        playBtn.className = 'debug-button';
+        playBtn.textContent = '▶ Play';
+        playBtn.style.marginRight = '5px';
+        playBtn.onclick = () => {
+            const selectedCharacterRadio = document.querySelector('input[name="debugCharacter"]:checked');
+            if (selectedCharacterRadio) {
+                debugPlayCelebration(selectedCharacterRadio.value, levelKey);
             }
-        });
+        };
+        
+        const stopBtn = document.createElement('button');
+        stopBtn.className = 'debug-button';
+        stopBtn.textContent = '⏸ Stop';
+        stopBtn.onclick = () => {
+            const selectedCharacterRadio = document.querySelector('input[name="debugCharacter"]:checked');
+            if (selectedCharacterRadio) {
+                debugStopCelebration(selectedCharacterRadio.value, levelKey);
+            }
+        };
+        
+        controls.appendChild(playBtn);
+        controls.appendChild(stopBtn);
+        
+        item.appendChild(title);
+        item.appendChild(canvas);
+        item.appendChild(controls);
+        container.appendChild(item);
+    });
 }
 
 /**
