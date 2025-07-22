@@ -158,6 +158,8 @@ function generateDebugCharacterSelection() {
     console.log('🔍 Checking configManager:', {
         configManager: !!configManager,
         config: configManager?.config ? 'exists' : 'missing',
+        configType: typeof configManager?.config,
+        configKeys: configManager?.config ? Object.keys(configManager.config) : 'no config',
         characters: configManager?.config?.characters ? Object.keys(configManager.config.characters) : 'missing'
     });
     
@@ -233,41 +235,54 @@ function reloadDebugCelebrationSprites() {
  * Creates sprite objects for each character-level combination
  */
 function loadDebugCelebrationSprites() {
-    if (!configManager || !configManager.config) return;
+    console.log('🖼️ Loading debug celebration sprites...');
     
     const selectedCharacterRadio = document.querySelector('input[name="debugCharacter"]:checked');
-    if (!selectedCharacterRadio) return;
+    if (!selectedCharacterRadio) {
+        console.warn('No character selected, cannot load sprites');
+        return;
+    }
     
     const selectedCharacter = selectedCharacterRadio.value;
-    const config = configManager.config;
-    const levels = config.levels || {};
+    console.log(`Selected character: ${selectedCharacter}`);
+    
+    let levelsToLoad = [];
+    
+    if (configManager && configManager.config && configManager.config.levels) {
+        const levels = configManager.config.levels;
+        levelsToLoad = Object.keys(levels).filter(levelKey => levels[levelKey].playable);
+        console.log('Using config levels:', levelsToLoad);
+    } else {
+        levelsToLoad = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
+        console.log('Using fallback levels:', levelsToLoad);
+    }
     
     // Clear existing sprites
     debugState.celebrationSprites = {};
     debugState.animationFrames = {};
     debugState.isAnimating = {};
     
-    // Load sprites for all playable levels
-    Object.keys(levels).forEach(levelKey => {
-        const level = levels[levelKey];
-        if (level.playable) {
-            const spriteKey = `${selectedCharacter}-${levelKey}`;
-            const spritePath = `level-${levelKey}/${selectedCharacter}-celebrate.png`;
+    // Load sprites for all levels
+    levelsToLoad.forEach(levelKey => {
+        const spriteKey = `${selectedCharacter}-${levelKey}`;
+        const spritePath = `level-${levelKey}/${selectedCharacter}-celebrate.png`;
+        
+        console.log(`🔄 Loading sprite: ${spritePath}`);
+        
+        const sprite = new Image();
+        sprite.onload = function() {
+            debugState.celebrationSprites[spriteKey] = sprite;
+            console.log(`✅ Loaded ${spritePath} (${sprite.width}x${sprite.height})`);
             
-            const sprite = new Image();
-            sprite.onload = function() {
-                debugState.celebrationSprites[spriteKey] = sprite;
-                console.log(`Debug: Loaded ${spritePath}`);
-                
-                // Initialize animation state
-                debugState.animationFrames[spriteKey] = 0;
-                debugState.isAnimating[spriteKey] = false;
-            };
-            sprite.onerror = function() {
-                console.warn(`Debug: Failed to load ${spritePath}`);
-            };
-            sprite.src = spritePath;
-        }
+            // Initialize animation state
+            debugState.animationFrames[spriteKey] = 0;
+            debugState.animationTimers[spriteKey] = 0;
+            debugState.isAnimating[spriteKey] = false;
+        };
+        sprite.onerror = function() {
+            console.warn(`❌ Failed to load ${spritePath}`);
+        };
+        sprite.src = spritePath;
     });
 }
 
@@ -276,7 +291,14 @@ function loadDebugCelebrationSprites() {
  */
 function debugPlayCelebration(character, level) {
     const spriteKey = `${character}-${level}`;
+    console.log(`▶ Starting animation for ${spriteKey}`);
+    
+    // Initialize animation state
     debugState.isAnimating[spriteKey] = true;
+    debugState.animationFrames[spriteKey] = 0;
+    debugState.animationTimers[spriteKey] = 0;
+    
+    // Start animation loop
     animateDebugCelebration(character, level);
 }
 
@@ -292,15 +314,7 @@ function debugStopCelebration(character, level) {
  * Stop all debug animations
  */
 function stopAllDebugAnimations() {
-    // Stop all animation timers
-    Object.keys(debugState.animationTimers).forEach(key => {
-        if (debugState.animationTimers[key]) {
-            clearTimeout(debugState.animationTimers[key]);
-            delete debugState.animationTimers[key];
-        }
-    });
-    
-    // Reset animation states
+    // Reset animation states (requestAnimationFrame stops automatically)
     Object.keys(debugState.isAnimating).forEach(key => {
         debugState.isAnimating[key] = false;
     });
@@ -324,13 +338,13 @@ function generateDebugLevelButtons() {
             .sort((a, b) => parseInt(a) - parseInt(b))
             .forEach(levelKey => {
                 const level = levels[levelKey];
-                if (level.playable) {
-                    const button = document.createElement('button');
-                    button.className = 'debug-button';
-                    button.textContent = `Level ${levelKey}`;
-                    button.onclick = () => jumpToLevel(parseInt(levelKey));
-                    container.appendChild(button);
-                }
+                // Debug mode shows ALL levels (playable and debug-only)
+                const button = document.createElement('button');
+                button.className = 'debug-button';
+                const labelSuffix = level.playable ? '' : ' (Debug Only)';
+                button.textContent = `Level ${levelKey}${labelSuffix}`;
+                button.onclick = () => jumpToLevel(parseInt(levelKey));
+                container.appendChild(button);
             });
     } else {
         console.warn('⚠️  ConfigManager not available, using fallback levels');
@@ -363,9 +377,9 @@ function generateDebugCelebrationItems() {
     
     if (configManager && configManager.config) {
         const levels = configManager.config.levels || {};
+        // Debug mode shows ALL levels (playable and debug-only)
         levelsToProcess = Object.keys(levels)
-            .sort((a, b) => parseInt(a) - parseInt(b))
-            .filter(levelKey => levels[levelKey].playable);
+            .sort((a, b) => parseInt(a) - parseInt(b));
     } else {
         console.warn('⚠️  ConfigManager not available, using fallback levels');
         levelsToProcess = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
@@ -376,7 +390,9 @@ function generateDebugCelebrationItems() {
         item.className = 'celebration-item';
         
         const title = document.createElement('h4');
-        title.textContent = `Level ${levelKey}`;
+        const isPlayable = configManager?.config?.levels?.[levelKey]?.playable !== false;
+        const debugSuffix = isPlayable ? '' : ' (Debug Only)';
+        title.textContent = `Level ${levelKey}${debugSuffix}`;
         
         const canvas = document.createElement('canvas');
         canvas.className = 'celebration-preview';
@@ -419,46 +435,76 @@ function generateDebugCelebrationItems() {
 }
 
 /**
- * Animate debug celebration sprites
- * Handles the animation loop for celebration previews
+ * Animate debug celebration sprites using the same logic as the main game
+ * Reuses calculateFrameProperties and getCelebrationConfig from main game
  */
 function animateDebugCelebration(character, level) {
     const spriteKey = `${character}-${level}`;
     const sprite = debugState.celebrationSprites[spriteKey];
     const canvas = document.getElementById(`debugCanvas-${level}`);
     
-    if (!sprite || !canvas || !debugState.isAnimating[spriteKey]) return;
+    if (!sprite || !canvas || !debugState.isAnimating[spriteKey] || !sprite.complete) return;
     
     const ctx = canvas.getContext('2d');
-    const frameWidth = 200;
-    const frameHeight = 200;
-    const totalFrames = 40; // Default frame count
-    
-    // Get current frame
-    let currentFrame = debugState.animationFrames[spriteKey] || 0;
     
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Calculate source position
-    const sourceX = (currentFrame % 5) * frameWidth;
-    const sourceY = Math.floor(currentFrame / 5) * frameHeight;
-    
-    // Draw current frame
-    ctx.drawImage(sprite, sourceX, sourceY, frameWidth, frameHeight, 0, 0, canvas.width, canvas.height);
-    
-    // Update frame
-    currentFrame++;
-    if (currentFrame >= totalFrames) {
-        currentFrame = 0;
+    try {
+        // Use the same frame calculation logic as the main game
+        const frameProps = calculateFrameProperties(sprite, level);
+        const { frameWidth, frameHeight, framesPerRow, totalFrames } = frameProps;
+        
+        // Get current frame
+        let currentFrame = debugState.animationFrames[spriteKey] || 0;
+        
+        // Calculate frame position (same as main game)
+        const row = Math.floor(currentFrame / framesPerRow);
+        const col = currentFrame % framesPerRow;
+        const frameX = col * frameWidth;
+        const frameY = row * frameHeight;
+        
+        // Scale to fit debug canvas (smaller than main game)
+        const scaleX = canvas.width / frameWidth;
+        const scaleY = canvas.height / frameHeight;
+        const scale = Math.min(scaleX, scaleY) * 0.8; // 80% of canvas size for debug
+        
+        const scaledWidth = frameWidth * scale;
+        const scaledHeight = frameHeight * scale;
+        const offsetX = (canvas.width - scaledWidth) / 2;
+        const offsetY = (canvas.height - scaledHeight) / 2;
+        
+        // Draw current frame
+        ctx.drawImage(
+            sprite,
+            frameX, frameY, frameWidth, frameHeight,
+            offsetX, offsetY, scaledWidth, scaledHeight
+        );
+        
+        // Update frame counter (same timing as main game)
+        debugState.animationTimers[spriteKey]++;
+        const config = getCelebrationConfig(level);
+        const frameDelay = config?.frameDelay || 6; // Use config or default
+        
+        if (debugState.animationTimers[spriteKey] >= frameDelay) {
+            currentFrame = (currentFrame + 1) % totalFrames;
+            debugState.animationFrames[spriteKey] = currentFrame;
+            debugState.animationTimers[spriteKey] = 0;
+        }
+        
+    } catch (error) {
+        console.warn(`Debug animation error for ${spriteKey}:`, error);
+        // Fallback to simple animation if config functions fail
+        const currentFrame = (debugState.animationFrames[spriteKey] || 0);
+        debugState.animationFrames[spriteKey] = (currentFrame + 1) % 40;
+        
+        // Simple draw of first frame
+        ctx.drawImage(sprite, 0, 0, 200, 200, 10, 10, canvas.width-20, canvas.height-20);
     }
-    debugState.animationFrames[spriteKey] = currentFrame;
     
-    // Schedule next frame if still animating
+    // Continue animation loop
     if (debugState.isAnimating[spriteKey]) {
-        debugState.animationTimers[spriteKey] = setTimeout(() => {
-            animateDebugCelebration(character, level);
-        }, 100); // ~10 FPS for debug preview
+        requestAnimationFrame(() => animateDebugCelebration(character, level));
     }
 }
 

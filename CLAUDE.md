@@ -53,7 +53,9 @@ Pre-literate children cannot read instruction text or feedback messages. All com
 ## 3. Architecture & Configuration System
 
 ### Core Files Structure
-- **`index.html`**: Complete game implementation (4000+ lines) containing all HTML, CSS, JavaScript, and game logic
+- **`index.html`**: Core game implementation (~2450 lines) containing HTML, CSS, and main game logic
+- **`debug-manager.js`**: Extracted debug system (~400 lines) for comprehensive testing and development
+- **`styles.css`**: Design system and component styling with CSS custom properties
 - **`game-config.json`**: Comprehensive configuration file controlling levels, characters, and puzzles
 - **`config-manager.js`**: Configuration management utility for dynamic loading
 - **Level directories** (`level-1/` through `level-11/`): Each contains complete asset sets
@@ -207,18 +209,22 @@ All puzzles share common characteristics:
 ```
 
 ### Debug Mode (Shift+Ctrl+D)
-- **Dynamic Character Selection**: Choose any character from config for testing
-- **Level jumping**: Direct access to any configured level
-- **Celebration Animation Testing**: Preview and control celebration sprites for all levels
-- **Difficulty Selection**: Test with Easy, Neutral, or Hard mode settings
-- **Real-time Testing**: All debug features respect selected character and difficulty
+**Status**: ✅ **EXTRACTED TO SEPARATE MODULE** - All debug functionality moved to `debug-manager.js`
 
 **Debug Features:**
-- **Character-Aware Testing**: Debug mode dynamically loads characters from config
-- **Level Testing**: Manual level progression with character-specific assets
-- **Animation Preview**: Individual celebration sprite testing with controls
-- **Visual Indicators**: Real-time level display and debugging information
-- **Performance Testing**: Animation frame rates, texture loading times
+- **Character Selection**: Choose any character from config for testing (PT, Enderman, etc.)
+- **Difficulty Settings**: Test with Easy Peasy 🫛, Neutral 😐, or Hard Mode 🙀 with proper heart counts
+- **Level Jumping**: Direct access to ALL levels (playable + debug-only), with "(Debug Only)" labels
+- **Celebration Animation Testing**: Preview and control celebration sprites using the same animation logic as main game
+- **Score Screen Testing**: Direct access to Final Score and Game Over screens for testing
+- **Reload Sprites**: Manual sprite reloading for testing character changes
+
+**Technical Architecture:**
+- **Modular System**: All debug code extracted to `debug-manager.js` for better organization
+- **Dynamic Content**: Automatically discovers levels and characters from `game-config.json`
+- **Fallback Support**: Works with hardcoded fallbacks if config loading fails
+- **Animation Integration**: Uses existing `calculateFrameProperties()` and `getCelebrationConfig()` functions
+- **Debug-Only Levels**: Shows levels with `playable: false` only in debug mode with clear labeling
 
 ## 6. Development Guidelines
 
@@ -313,15 +319,22 @@ All puzzles share common characteristics:
 - **Asset validation**: Check for required files and warn about missing assets
 - **Export options**: Download JSON, copy to clipboard, or save to browser storage
 
-**Index.html Modularization** (Planned)
-**Objective**: Further reduce index.html size by extracting functional modules (~4000 → ~1500-2000 lines)
+**Index.html Modularization** (✅ **PARTIALLY COMPLETE**)
+**Status**: Successfully reduced index.html from ~4000 to ~2450 lines (-38% reduction)
 
-**Proposed Extraction:**
-- **CSS Extraction**: Move all CSS from `<style>` blocks to external file (~300-500 lines)
+**Completed Extractions:**
+- ✅ **CSS Extraction**: Moved ~400 lines to `styles.css` with design system integration
+- ✅ **Debug System**: Extracted ~400 lines to `debug-manager.js` as complete modular system
+
+**Remaining Modularization Opportunities:**
 - **UI Management**: Character/level selection, modal management (~500-800 lines)
-- **Game Rendering**: `drawGame()` function and helpers (~300-500 lines)
-- **Debug System**: All debug mode functions (~400-600 lines)
+- **Game Rendering**: `drawGame()` function and helpers (~300-500 lines)  
 - **Score & Progress**: Score calculation and display (~200-300 lines)
+
+**Current Architecture Benefits:**
+- **Cleaner main file**: Core game logic easier to navigate and maintain
+- **Modular debug system**: Testing functionality in organized separate file
+- **Design system**: Consistent styling with CSS custom properties
 
 ## 8. Related Documentation
 
