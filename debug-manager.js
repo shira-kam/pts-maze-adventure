@@ -31,7 +31,7 @@ function toggleDebugMode() {
         console.log('🐛 Debug mode opening - generating content...');
         
         // Generate dynamic debug content
-        if (configManager && !configManager.config) {
+        if (configManager && !configManager.gameConfig) {
             console.log('📋 Loading config first...');
             configManager.loadConfig().then(() => {
                 console.log('✅ Config loaded successfully');
@@ -157,14 +157,14 @@ function generateDebugCharacterSelection() {
     
     console.log('🔍 Checking configManager:', {
         configManager: !!configManager,
-        config: configManager?.config ? 'exists' : 'missing',
-        configType: typeof configManager?.config,
-        configKeys: configManager?.config ? Object.keys(configManager.config) : 'no config',
-        characters: configManager?.config?.characters ? Object.keys(configManager.config.characters) : 'missing'
+        config: configManager?.gameConfig ? 'exists' : 'missing',
+        configType: typeof configManager?.gameConfig,
+        configKeys: configManager?.gameConfig ? Object.keys(configManager.gameConfig) : 'no config',
+        characters: configManager?.gameConfig?.characters ? Object.keys(configManager.gameConfig.characters) : 'missing'
     });
     
-    if (configManager && configManager.config && configManager.config.characters) {
-        const characters = configManager.config.characters;
+    if (configManager && configManager.gameConfig && configManager.gameConfig.characters) {
+        const characters = configManager.gameConfig.characters;
         let isFirst = true;
         
         Object.keys(characters).forEach(characterKey => {
@@ -248,12 +248,13 @@ function loadDebugCelebrationSprites() {
     
     let levelsToLoad = [];
     
-    if (configManager && configManager.config && configManager.config.levels) {
-        const levels = configManager.config.levels;
-        levelsToLoad = Object.keys(levels).filter(levelKey => levels[levelKey].playable);
+    if (configManager && configManager.gameConfig && configManager.gameConfig.levels) {
+        const levels = configManager.gameConfig.levels;
+        // Debug mode should load ALL levels (playable and non-playable)
+        levelsToLoad = Object.keys(levels);
         console.log('Using config levels:', levelsToLoad);
     } else {
-        levelsToLoad = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
+        levelsToLoad = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
         console.log('Using fallback levels:', levelsToLoad);
     }
     
@@ -332,8 +333,8 @@ function generateDebugLevelButtons() {
     
     container.innerHTML = '';
     
-    if (configManager && configManager.config) {
-        const levels = configManager.config.levels || {};
+    if (configManager && configManager.gameConfig) {
+        const levels = configManager.gameConfig.levels || {};
         Object.keys(levels)
             .sort((a, b) => parseInt(a) - parseInt(b))
             .forEach(levelKey => {
@@ -349,7 +350,7 @@ function generateDebugLevelButtons() {
     } else {
         console.warn('⚠️  ConfigManager not available, using fallback levels');
         // Fallback levels if configManager isn't available
-        const fallbackLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        const fallbackLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         
         fallbackLevels.forEach(levelNum => {
             const button = document.createElement('button');
@@ -375,14 +376,14 @@ function generateDebugCelebrationItems() {
     
     let levelsToProcess = [];
     
-    if (configManager && configManager.config) {
-        const levels = configManager.config.levels || {};
+    if (configManager && configManager.gameConfig) {
+        const levels = configManager.gameConfig.levels || {};
         // Debug mode shows ALL levels (playable and debug-only)
         levelsToProcess = Object.keys(levels)
             .sort((a, b) => parseInt(a) - parseInt(b));
     } else {
         console.warn('⚠️  ConfigManager not available, using fallback levels');
-        levelsToProcess = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
+        levelsToProcess = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
     }
     
     levelsToProcess.forEach(levelKey => {
@@ -390,7 +391,7 @@ function generateDebugCelebrationItems() {
         item.className = 'celebration-item';
         
         const title = document.createElement('h4');
-        const isPlayable = configManager?.config?.levels?.[levelKey]?.playable !== false;
+        const isPlayable = configManager?.gameConfig?.levels?.[levelKey]?.playable !== false;
         const debugSuffix = isPlayable ? '' : ' (Debug Only)';
         title.textContent = `Level ${levelKey}${debugSuffix}`;
         
