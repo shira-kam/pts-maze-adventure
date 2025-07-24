@@ -296,93 +296,6 @@
             return { doors, paths, watering_hole, bonusItems, maze };
         }
         
-        // Word list parser for dynamic loading
-        async function loadWordListFromFile() {
-            try {
-                // Load word list for current level
-                const wordListLevel = game.selectedDifficulty;
-                const wordListPath = `level-${wordListLevel}/Word-List.txt`;
-                console.log(`Attempting to load ${wordListPath}...`);
-                const response = await fetch(wordListPath + '?v=' + Date.now());
-                const wordListText = await response.text();
-                return parseWordList(wordListText);
-            } catch (error) {
-                console.error(`Error loading Word-List.txt from level-${game.selectedDifficulty}:`, error);
-                // Fallback to embedded word list if file load fails
-                const fallbackWordList = `BAG 💼,
-MAP 🗺️,
-HAT 🧢,
-LEG 🦵,
-GEM 💎,
-DOT ⚪️,
-TEN 🔟,
-BOX 📦,
-FOX 🦊,
-CAR 🚗,
-CAT 🐈,
-DOG 🐕,
-LOG 🪵,
-SUN ☀️,
-CUP ☕️,
-FLY 🪰,
-BED 🛏️,
-RAT 🐀,
-BAT 🦇,
-PEN 🖊️,
-PIG 🐖`;
-                return parseWordList(fallbackWordList);
-            }
-        }
-        
-        // Distractor list parser
-        async function loadDistractorsFromFile() {
-            try {
-                const response = await fetch('distractors.txt' + '?v=' + Date.now());
-                const distractorText = await response.text();
-                return parseDistractors(distractorText);
-            } catch (error) {
-                console.error('Error loading distractors.txt:', error);
-                return {};
-            }
-        }
-        
-        function parseDistractors(distractorText) {
-            const lines = distractorText.trim().split('\n');
-            const distractors = {};
-            
-            lines.forEach(line => {
-                const trimmedLine = line.trim();
-                if (trimmedLine.includes(':')) {
-                    const [letter, emojis] = trimmedLine.split(':');
-                    const letterKey = letter.trim().toUpperCase();
-                    const emojiList = emojis.trim().split(/\s+/).filter(emoji => emoji.length > 0);
-                    distractors[letterKey] = emojiList;
-                }
-            });
-            
-            return distractors;
-        }
-        
-        function parseWordList(wordListText) {
-            const lines = wordListText.trim().split('\n');
-            const wordEmojiPairs = [];
-            
-            lines.forEach(line => {
-                const trimmedLine = line.trim();
-                if (trimmedLine && trimmedLine.endsWith(',')) {
-                    // Remove trailing comma and split by space
-                    const parts = trimmedLine.slice(0, -1).split(' ');
-                    if (parts.length >= 2) {
-                        const word = parts[0];
-                        const emoji = parts.slice(1).join(' '); // Join in case emoji has spaces
-                        wordEmojiPairs.push({ word, emoji });
-                    }
-                }
-            });
-            
-            return wordEmojiPairs;
-        }
-        
         // Load sprite sheets for PT
         const characterSprites = {
             movement: new Image(),
@@ -702,8 +615,6 @@ PIG 🐖`;
             originalMaze: [], // Store original maze for wall restoration
             playerStartPosition: { x: 0, y: 0 }, // Store starting position for teleport
             watering_hole: null, // Will be populated from CSV
-            wordEmojiPairs: [], // Will be populated from Word-List.txt
-            distractors: {}, // Will be populated from distractors.txt
             usedWords: [], // Track words used in current level to prevent repetition
             difficultyMode: 'hard', // easy, medium, hard
             testMode: false, // Test mode for alternative starting positions
@@ -1114,11 +1025,9 @@ PIG 🐖`;
             loadCharacterBonusSprite(game.selectedDifficulty);
             
             console.log('Starting maze data loading...');
-            // Load maze data, word list, distractors, and digraph data (for Level 3) in parallel
+            // Load maze data and conditional puzzle data in parallel
             const loadPromises = [
-                loadMazeFromCSV(),
-                loadWordListFromFile(),
-                loadDistractorsFromFile()
+                loadMazeFromCSV()
             ];
             
             // Add digraph data loading for levels that have digraph puzzles
@@ -1129,13 +1038,9 @@ PIG 🐖`;
             
             const results = await Promise.all(loadPromises);
             const mazeData = results[0];
-            const wordList = results[1];
-            const distractors = results[2];
-            const digraphData = results[3]; // Will be undefined if not loaded
+            const digraphData = results[1]; // Will be undefined if not loaded
             
             console.log(`Loaded maze data:`, mazeData);
-            console.log(`Loaded word list:`, wordList);
-            console.log(`Loaded distractors:`, distractors);
             console.log(`Doors found: ${mazeData.doors?.length || 0}`);
             console.log(`Paths found: ${mazeData.paths?.length || 0}`);
             
@@ -1146,8 +1051,6 @@ PIG 🐖`;
             
             // Store original maze for wall restoration during rocket boost
             game.originalMaze = JSON.parse(JSON.stringify(mazeData.maze || []));
-            game.wordEmojiPairs = wordList;
-            game.distractors = distractors;
             
             // Store digraph data if this level has digraph puzzles and data was loaded
             if (digraphConfig && digraphData) {
@@ -1871,7 +1774,7 @@ PIG 🐖`;
         });
         
         // Keyboard controls
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', async (e) => {
             // Don't allow movement if puzzle is active or during boost transitions
             if (game.puzzleActive) return;
             if (game.boostTransitionState === 'starting' || game.boostTransitionState === 'ending') return;
@@ -1954,7 +1857,7 @@ PIG 🐖`;
                             }
                         } else if (blockingDoor.type === 'word_emoji_matching') {
                             // Use modular system for word-emoji matching
-                            const usedModular = showWordEmojiPuzzle(blockingDoor);
+                            const usedModular = await showWordEmojiPuzzle(blockingDoor);
                             if (!usedModular) {
                                 showPuzzle(blockingDoor.type, blockingDoor);
                             }
@@ -2028,12 +1931,12 @@ PIG 🐖`;
         }
         
         // Word-Emoji Puzzle Integration - Only for word_emoji_matching type
-        function showWordEmojiPuzzle(door) {
+        async function showWordEmojiPuzzle(door) {
             // Only handle word_emoji_matching door type (Levels 1-2)
             if (door.type === 'word_emoji_matching') {
                 console.log(`Using modular word-emoji puzzle for door type: ${door.type}`);
                 const puzzle = new WordEmojiPuzzle(door);
-                puzzle.render();
+                await puzzle.render();
                 return true; // Indicates modular system was used
             }
             

@@ -1,27 +1,30 @@
 
 ### Current Puzzle Types
 
-**Important**: Puzzle types are **dynamically assigned to levels** via `game-config.json`. There are no hardcoded level-to-puzzle mappings. Each level's `grid.csv` file contains puzzle type codes that determine which puzzles appear in that level.
+**Puzzle-to-Level Mapping**: All puzzle assignments are controlled by `game-config.json` only. Each level specifies an ordered array of puzzle types in its configuration. The game uses **generic obstacle codes** (`ob1`, `ob2`, etc.) in `grid.csv` files that map to puzzle types based on the configuration array order. Textures are also generic (`obstacle1.png`, `obstacle2.png`, etc.) allowing the same asset files to work with any puzzle type.
+
+**Example**: If Level 1 config has `["number_line", "word_emoji_matching"]`, then `ob1` in the grid maps to number_line puzzles and `ob2` maps to word_emoji puzzles.
 
 #### 1. Word Emoji Matching
-- **Grid Code**: "we"
-- **Texture**: `we.png`
-- **Configuration**: `Word-List.txt` in level folder
+- **Word Lists**: Centralized in `word-lists/` directory with difficulty categories:
+  - `beginner.txt` - Simple 3-letter words
+  - `intermediate.txt` - Expanded vocabulary including 4-letter words  
+  - `advanced.txt` - Complex words, compound words, numbers
+- **Configuration**: Each level specifies `wordListLevel` property (e.g., "beginner", "intermediate", "advanced")
+- **Distractors**: Shared `word-lists/distractors.txt` for all levels
+- **Loading**: On-demand with class-level caching - loads once per word list level per session
 - **Mechanics**: Show word, select matching emoji from 3 options
 - **Wrong Answers**: Must start with same letter/sound as correct answer
-- **Fallback**: Uses `distractors.txt` when insufficient options
+- **Word Tracking**: Prevents repetition within level, resets when all words used
+- **Fallback**: Built-in hardcoded word list if file loading fails
 
 #### 2. Simple Math Puzzle
-- **Grid Code**: "ma"
-- **Texture**: `ma.png`
 - **Configuration**: Main config file
 - **Mechanics**: A+B=? or A-B=? with 3 answer options
 - **Constraints**: |R-W|<4 for wrong answers to prevent guessing
 - **Ranges**: A, B, and C ranges configurable per level
 
 #### 3. Digraph Puzzle
-- **Grid Code**: "ds"
-- **Texture**: `ds.png`
 - **Configuration**: Main config file + root directory data files
 - **Mechanics**: Show 2-letter combination, select emoji with that sound
 - **Audio**: Speaker button for pronunciation hints
@@ -29,8 +32,6 @@
 - **Logic**: Avoids similar-sounding wrong answers (SK/SC pairs, PH vs FL/FR sounds)
 
 #### 4. Number Line Puzzle
-- **Grid Code**: "nl"
-- **Texture**: `nl.png`
 - **Configuration**: Main config file
 - **Mechanics**: A+B=? or A-B=? with visual number line for calculation
 - **Extended Form**: Three-term problems (A+B+C, A-B+C, A+B-C)
@@ -38,8 +39,6 @@
 - **Answer Options**: 3 choices with same wrong answer constraints as simple math
 
 #### 5. Division Puzzle
-- **Grid Code**: "dv"
-- **Texture**: `dv.png`
 - **Configuration**: Main config file
 - **Mechanics**: A÷B=? with two-part completion requirement
 - **Visual Part**: Distribute A purple dots into B red squares equally
@@ -49,8 +48,6 @@
 - **Constraints**: A÷A limited to A>6, A÷1 limited to A>5
 
 #### 6. Multiplication Puzzle
-- **Grid Code**: "mg"
-- **Texture**: `mg.png`
 - **Configuration**: Main config file
 - **Mechanics**: A×B=? with two-part completion requirement
 - **Visual Part**: Create A groups of B dots OR B groups of A dots
@@ -60,8 +57,6 @@
 - **Constraints**: A×1 limited to A>6
 
 #### 7. Letter Identification Puzzle
-- **Grid Code**: "li"
-- **Texture**: `li.png`
 - **Configuration**: Main config file
 - **Mechanics**: Given a capital letter, select the matching lower case letter and select the matching phonic sound
 - **Part 1**: select correct lower case letter out of 3 options
