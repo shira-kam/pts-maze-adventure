@@ -1,8 +1,6 @@
 {
   "puzzles": {
     "simple_arithmetic": {
-      "doorType": "ma",
-      "texture": "ma.png",
       "operations": ["addition", "subtraction"],
       "limits": {
         "maxA": 10,
@@ -16,8 +14,6 @@
       }
     },
     "word_emoji_matching": {
-      "doorType": "we",
-      "texture": "we.png",
       "tracking": {
         "preventRepetition": true,
         "usedWords": [],
@@ -25,8 +21,6 @@
       }
     },
     "number_line": {
-      "doorType": "nl",
-      "texture": "nl.png",
       "operations": ["addition", "subtraction"],
       "numberLine": {
         "length": 12,
@@ -43,8 +37,6 @@
       }
     },
     "digraph_sounds": {
-      "doorType": "ds",
-      "texture": "ds.png",
       "digraphs": ["CH", "TH", "SH", "WH", "PH", "GH"],
       "tracking": {
         "preventRepetition": true,
@@ -53,8 +45,6 @@
       }
     },
     "division_visual": {
-      "doorType": "dv",
-      "texture": "dv.png",
       "division": {
         "maxA": 12,
         "maxB": 10,
@@ -68,8 +58,6 @@
       }
     },
     "multiplication_groups": {
-      "doorType": "mg",
-      "texture": "mg.png",
       "operations": ["multiplication"],
       "multiplication": {
         "maxProduct": 20,
@@ -84,8 +72,6 @@
       }
     },
     "letter_identification": {
-      "doorType": "li",
-      "texture": "li.png",
       "tracking": {
         "preventRepetition": true,
         "maxAttempts": 3,
@@ -96,8 +82,9 @@
   "levels": {
     "1": {
       "playable": true,
-      "puzzles": {
-       "number_line": {
+      "puzzles": [
+        {
+          "type": "number_line",
           "operations": ["addition"],
           "numberLine": {
             "length": 10,
@@ -108,14 +95,15 @@
             "maxResult": 10
           }
         },
-        "word_emoji_matching": {
+        {
+          "type": "word_emoji_matching",
           "tracking": {
             "preventRepetition": true,
             "usedWords": [],
             "trackingScope": "level"
           }
         }
-      },
+      ],
       "assets": {
         "celebration": {
           "frames": 9,
@@ -131,8 +119,9 @@
     },
     "2": {
       "playable": true,
-      "puzzles": {
-      "number_line": {
+      "puzzles": [
+        {
+          "type": "number_line",
           "operations": ["addition", "subtraction"],
           "numberLine": {
             "length": 10,
@@ -143,14 +132,15 @@
             "maxResult": 10
           }
         },
-        "word_emoji_matching": {
+        {
+          "type": "word_emoji_matching",
           "tracking": {
             "preventRepetition": true,
             "usedWords": [],
             "trackingScope": "level"
           }
         }
-      },
+      ],
       "assets": {
         "celebration": {
           "frames": 62,
@@ -166,8 +156,9 @@
     },
     "3": {
       "playable": true,
-      "puzzles": {
-      "number_line": {
+      "puzzles": [
+        {
+          "type": "number_line",
           "operations": ["addition", "subtraction"],
           "numberLine": {
             "length": 12,
@@ -178,14 +169,15 @@
             "maxResult": 12
           }
         },
-        "word_emoji_matching": {
+        {
+          "type": "word_emoji_matching",
           "tracking": {
             "preventRepetition": true,
             "usedWords": [],
             "trackingScope": "level"
           }
         }
-      },
+      ],
       "assets": {
         "celebration": {
           "frames": 41,
@@ -201,8 +193,9 @@
     },
     "4": {
       "playable": true,
-      "puzzles": {
-        "number_line": {
+      "puzzles": [
+        {
+          "type": "number_line",
           "operations": ["addition", "subtraction"],
           "numberLine": {
             "length": 15,
@@ -213,7 +206,7 @@
             "maxResult": 15
           }
         }
-      },
+      ],
       "assets": {
         "celebration": {
           "frames": 62,
@@ -229,11 +222,9 @@
     },
     "5": {
       "playable": true,
-      "puzzles": {
-        "digraph_sounds": {
-          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
-        },
-        "number_line": {
+      "puzzles": [
+        {
+          "type": "number_line",
           "operations": ["addition", "subtraction"],
           "numberLine": {
             "length": 17,
@@ -243,8 +234,12 @@
             "maxB": 16,
             "maxResult": 17
           }
+        },
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
         }
-      },
+      ],
       "assets": {
         "celebration": {
           "frames": 52,
@@ -260,11 +255,9 @@
     },
     "6": {
       "playable": true,
-      "puzzles": {
-        "digraph_sounds": {
-          "digraphs": ["TR", "PR", "GR", "FR", "DR", "CR", "BR"]
-        },
-        "number_line": {
+      "puzzles": [
+        {
+          "type": "number_line",
           "operations": ["addition", "subtraction"],
           "numberLine": {
             "length": 20,
@@ -274,8 +267,12 @@
             "maxB": 19,
             "maxResult": 20
           }
+        },
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["TR", "PR", "GR", "FR", "DR", "CR", "BR"]
         }
-      },
+      ],
       "assets": {
         "celebration": {
           "frames": 30,
@@ -291,11 +288,13 @@
     },
     "7": {
       "playable": true,
-      "puzzles": {
-        "digraph_sounds": {
+      "puzzles": [
+        {
+          "type": "digraph_sounds",
           "digraphs": ["CH", "TH", "SH", "WH", "PH"]
         },
-        "number_line": {
+        {
+          "type": "number_line",
           "operations": ["addition", "subtraction"],
           "numberLine": {
             "length": 20,
@@ -306,7 +305,7 @@
             "maxResult": 20
           }
         }
-      },
+      ],
       "assets": {
         "celebration": {
           "frames": 28,
@@ -322,8 +321,9 @@
     },
     "8": {
       "playable": true,
-      "puzzles": {
-        "division_visual": {
+      "puzzles": [
+        {
+          "type": "division_visual",
           "division": {
             "maxA": 15,
             "maxB": 15,
@@ -332,7 +332,8 @@
             "excludeA1": true
           }
         },
-        "number_line": {
+        {
+          "type": "number_line",
           "operations": ["addition", "subtraction"],
           "numberLine": {
             "length": 20,
@@ -346,7 +347,7 @@
             "equationType": "triple_add"
           }
         }
-      },
+      ],
       "assets": {
         "celebration": {
           "frames": 24,
@@ -362,22 +363,26 @@
     },
     "9": {
       "playable": true,
-      "puzzles": {
-        "division_visual": {
+      "puzzles": [
+        {
+          "type": "division_visual",
           "division": {
             "maxA": 15,
-            "maxB": 12,
-            "maxAnswer": 10
+            "maxB": 15,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
           }
         },
-        "word_emoji_matching": {
+        {
+        "type": "word_emoji_matching",
           "tracking": {
             "preventRepetition": true,
             "usedWords": [],
             "trackingScope": "level"
           }
         }
-      },
+      ],
       "assets": {
         "celebration": {
           "frames": 27,
@@ -393,15 +398,19 @@
     },
     "10": {
       "playable": true,
-      "puzzles": {
-        "division_visual": {
+       "puzzles": [
+        {
+          "type": "division_visual",
           "division": {
             "maxA": 20,
-            "maxB": 15,
-            "maxAnswer": 10
+            "maxB": 20,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
           }
         },
-        "multiplication_groups": {
+        {
+          "type": "multiplication_groups",
           "operations": ["multiplication"],
           "multiplication": {
             "maxProduct": 20,
@@ -410,7 +419,7 @@
             "excludeOne": true
           }
         }
-      },
+      ],
       "assets": {
         "celebration": {
           "frames": 53,
@@ -426,15 +435,51 @@
     },
     "11": {
       "playable": true,
-      "puzzles": {
-        "letter_identification": {
+      "puzzles": [
+        {
+          "type": "letter_identification",
           "tracking": {
             "preventRepetition": true,
             "usedLetters": [],
             "trackingScope": "level"
           }
         }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 54,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
       },
+      "animation": {
+        "frameDelay": 20
+      }
+    },
+    "12": {
+      "playable": false,
+      "puzzles": [
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        },
+        {
+          "type": "multiplication_groups",
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 20,
+            "minFactor": 2,
+            "maxFactor": 10,
+            "excludeOne": true
+          }
+        }
+      ],
       "assets": {
         "celebration": {
           "frames": 54,

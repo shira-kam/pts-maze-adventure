@@ -150,3 +150,7 @@
 🚚,truck
 🌲,tree
 🗑️,trash
+🤿, snorkel
+🐚, shell
+３, three
+👗, dress

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elephant Maze Adventure</title>
+    <title>Maze of Marvels</title>
     <link rel="stylesheet" href="styles.css?v=5">
     <style>
         
@@ -49,15 +49,28 @@
         </div>
     </div>
     
-    <div id="difficultyScreen">
-        <div id="difficultyContent">
-            <div id="difficultyTitle">Choose Your Difficulty</div>
-            <button class="difficulty-button easy" onclick="selectDifficulty('easy')">Easy Peasy 🫛</button>
-            <button class="difficulty-button medium" onclick="selectDifficulty('medium')">Neutral 😐</button>
-            <button class="difficulty-button hard" onclick="selectDifficulty('hard')">Hard Mode 🙀</button>
-            <button id="backToCharacterBtn" onclick="backToCharacterSelection()">←</button>
-        </div>
-    </div>
+   <div id="difficultyScreen">
+  <div id="difficultyContent">
+    <div id="difficultyTitle">Choose Your Difficulty</div>
+
+    <button class="difficulty-button easy" onclick="selectDifficulty('easy')">
+      <div class="circle">🫛</div>
+      <div class="label">Easy Peasy</div>
+    </button>
+
+    <button class="difficulty-button medium" onclick="selectDifficulty('medium')">
+      <div class="circle">😐</div>
+      <div class="label">Neutral</div>
+    </button>
+
+    <button class="difficulty-button hard" onclick="selectDifficulty('hard')">
+      <div class="circle">🙀</div>
+      <div class="label">Hard Mode</div>
+    </button>
+
+    <button id="backToCharacterBtn" onclick="backToCharacterSelection()">←</button>
+  </div>
+</div>
     
     <div id="levelSelectionScreen">
         <div id="levelSelectionContent">
@@ -238,46 +251,28 @@
                         case 'o':
                             paths.push({ x, y, width: 40, height: 40 });
                             break;
-                        case 'ma':
-                            doors.push({ x, y, type: 'simple_arithmetic', open: false, color: '#FF6B6B' });
-                            // Add path under door for walkability
-                            paths.push({ x, y, width: 40, height: 40 });
+                        case 'ob1':
+                        case 'ob2':
+                        case 'ob3':
+                        case 'ob4':
+                        case 'ob5': {
+                            // Get puzzle type from obstacle code using current level
+                            const puzzleType = configManager.getPuzzleTypeFromObstacle(game.selectedDifficulty, cellValue);
+                            if (puzzleType) {
+                                doors.push({ 
+                                    x, y, 
+                                    type: puzzleType, 
+                                    obstacleCode: cellValue,
+                                    open: false, 
+                                    color: '#FF6B6B' 
+                                });
+                                // Add path under door for walkability
+                                paths.push({ x, y, width: 40, height: 40 });
+                            } else {
+                                console.warn(`No puzzle type found for obstacle ${cellValue} in level ${game.selectedDifficulty}`);
+                            }
                             break;
-                        case 'nl':
-                            doors.push({ x, y, type: 'number_line', open: false, color: '#FF6B6B' });
-                            // Add path under door for walkability
-                            paths.push({ x, y, width: 40, height: 40 });
-                            break;
-                        case 'nt':
-                            doors.push({ x, y, type: 'nt', open: false, color: '#FF6B6B' });
-                            // Add path under door for walkability
-                            paths.push({ x, y, width: 40, height: 40 });
-                            break;
-                        case 'mg':
-                            doors.push({ x, y, type: 'multiplication_groups', open: false, color: '#FF6B6B' });
-                            // Add path under door for walkability
-                            paths.push({ x, y, width: 40, height: 40 });
-                            break;
-                        case 'li':
-                            doors.push({ x, y, type: 'letter_identification', open: false, color: '#4ECDC4' });
-                            // Add path under door for walkability
-                            paths.push({ x, y, width: 40, height: 40 });
-                            break;
-                        case 'we':
-                            doors.push({ x, y, type: 'word_emoji_matching', open: false, color: '#4ECDC4' });
-                            // Add path under door for walkability
-                            paths.push({ x, y, width: 40, height: 40 });
-                            break;
-                        case 'ds':
-                            doors.push({ x, y, type: 'digraph_sounds', open: false, color: '#4ECDC4' });
-                            // Add path under door for walkability
-                            paths.push({ x, y, width: 40, height: 40 });
-                            break;
-                        case 'dv':
-                            doors.push({ x, y, type: 'division_visual', open: false, color: '#4ECDC4' });
-                            // Add path under door for walkability
-                            paths.push({ x, y, width: 40, height: 40 });
-                            break;
+                        }
                         case 'w':
                             watering_hole = { x, y };
                             // Add path under watering hole for walkability
@@ -1779,33 +1774,14 @@ PIG 🐖`;
                 if (!door.open) {
                     let doorTexture = null;
                     
-                    // Select appropriate texture based on door type using config manager
-                    const doorType = configManager.getPuzzleDoorType(door.type);
-                    switch (doorType) {
-                        case 'ma':
-                            doorTexture = textures.ma;
-                            break;
-                        case 'we':
-                            doorTexture = textures.we;
-                            break;
-                        case 'nl':
-                            doorTexture = textures.nl;
-                            break;
-                        case 'ds':
-                            doorTexture = textures.ds;
-                            break;
-                        case 'dv':
-                            doorTexture = textures.dv;
-                            break;
-                        case 'mg':
-                            doorTexture = textures.mg;
-                            break;
-                        case 'li':
-                            doorTexture = textures.li;
-                            break;
-                        default:
-                            doorTexture = null;
-                            break;
+                    // Use obstacle-based texture loading
+                    if (door.obstacleCode) {
+                        const obstacleNumber = door.obstacleCode.replace('ob', ''); // ob1 -> 1, ob2 -> 2, etc.
+                        const textureName = `obstacle${obstacleNumber}`;
+                        doorTexture = textures[textureName];
+                    } else {
+                        console.warn('Door missing obstacleCode, cannot determine texture');
+                        doorTexture = null;
                     }
                     
                     // Draw door texture or fallback color

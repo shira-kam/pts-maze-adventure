@@ -1,4 +1,4 @@
-/* PT's Maze Adventure - Design System */
+/* Maze of Marvels - Design System */
 /* Global CSS extraction with design tokens */
 
 /* ========================================
@@ -7,15 +7,15 @@
 
 :root {
     /* Typography */
-    --font-primary: 'Comic Sans MS', cursive, sans-serif;
+    --font-primary: 'Helvetica', 'Arial', sans-serif;
     --font-size-xl: 32px;
     --font-size-lg: 24px;
     --font-weight-bold: bold;
     
     /* Colors */
-    --color-primary: #2E8B57;
-    --color-success: #4CAF50;
-    --color-success-hover: #45a049;
+    --color-primary: #013089;
+    --color-success: #013089;
+    --color-success-hover: #00215F;
     --color-white: white;
     --color-light-gray: #f8f9fa;
     
@@ -54,7 +54,6 @@
     text-align: center;
     margin-bottom: var(--spacing-lg);
     font-weight: var(--font-weight-bold);
-    text-shadow: var(--text-shadow);
 }
 
 /* ========================================
@@ -95,8 +94,8 @@
 
 /* Character Selection Buttons */
 .character-button {
-    background: #f0f8ff;
-    border: 3px solid var(--color-primary);
+    background: #ffffff;
+    border: 6px solid #013089;
     border-radius: var(--border-radius);
     padding: 20px;
     width: 200px;
@@ -116,7 +115,7 @@
 .character-button:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    border-color: #228B22;
+    border-color: #00215F;
     background: #e6f3ff;
 }
 
@@ -150,8 +149,8 @@
 /* Back to Character Button */
 #backToCharacterBtn {
     background: var(--color-white);
-    color: black;
-    border: 2px solid #ddd;
+    color: var(--color-primary);
+    border: 3px solid var(--color-primary);
     padding: 0;
     width: 64px;
     height: 64px;
@@ -170,7 +169,7 @@
 }
 
 #backToCharacterBtn:hover {
-    background: #f5f5f5;
+    background: #e6f3ff;
     transform: translateY(-2px);
 }
 
@@ -201,47 +200,71 @@
     box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
-/* Difficulty Selection Buttons */
 .difficulty-button {
-    background: var(--color-success);
-    color: var(--color-white);
-    border: none;
-    padding: 25px 40px;
-    margin: var(--spacing-md);
-    border-radius: 25px;
-    font-size: 24px;
-    cursor: pointer;
-    font-family: var(--font-primary);
-    font-weight: var(--font-weight-bold);
-    min-width: 250px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    transition: var(--transition);
+  --button-color: #007BFF; /* default fallback */
+  
+  position: relative;
+  width: 320px;
+  height: 120px;
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-primary, sans-serif);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 16px auto;
 }
 
-.difficulty-button:hover {
-    background: var(--color-success-hover);
-    transform: scale(1.05);
+/* Circle with emoji */
+.difficulty-button .circle {
+  width: 120px;
+  height: 120px;
+  background: white;
+  border: 4px solid var(--button-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 54pt;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+/* Rectangle label */
+.difficulty-button .label {
+  height: 88px;
+  width: 276px;
+  margin-left: -44px;
+  background: var(--button-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  padding-left: 50px;
+  border-radius: 0 44px 44px 0;
+  font-size: 24px;
+  font-weight: bold;
+  z-index: 1;
 }
 
 .difficulty-button.easy {
-    background: var(--color-success);
+  --button-color: #28a745;
 }
-
 .difficulty-button.medium {
-    background: #FF9800;
+  --button-color: #FFAF1C;
+}
+.difficulty-button.hard {
+  --button-color: #dc3545;
 }
 
-.difficulty-button.hard {
-    background: #F44336;
-}
 
 /* Back to Difficulty Button */
 #backToDifficultyBtn {
     background: var(--color-white);
-    color: black;
-    border: 2px solid #ddd;
+    color: var(--color-primary);
+    border: 3px solid var(--color-primary);
     padding: 0;
     width: 64px;
     height: 64px;
@@ -260,7 +283,7 @@
 }
 
 #backToDifficultyBtn:hover {
-    background: #f5f5f5;
+    background: #e6f3ff;
     transform: translateY(-2px);
 }
 
@@ -304,8 +327,8 @@
 
 /* Level Selection Buttons */
 .level-button-new {
-    width: 200px;
-    height: 200px;
+    width: 180px;
+    height: 180px;
     border: 6px solid #1565C0;
     border-radius: 20px;
     padding: 0;
@@ -320,6 +343,7 @@
 }
 
 .level-button-new:hover {
+    background: #e6f3ff;
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     border-color: #0D47A1;
@@ -591,7 +615,6 @@
     font-size: var(--font-size-xl);
     color: var(--color-primary);
     margin-bottom: var(--spacing-lg);
-    text-shadow: var(--text-shadow);
     font-family: var(--font-primary);
     font-weight: var(--font-weight-bold);
 }
@@ -605,7 +628,6 @@
     margin: 5px 0;
     background: #f0f8ff;
     border-radius: var(--spacing-sm);
-    border-left: 5px solid var(--color-success);
 }
 
 .level-wall-block {
@@ -637,8 +659,6 @@
     margin-top: var(--spacing-lg);
     padding: 20px;
     background: #e6f3ff;
-    border-radius: var(--border-radius);
-    border: 3px solid var(--color-success);
 }
 
 #totalScoreText {
@@ -649,7 +669,7 @@
 }
 
 #finalScoreBtn {
-    background: var(--color-success);
+    background: var(--color-primary);
     color: var(--color-white);
     border: none;
     padding: 20px 40px;
@@ -686,7 +706,6 @@ body {
 /* Main Page Title */
 h1 {
     color: var(--color-primary);
-    text-shadow: var(--text-shadow);
     margin-bottom: var(--spacing-sm);
 }
 
@@ -785,7 +804,7 @@ h1 {
 
 /* Play Again Button */
 #playAgainBtn {
-    background: var(--color-success);
+    background: var(--color-primary);
     color: var(--color-white);
     border: none;
     padding: var(--spacing-md) var(--spacing-lg);

@@ -106,13 +106,19 @@ class ConfigManager {
         // Start with default puzzle configuration
         const defaultConfig = JSON.parse(JSON.stringify(this.gameConfig.puzzles[puzzleType]));
         
-        // Get level-specific overrides
+        // Get level-specific overrides from the puzzle array
         const levelConfig = this.getLevelConfig(level);
-        if (levelConfig && levelConfig.puzzles && levelConfig.puzzles[puzzleType]) {
-            const levelOverrides = levelConfig.puzzles[puzzleType];
-            
-            // Deep merge level overrides with defaults
-            return this.deepMerge(defaultConfig, levelOverrides);
+        if (levelConfig && levelConfig.puzzles && Array.isArray(levelConfig.puzzles)) {
+            // Find the specific puzzle in the array
+            const levelPuzzle = levelConfig.puzzles.find(puzzle => puzzle.type === puzzleType);
+            if (levelPuzzle) {
+                // Create a copy without the 'type' property for merging
+                const levelOverrides = { ...levelPuzzle };
+                delete levelOverrides.type;
+                
+                // Deep merge level overrides with defaults
+                return this.deepMerge(defaultConfig, levelOverrides);
+            }
         }
 
         return defaultConfig;
@@ -313,36 +319,61 @@ class ConfigManager {
     }
 
     /**
-     * Get the door type for a puzzle type
-     * @param {string} puzzleType - Puzzle type (e.g., 'simple_arithmetic')
-     * @returns {string} Door type (e.g., 'ma')
+     * Get puzzle mapping array for a level
+     * @param {number} level - Level number
+     * @returns {string[]} Array of puzzle types in order (e.g., ['number_line', 'word_emoji_matching'])
      */
-    getPuzzleDoorType(puzzleType) {
-        if (!this.gameConfig || !this.gameConfig.puzzles || !this.gameConfig.puzzles[puzzleType]) {
-            console.warn(`No puzzle config found for type: ${puzzleType}`);
-            return null;
+    getPuzzleMapping(level) {
+        const levelConfig = this.getLevelConfig(level);
+        if (!levelConfig || !levelConfig.puzzles || !Array.isArray(levelConfig.puzzles)) {
+            console.warn(`No puzzle array found for level ${level}`);
+            return [];
         }
-        const doorType = this.gameConfig.puzzles[puzzleType].doorType;
-        return doorType;
+        
+        return levelConfig.puzzles.map(puzzle => puzzle.type);
     }
 
     /**
-     * Get puzzle type by door type
-     * @param {string} doorType - Door type (e.g., 'ma')
-     * @returns {string} Puzzle type (e.g., 'simple_arithmetic')
+     * Get obstacle code for a puzzle type in a specific level
+     * @param {number} level - Level number
+     * @param {string} puzzleType - Puzzle type (e.g., 'simple_arithmetic')
+     * @returns {string|null} Obstacle code (e.g., 'ob1', 'ob2') or null if not found
      */
-    getPuzzleTypeByDoorType(doorType) {
-        if (!this.gameConfig || !this.gameConfig.puzzles) {
+    getObstacleCode(level, puzzleType) {
+        const puzzleMapping = this.getPuzzleMapping(level);
+        const index = puzzleMapping.indexOf(puzzleType);
+        
+        if (index === -1) {
+            console.warn(`Puzzle type '${puzzleType}' not found in level ${level}`);
             return null;
         }
         
-        for (const puzzleType in this.gameConfig.puzzles) {
-            if (this.gameConfig.puzzles[puzzleType].doorType === doorType) {
-                return puzzleType;
-            }
+        return `ob${index + 1}`; // ob1, ob2, ob3, etc.
+    }
+
+    /**
+     * Get puzzle type from obstacle code for a specific level
+     * @param {number} level - Level number
+     * @param {string} obstacleCode - Obstacle code (e.g., 'ob1', 'ob2')
+     * @returns {string|null} Puzzle type or null if not found
+     */
+    getPuzzleTypeFromObstacle(level, obstacleCode) {
+        // Extract number from obstacle code (ob1 -> 1, ob2 -> 2, etc.)
+        const match = obstacleCode.match(/^ob(\d+)$/);
+        if (!match) {
+            console.warn(`Invalid obstacle code format: ${obstacleCode}`);
+            return null;
         }
         
-        return null;
+        const obstacleIndex = parseInt(match[1]) - 1; // Convert to 0-based index
+        const puzzleMapping = this.getPuzzleMapping(level);
+        
+        if (obstacleIndex < 0 || obstacleIndex >= puzzleMapping.length) {
+            console.warn(`Obstacle index ${obstacleIndex + 1} out of range for level ${level}`);
+            return null;
+        }
+        
+        return puzzleMapping[obstacleIndex];
     }
 
     /**
@@ -359,14 +390,10 @@ class ConfigManager {
 
         const textures = ['wall', 'open', 'endpoint']; // Always needed
 
-        // Add puzzle-specific textures based on level configuration
-        if (levelConfig.puzzles) {
-            for (const puzzleType in levelConfig.puzzles) {
-                const puzzleConfig = this.gameConfig.puzzles[puzzleType];
-                if (puzzleConfig && puzzleConfig.doorType) {
-                    textures.push(puzzleConfig.doorType);
-                }
-            }
+        // Add generic obstacle textures based on puzzle count
+        const puzzleMapping = this.getPuzzleMapping(level);
+        for (let i = 0; i < puzzleMapping.length; i++) {
+            textures.push(`obstacle${i + 1}`); // obstacle1.png, obstacle2.png, etc.
         }
 
         // Add asset-specific textures
@@ -379,7 +406,7 @@ class ConfigManager {
             }
         }
 
-        // console.log(`Level ${level} required textures:`, textures);
+        console.log(`Level ${level} required textures:`, textures);
         return textures;
     }
 }

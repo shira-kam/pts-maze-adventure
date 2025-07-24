@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 1. Project Overview & Setup
 
-"PT's Maze Adventure" is a sophisticated educational HTML5 Canvas maze game featuring multiple playable characters. The game spans 11 levels with progressive difficulty, incorporating multiple educational puzzle types, advanced movement mechanics, comprehensive scoring systems, and extensive debug capabilities. Built as a single-page application with no external dependencies and fully dynamic character support.
+"Maze of Marvels" is a sophisticated educational HTML5 Canvas maze game featuring multiple playable characters. The game spans 11 levels with progressive difficulty, incorporating multiple educational puzzle types, advanced movement mechanics, comprehensive scoring systems, and extensive debug capabilities. Built as a single-page application with no external dependencies and fully dynamic character support.
 
 ### Live Game Access
 **🎉 PLAY ONLINE**: https://shira-kam.github.io/pts-maze-adventure/
@@ -106,6 +106,32 @@ The game is designed to be fully configurable through a main JSON configuration 
 - **Level discovery**: Game reads configuration to determine available levels
 - **Fallback handling**: Graceful degradation when assets are missing
 
+### Generic Obstacle-Based Asset Loading Architecture
+
+**Configuration Structure:**
+```json
+"levels": {
+  "1": {
+    "puzzles": [
+      {"type": "number_line", "operations": ["addition"]},
+      {"type": "word_emoji_matching"}
+    ]
+  }
+}
+```
+
+**Key Benefits:**
+- **Simplified Level Creation**: Drop in `obstacle1.png`, `obstacle2.png` - no puzzle-specific naming required
+- **Dynamic Puzzle Assignment**: Reorder config array to change which puzzle appears where
+- **No Hardcoded Mappings**: System works with any puzzle type at any position
+- **Future-Proof**: Easy to add new puzzle types or levels without code changes
+
+**Asset Mapping Functions:**
+- `getPuzzleMapping(level)` - Returns ordered array of puzzle types for a level
+- `getObstacleCode(level, puzzleType)` - Maps puzzle type to grid code (ob1, ob2, etc.)
+- `getPuzzleTypeFromObstacle(level, obstacleCode)` - Maps grid code to puzzle type
+- `getRequiredTextures(level)` - Returns generic texture names needed for level
+
 ## 4. Game Features
 
 ### Difficulty Settings
@@ -123,19 +149,23 @@ Chosen at session start and applied to all levels completed during the session:
 
 ### Level Structure
 **Level Assets:**
-- **`grid.csv`**: Maze layout with texture codes
+- **`grid.csv`**: Maze layout with generic obstacle codes
 - **`Word-List.txt`**: Educational content for word-emoji puzzles
-- **Texture files**: `open.png`, `wall.png`, `endpoint.png`, etc.
+- **Core textures**: `open.png`, `wall.png`, `endpoint.png`
+- **Generic obstacle textures**: `obstacle1.png`, `obstacle2.png`, etc.
 - **`celebrate.png`**: Level-specific celebration animation
-- **Special textures**: `heart.png`, `bonus.png`, puzzle-specific textures
+- **Special textures**: `heart.png`, `bonus.png` (when applicable)
 
-**Texture System:**
+**Generic Obstacle-Based Texture System:**
 - **Path**: `open.png` (denoted by "o" in grid)
 - **Wall**: `wall.png` (denoted by empty space in grid)
 - **Endpoint**: `endpoint.png` (denoted by "w" in grid)
 - **Hearts**: `heart.png` (denoted by "h" in grid) - Adds 1 point to score, texture changes to open path
 - **Bonus**: `bonus.png` (denoted by "b" in grid) - Activates rocket boost mode
-- **Puzzles**: Various textures based on puzzle type codes
+- **Generic Obstacles**: `obstacle1.png`, `obstacle2.png`, etc. (denoted by "ob1", "ob2", etc. in grid)
+  - **Dynamic Mapping**: Grid codes map to puzzle types based on level configuration array order
+  - **Example**: In level 1, "ob1" → number_line puzzle, "ob2" → word_emoji puzzle
+  - **Example**: In level 7, "ob1" → digraph_sounds puzzle, "ob2" → number_line puzzle
 
 ### Special Features
 
@@ -243,14 +273,31 @@ All puzzles share common characteristics:
 - **Hardcoded values**: Replace with configuration-driven values
 
 ### Adding/Removing Levels
-**Adding New Levels:**
-1. Create level folder with required assets
-2. Add level entry to main configuration file
-3. Level automatically appears in game
+
+**Adding New Levels (Generic Obstacle System):**
+1. **Create level directory**: `level-X/` with required assets
+2. **Create grid file**: `grid.csv` using generic codes (`ob1`, `ob2`, etc.)
+3. **Add obstacle textures**: `obstacle1.png`, `obstacle2.png`, etc. (generic names)
+4. **Update configuration**: Add level entry to `game-config.json`
+   ```json
+   "X": {
+     "playable": true,
+     "puzzles": [
+       {"type": "puzzle_type_1", ...config...},
+       {"type": "puzzle_type_2", ...config...}
+     ]
+   }
+   ```
+5. **Array order determines mapping**: First puzzle → ob1, second → ob2, etc.
 
 **Removing Levels:**
-1. Remove level entry from main configuration file
+1. Remove level entry from `game-config.json`
 2. Level automatically removed from all game screens
+
+**Benefits of Generic System:**
+- **Same texture files work for any puzzle type**: No need for puzzle-specific naming
+- **Easy puzzle reordering**: Change array order in config to change obstacle mapping
+- **Consistent asset structure**: All levels use same generic texture naming convention
 
 ### Development Patterns
 **Adding Characters:**
@@ -290,6 +337,15 @@ All puzzles share common characteristics:
 - **`styles.css`**: Comprehensive design tokens and component library
 - **`design-system.html`**: Interactive showcase and testing page
 - **Keyboard shortcut**: `Shift + Ctrl + S` to access design system from game
+
+**Phase 3: Generic Obstacle-Based Asset Loading** ✅ **COMPLETED**
+- **Configuration restructure**: Converted puzzle configs from objects to ordered arrays
+- **Generic grid codes**: All levels use `ob1`, `ob2`, etc. instead of puzzle-specific codes
+- **Generic texture naming**: `obstacle1.png`, `obstacle2.png` instead of `ma.png`, `we.png`, etc.
+- **Dynamic puzzle mapping**: Same puzzle type can appear as different obstacles based on config order
+- **Asset mapping functions**: New ConfigManager functions for obstacle-to-puzzle translation
+- **Simplified level creation**: Level creators use consistent generic asset naming
+- **Future-proof architecture**: Easy to reorder puzzles or add new types without code changes
 
 ### Current Phase: Design System Implementation
 **Status**: 🔄 **FOUNDATION COMPLETE** - Design system created, ready for implementation
@@ -343,4 +399,4 @@ All puzzles share common characteristics:
 
 ---
 
-This documentation reflects the current state and future development roadmap for PT's Maze Adventure as a comprehensive, configuration-driven educational gaming platform.
+This documentation reflects the current state and future development roadmap for Maze of Marvels as a comprehensive, configuration-driven educational gaming platform.
