@@ -1864,8 +1864,8 @@ PIG 🐖`;
         document.addEventListener('keydown', (e) => {
             // Always prevent arrow keys from scrolling the page
             const key = e.key || e.code;
-            const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Up', 'Down', 'Left', 'Right'];
-            if (arrowKeys.includes(key)) {
+            const navigationKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Up', 'Down', 'Left', 'Right', 'w', 'W', 'a', 'A', 's', 'S', 'd', 'D'];
+            if (navigationKeys.includes(key)) {
                 e.preventDefault();
             }
         });
