@@ -2423,6 +2423,11 @@
             // Start the game loop
             gameLoop();
             
+            // Force hide all other screens and show character selection
+            document.getElementById('gameContainer').style.display = 'none';
+            document.getElementById('difficultyScreen').style.display = 'none';
+            document.getElementById('levelSelectionScreen').style.display = 'none';
+            
             // Show character selection screen as the first screen
             showCharacterSelection();
         });
