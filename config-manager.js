@@ -50,6 +50,87 @@ class ConfigManager {
     }
 
     /**
+     * Deep merge two objects
+     * @param {object} target - Target object
+     * @param {object} source - Source object to merge
+     * @returns {object} Merged object
+     */
+    deepMerge(target, source) {
+        const result = { ...target };
+        
+        for (const key in source) {
+            if (source.hasOwnProperty(key)) {
+                if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+                    // If both target and source have the key and both are objects, merge recursively
+                    if (result[key] && typeof result[key] === 'object') {
+                        result[key] = this.deepMerge(result[key], source[key]);
+                    } else {
+                        result[key] = source[key];
+                    }
+                } else {
+                    // For primitive values or arrays, replace directly
+                    result[key] = source[key];
+                }
+            }
+        }
+        
+        return result;
+    }
+
+    /**
+     * Update configuration with custom settings
+     * @param {object} customConfig - Custom configuration object
+     */
+    updateConfig(customConfig) {
+        if (!this.gameConfig) {
+            console.warn('No base config loaded, cannot update with custom config');
+            return;
+        }
+        
+        console.log('Updating game configuration with custom settings...');
+        console.log('Custom config to apply:', customConfig);
+        
+        // Deep merge custom config with existing config
+        this.gameConfig = this.deepMerge(this.gameConfig, customConfig);
+        
+        console.log('Game configuration updated successfully');
+        console.log('Updated levels:', this.gameConfig.levels);
+    }
+
+    /**
+     * Check if custom config is available and apply it
+     */
+    checkAndApplyCustomConfig() {
+        if (window.customGameConfig) {
+            console.log('Found custom game config, applying...');
+            this.updateConfig(window.customGameConfig);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Force reload configuration with custom settings
+     * Used when settings are applied mid-session
+     */
+    async reloadWithCustomConfig() {
+        if (window.customGameConfig) {
+            console.log('Reloading configuration with custom settings...');
+            
+            // Reload base config first
+            const response = await fetch('game-config.json');
+            if (response.ok) {
+                this.gameConfig = await response.json();
+                this.isLoaded = true;
+            }
+            
+            // Apply custom config
+            this.updateConfig(window.customGameConfig);
+            console.log('Configuration reloaded with custom settings');
+        }
+    }
+
+    /**
      * Get complete configuration for a specific level
      * @param {number} level - Level number
      * @returns {object} Level configuration object
@@ -325,6 +406,7 @@ class ConfigManager {
      */
     getPuzzleMapping(level) {
         const levelConfig = this.getLevelConfig(level);
+        
         if (!levelConfig || !levelConfig.puzzles || !Array.isArray(levelConfig.puzzles)) {
             console.warn(`No puzzle array found for level ${level}`);
             return [];

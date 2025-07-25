@@ -92,6 +92,74 @@
     flex-wrap: wrap;
 }
 
+#parentSettingsSection {
+    margin-top: 30px;
+    text-align: center;
+}
+
+#gameSettingsButton {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#gameSettingsButton:hover {
+    background: #545b62;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+#settingsAppliedMessage {
+    margin-top: 10px;
+    color: #28a745;
+    font-size: 14px;
+    font-weight: bold;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Settings Modal */
+#settingsModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#settingsModalContent {
+    width: 90%;
+    height: 90%;
+    max-width: 1200px;
+    max-height: 800px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+#settingsIframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
 /* Character Selection Buttons */
 .character-button {
     background: #ffffff;

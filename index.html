@@ -46,6 +46,21 @@
             <div id="characterButtons">
                 <!-- Character buttons will be generated dynamically -->
             </div>
+            <div id="parentSettingsSection">
+                <button id="gameSettingsButton" onclick="openGameSettings()">
+                    Game Settings (for parents)
+                </button>
+                <div id="settingsAppliedMessage" style="display: none;">
+                    ✅ Custom settings applied
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div id="settingsModal" style="display: none;" onclick="closeGameSettings()">
+        <div id="settingsModalContent" onclick="event.stopPropagation()">
+            <iframe id="settingsIframe" src="game-settings.html" frameborder="0"></iframe>
         </div>
     </div>
     
@@ -311,6 +326,8 @@
             // Load config if not already loaded
             if (!configManager.isConfigLoaded()) {
                 await configManager.loadConfig();
+                // Check for and apply custom config if available
+                configManager.checkAndApplyCustomConfig();
             }
             
             const characterConfig = configManager.getCharacterConfig(selectedCharacter);
@@ -736,6 +753,8 @@
             // Load config if not already loaded
             if (!configManager.isConfigLoaded()) {
                 await configManager.loadConfig();
+                // Check for and apply custom config if available
+                configManager.checkAndApplyCustomConfig();
             }
             
             // Get playable levels from config
@@ -825,6 +844,8 @@
             // Load config if not already loaded
             if (!configManager.isConfigLoaded()) {
                 await configManager.loadConfig();
+                // Check for and apply custom config if available
+                configManager.checkAndApplyCustomConfig();
             }
             
             // Get available characters from config
@@ -922,6 +943,56 @@
             // Show character selection screen
             document.getElementById('characterSelectionScreen').style.display = 'flex';
         }
+
+        // Game Settings Modal Functions
+        function openGameSettings() {
+            const modal = document.getElementById('settingsModal');
+            const iframe = document.getElementById('settingsIframe');
+            
+            // Reset iframe source to ensure fresh load
+            iframe.src = 'game-settings.html';
+            modal.style.display = 'flex';
+            
+            // Hide the settings applied message when opening settings
+            document.getElementById('settingsAppliedMessage').style.display = 'none';
+        }
+
+        function closeGameSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        // Functions called by the settings page
+        function returnToCharacterSelection() {
+            closeGameSettings();
+        }
+
+        async function applyCustomConfigAndStartGame(customConfig, selectedCharacter) {
+            // Store the custom config globally for the game to use
+            window.customGameConfig = customConfig;
+            
+            // Force reload the configuration with custom settings
+            if (configManager.isConfigLoaded()) {
+                await configManager.reloadWithCustomConfig();
+            }
+            
+            // Close the settings modal
+            closeGameSettings();
+            
+            // Show the settings applied message
+            const message = document.getElementById('settingsAppliedMessage');
+            message.style.display = 'block';
+            
+            // Auto-hide the message after 5 seconds
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 5000);
+            
+            console.log('Custom game config applied:', customConfig);
+        }
+
+        // Make functions available globally for iframe communication
+        window.returnToCharacterSelection = returnToCharacterSelection;
+        window.applyCustomConfigAndStartGame = applyCustomConfigAndStartGame;
         
         
         function resetGame() {

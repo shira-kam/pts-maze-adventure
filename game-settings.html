@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customize Levels</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 0;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .level-drawer {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+        
+        .level-drawer.open {
+            border-color: #007bff;
+            border-width: 2px;
+        }
+        
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #e9ecef;
+            cursor: pointer;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .drawer-header:hover {
+            background: #dee2e6;
+        }
+        
+        .drawer-title-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+        
+        .drawer-title-right {
+            color: #666;
+            font-style: italic;
+        }
+        
+        .chevron {
+            transition: transform 0.3s ease;
+            font-size: 14px;
+            color: #666;
+            font-weight: bold;
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #666;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            margin-left: 10px;
+        }
+        
+        .chevron.open {
+            transform: rotate(90deg);
+            margin-left: 8px;
+            margin-top: 2px;
+        }
+        
+        .drawer-content {
+            display: none;
+            padding: 20px;
+        }
+        
+        .drawer-content.open {
+            display: block;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        
+        .section h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: normal;
+        }
+        
+        select, input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-group.operations {
+            gap: 20px;
+        }
+        
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: normal;
+        }
+        
+        .puzzle-config {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .puzzle-config.active {
+            display: block;
+        }
+        
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            background: white;
+            padding: 20px 52px 20px 20px;
+            border-top: 1px solid #e0e0e0;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .cancel-button, .apply-button {
+            border: none;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .cancel-button {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .cancel-button:hover {
+            background: #545b62;
+        }
+        
+        .apply-button {
+            background: #28a745;
+            color: white;
+            box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+        }
+        
+        .apply-button:hover {
+            background: #1e7e34;
+        }
+        
+        .icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 3px;
+            display: inline-block;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #ddd;
+        }
+        
+        .number-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Customize Levels</h1>
+    </div>
+    
+    <div id="level-drawers">
+        <!-- Level drawers will be generated here -->
+    </div>
+    
+    <div class="action-buttons" id="actionButtons">
+        <button class="cancel-button" onclick="cancelAndReturnToCharacterSelection()">
+            Cancel
+        </button>
+        <button class="apply-button" onclick="applyConfigAndStartGame()">
+            Apply to Game
+        </button>
+    </div>
+    
+    <!-- Bottom spacer to ensure content doesn't get hidden behind fixed buttons -->
+    <div style="height: 100px;"></div>
+
+    <script>
+        let gameConfig = {};
+        let currentConfig = {};
+        
+        // Available puzzle types
+        const puzzleTypes = [
+            { value: 'word_emoji_matching', label: 'Word Emoji Matching' },
+            { value: 'simple_arithmetic', label: 'Simple Math (A+B=?)' },
+            { value: 'digraph_sounds', label: 'Digraph Matching' },
+            { value: 'number_line', label: 'Number Line (A+B+C=?)' },
+            { value: 'division_visual', label: 'Division puzzle (A:B=?)' },
+            { value: 'multiplication_groups', label: 'Multiplication puzzle (AxB=?)' },
+            { value: 'letter_identification', label: 'Letter Identification' }
+        ];
+        
+        // Available digraphs from digraph-sounds.txt
+        const availableDigraphs = ['CH', 'SH', 'TH', 'WH', 'PH', 'BL', 'CL', 'FL', 'GL', 'PL', 'SL', 'SC', 'SK', 'SM', 'SN', 'SP', 'ST', 'BR', 'CR', 'DR', 'FR', 'GR', 'PR', 'TR'];
+        
+        // Word list levels
+        const wordListLevels = [
+            { value: 'beginner', label: 'Beginner' },
+            { value: 'intermediate', label: 'Intermediate' },
+            { value: 'advanced', label: 'Advanced' }
+        ];
+        
+        // Initialize the page
+        async function initializePage() {
+            await loadGameConfig();
+            
+            // Check if we're being called from character selection with specific character
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedCharacter = urlParams.get('character');
+            
+            if (selectedCharacter) {
+                // Store the selected character for when we return to the game
+                sessionStorage.setItem('selectedCharacter', selectedCharacter);
+            }
+            
+            generateLevelDrawers();
+        }
+        
+        // Load the current game configuration
+        async function loadGameConfig() {
+            // Embedded game config data (updated from game-config.json)
+            gameConfig = {
+  "puzzles": {
+    "simple_arithmetic": {
+      "operations": ["addition", "subtraction"],
+      "limits": {
+        "maxA": 10,
+        "maxB": 10,
+        "maxResult": 12
+      },
+      "tracking": {
+        "preventRepetition": true,
+        "maxAttempts": 3,
+        "trackingScope": "level"
+      }
+    },
+    "word_emoji_matching": {
+      "tracking": {
+        "preventRepetition": true,
+        "usedWords": [],
+        "trackingScope": "level"
+      }
+    },
+    "number_line": {
+      "operations": ["addition", "subtraction"],
+      "numberLine": {
+        "length": 12,
+        "minA": 1,
+        "maxA": 8,
+        "minB": 1,
+        "maxB": 8,
+        "maxResult": 12
+      },
+      "tracking": {
+        "preventRepetition": true,
+        "maxAttempts": 3,
+        "trackingScope": "level"
+      }
+    },
+    "digraph_sounds": {
+      "digraphs": ["CH", "TH", "SH", "WH", "PH", "GH"],
+      "tracking": {
+        "preventRepetition": true,
+        "usedDigraphs": [],
+        "trackingScope": "level"
+      }
+    },
+    "division_visual": {
+      "division": {
+        "maxA": 12,
+        "maxB": 10,
+        "maxAnswer": 10,
+        "excludeIdentity": true,
+        "excludeA1": true
+      },
+      "tracking": {
+        "preventRepetition": true,
+        "trackingScope": "level"
+      }
+    },
+    "multiplication_groups": {
+      "operations": ["multiplication"],
+      "multiplication": {
+        "maxProduct": 20,
+        "minFactor": 2,
+        "maxFactor": 10,
+        "excludeOne": true
+      },
+      "tracking": {
+        "preventRepetition": true,
+        "maxAttempts": 3,
+        "trackingScope": "level"
+      }
+    },
+    "letter_identification": {
+      "tracking": {
+        "preventRepetition": true,
+        "maxAttempts": 3,
+        "trackingScope": "level"
+      }
+    }
+  },
+  "levels": {
+    "1": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 10,
+            "minA": 1,
+            "maxA": 9,
+            "minB": 1,
+            "maxB": 9,
+            "maxResult": 10
+          }
+        },
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "beginner",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 9,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
+    },
+    "2": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 10,
+            "minA": 1,
+            "maxA": 9,
+            "minB": 1,
+            "maxB": 9,
+            "maxResult": 10
+          }
+        },
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "beginner",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 62,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
+    },
+    "3": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 12,
+            "minA": 1,
+            "maxA": 11,
+            "minB": 1,
+            "maxB": 11,
+            "maxResult": 12
+          }
+        },
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "intermediate",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 41,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
+    },
+    "4": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 15,
+            "minA": 1,
+            "maxA": 14,
+            "minB": 1,
+            "maxB": 14,
+            "maxResult": 15
+          }
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 62,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
+    },
+    "5": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 17,
+            "minA": 1,
+            "maxA": 16,
+            "minB": 1,
+            "maxB": 16,
+            "maxResult": 17
+          }
+        },
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 52,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
+    },
+    "6": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 20,
+            "minA": 1,
+            "maxA": 19,
+            "minB": 1,
+            "maxB": 19,
+            "maxResult": 20
+          }
+        },
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["TR", "PR", "GR", "FR", "DR", "CR", "BR"]
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 30,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
+    },
+    "7": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["CH", "TH", "SH", "WH", "PH"]
+        },
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 20,
+            "minA": 1,
+            "maxA": 19,
+            "minB": 1,
+            "maxB": 19,
+            "maxResult": 20
+          }
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 28,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
+    },
+    "8": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 15,
+            "maxB": 15,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 20,
+            "minA": 1,
+            "maxA": 19,
+            "minB": 1,
+            "maxB": 19,
+            "minC": 1,
+            "maxC": 4,
+            "maxResult": 20,
+            "equationType": "triple_add"
+          }
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 24,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
+    },
+    "9": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 15,
+            "maxB": 15,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        },
+        {
+        "type": "word_emoji_matching",
+        "wordListLevel": "advanced",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 27,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": true
+      },
+      "animation": {
+        "frameDelay": 25
+      }
+    },
+    "10": {
+      "playable": true,
+       "puzzles": [
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 20,
+            "maxB": 20,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        },
+        {
+          "type": "multiplication_groups",
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 20,
+            "minFactor": 2,
+            "maxFactor": 10,
+            "excludeOne": true
+          }
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 53,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": true
+      },
+      "animation": {
+        "frameDelay": 25
+      }
+    },
+    "11": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 54,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 20
+      }
+    },
+    "12": {
+      "playable": false,
+      "puzzles": [
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        },
+        {
+          "type": "multiplication_groups",
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 20,
+            "minFactor": 2,
+            "maxFactor": 10,
+            "excludeOne": true
+          }
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 54,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 20
+      }
+    }
+  },
+  "characters": {
+    "PT": {
+      "name": "PT the Elephant",
+      "movement": "PT-sprite.svg",
+      "celebration": "PT-celebrate.png",
+      "gameOver": "PT-game-over.png",
+      "bonus": {
+        "9": "level-9/PT-Bonus-Sprite.svg",
+        "10": "level-10/PT-Bonus-Sprite.svg"
+      },
+      "description": "A friendly elephant who loves solving puzzles"
+    },
+    "Enderman": {
+      "name": "Enderman",
+      "movement": "Enderman-sprite.svg",
+      "celebration": "Enderman-celebrate.png",
+      "gameOver": "Enderman-game-over.png",
+      "bonus": {
+        "9": "level-9/Enderman-Bonus-Sprite.svg",
+        "10": "level-10/Enderman-Bonus-Sprite.svg"
+      },
+      "description": "A mysterious dark figure from another dimension"
+    }
+  }
+};
+            currentConfig = JSON.parse(JSON.stringify(gameConfig)); // Deep copy
+        }
+        
+        // Generate level drawer components
+        function generateLevelDrawers() {
+            const container = document.getElementById('level-drawers');
+            container.innerHTML = '';
+            
+            // Sort levels numerically
+            const levelNumbers = Object.keys(gameConfig.levels || {}).sort((a, b) => parseInt(a) - parseInt(b));
+            
+            levelNumbers.forEach(levelNum => {
+                const levelConfig = gameConfig.levels[levelNum];
+                const drawer = createLevelDrawer(levelNum, levelConfig);
+                container.appendChild(drawer);
+            });
+        }
+        
+        // Create a single level drawer
+        function createLevelDrawer(levelNum, levelConfig) {
+            const drawer = document.createElement('div');
+            drawer.className = 'level-drawer';
+            drawer.id = `level-${levelNum}`;
+            
+            // Determine puzzle names for display
+            let puzzleDisplay = 'Not playable';
+            if (levelConfig.playable && levelConfig.puzzles && levelConfig.puzzles.length > 0) {
+                const puzzleNames = levelConfig.puzzles.map(p => {
+                    const puzzleType = puzzleTypes.find(pt => pt.value === p.type);
+                    return puzzleType ? puzzleType.label : p.type;
+                });
+                puzzleDisplay = puzzleNames.join(' & ');
+            }
+            
+            drawer.innerHTML = `
+                <div class="drawer-header" onclick="toggleDrawer(${levelNum})">
+                    <div class="drawer-title-left">
+                        <span class="icon" style="background-image: url('level-${levelNum}/wall.png')"></span>
+                        Level ${levelNum}
+                        <span class="chevron" id="chevron-${levelNum}"></span>
+                    </div>
+                    <div class="drawer-title-right" id="puzzle-display-${levelNum}">
+                        ${puzzleDisplay}
+                    </div>
+                </div>
+                <div class="drawer-content" id="content-${levelNum}">
+                    ${generateDrawerContent(levelNum, levelConfig)}
+                </div>
+            `;
+            
+            return drawer;
+        }
+        
+        // Generate the content inside a drawer
+        function generateDrawerContent(levelNum, levelConfig) {
+            const isPlayable = levelConfig.playable || false;
+            const puzzles = levelConfig.puzzles || [];
+            
+            let content = `
+                <div class="section">
+                    <h3>Playable</h3>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="playable-${levelNum}" value="true" 
+                                   ${isPlayable ? 'checked' : ''} 
+                                   onchange="updatePlayableStatus(${levelNum}, true)">
+                            Yes
+                        </label>
+                        <label>
+                            <input type="radio" name="playable-${levelNum}" value="false" 
+                                   ${!isPlayable ? 'checked' : ''}
+                                   onchange="updatePlayableStatus(${levelNum}, false)">
+                            No
+                        </label>
+                    </div>
+                </div>
+            `;
+            
+            // Add puzzle sections
+            for (let i = 0; i < 2; i++) {
+                const puzzleNum = i + 1;
+                const puzzle = puzzles[i] || { type: '', config: {} };
+                const sectionClass = !isPlayable ? 'section disabled' : 'section';
+                
+                content += `
+                    <div class="${sectionClass}" id="puzzle-section-${levelNum}-${puzzleNum}">
+                        <h3>
+                            <span class="icon" style="background-image: url('level-${levelNum}/obstacle${puzzleNum}.png')"></span>
+                            Puzzle ${puzzleNum}
+                        </h3>
+                        <div class="form-group">
+                            <label>Select puzzle:</label>
+                            <select id="puzzle-select-${levelNum}-${puzzleNum}" 
+                                    onchange="updatePuzzleType(${levelNum}, ${puzzleNum}, this.value)"
+                                    ${!isPlayable ? 'disabled' : ''}>
+                                <option value="">-- Select Puzzle --</option>
+                                ${puzzleTypes.map(pt => 
+                                    `<option value="${pt.value}" ${pt.value === puzzle.type ? 'selected' : ''}>${pt.label}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="puzzle-config ${puzzle.type ? 'active' : ''}" id="config-${levelNum}-${puzzleNum}">
+                            ${puzzle.type ? generatePuzzleConfig(levelNum, puzzleNum, puzzle.type, puzzle) : ''}
+                        </div>
+                    </div>
+                `;
+                
+                // Hide second puzzle section if level only has one puzzle
+                if (i === 1 && puzzles.length < 2) {
+                    content = content.replace(`puzzle-section-${levelNum}-${puzzleNum}"`, `puzzle-section-${levelNum}-${puzzleNum}" style="display: none;"`);
+                }
+            }
+            
+            return content;
+        }
+        
+        // Generate puzzle-specific configuration forms
+        function generatePuzzleConfig(levelNum, puzzleNum, puzzleType, puzzleData) {
+            switch (puzzleType) {
+                case 'word_emoji_matching':
+                    return generateWordEmojiConfig(levelNum, puzzleNum, puzzleData);
+                case 'simple_arithmetic':
+                    return generateSimpleMathConfig(levelNum, puzzleNum, puzzleData);
+                case 'digraph_sounds':
+                    return generateDigraphConfig(levelNum, puzzleNum, puzzleData);
+                case 'number_line':
+                    return generateNumberLineConfig(levelNum, puzzleNum, puzzleData);
+                case 'division_visual':
+                    return generateDivisionConfig(levelNum, puzzleNum, puzzleData);
+                case 'multiplication_groups':
+                    return generateMultiplicationConfig(levelNum, puzzleNum, puzzleData);
+                case 'letter_identification':
+                    return generateLetterIdConfig(levelNum, puzzleNum, puzzleData);
+                default:
+                    return '';
+            }
+        }
+        
+        function generateWordEmojiConfig(levelNum, puzzleNum, puzzleData) {
+            const wordListLevel = puzzleData.wordListLevel || 'beginner';
+            
+            return `
+                <div class="form-group">
+                    <label>Word List Level:</label>
+                    <select id="wordListLevel-${levelNum}-${puzzleNum}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                        ${wordListLevels.map(wl => 
+                            `<option value="${wl.value}" ${wl.value === wordListLevel ? 'selected' : ''}>${wl.label}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+            `;
+        }
+        
+        function generateSimpleMathConfig(levelNum, puzzleNum, puzzleData) {
+            const operations = puzzleData.operations || ['addition'];
+            const limits = puzzleData.limits || {};
+            
+            return `
+                <div class="form-group">
+                    <label>Operations:</label>
+                    <div class="checkbox-group operations">
+                        <label>
+                            <input type="checkbox" value="addition" ${operations.includes('addition') ? 'checked' : ''}
+                                   onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                            Addition
+                        </label>
+                        <label>
+                            <input type="checkbox" value="subtraction" ${operations.includes('subtraction') ? 'checked' : ''}
+                                   onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                            Subtraction
+                        </label>
+                    </div>
+                </div>
+                <div class="number-inputs">
+                    <div class="form-group">
+                        <label>Max A:</label>
+                        <input type="number" id="maxA-${levelNum}-${puzzleNum}" value="${limits.maxA || 10}" 
+                               min="1" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                    <div class="form-group">
+                        <label>Max B:</label>
+                        <input type="number" id="maxB-${levelNum}-${puzzleNum}" value="${limits.maxB || 10}" 
+                               min="1" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                    <div class="form-group">
+                        <label>Max Result:</label>
+                        <input type="number" id="maxResult-${levelNum}-${puzzleNum}" value="${limits.maxResult || 12}" 
+                               min="1" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateDigraphConfig(levelNum, puzzleNum, puzzleData) {
+            const selectedDigraphs = puzzleData.digraphs || [];
+            
+            return `
+                <div class="form-group">
+                    <label>Digraphs:</label>
+                    <div class="checkbox-group">
+                        ${availableDigraphs.map(digraph => `
+                            <label>
+                                <input type="checkbox" value="${digraph}" 
+                                       ${selectedDigraphs.includes(digraph) ? 'checked' : ''}
+                                       onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                                ${digraph}
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateNumberLineConfig(levelNum, puzzleNum, puzzleData) {
+            const operations = puzzleData.operations || ['addition'];
+            const numberLine = puzzleData.numberLine || {};
+            const equationType = numberLine.equationType || 'standard';
+            
+            return `
+                <div class="form-group">
+                    <label>Operations:</label>
+                    <div class="checkbox-group operations">
+                        <label>
+                            <input type="checkbox" value="addition" ${operations.includes('addition') ? 'checked' : ''}
+                                   onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                            Addition
+                        </label>
+                        <label>
+                            <input type="checkbox" value="subtraction" ${operations.includes('subtraction') ? 'checked' : ''}
+                                   onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                            Subtraction
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Length of Number Line:</label>
+                    <input type="number" id="length-${levelNum}-${puzzleNum}" value="${numberLine.length || 12}" 
+                           min="5" max="20" 
+                           onchange="updateNumberLineValidation(${levelNum}, ${puzzleNum}); updatePuzzleConfig(${levelNum}, ${puzzleNum})"
+                           onblur="updateNumberLineValidation(${levelNum}, ${puzzleNum}); updatePuzzleConfig(${levelNum}, ${puzzleNum})"
+                           oninput="if(this.value > 20) this.value = 20; if(this.value < 5 && this.value !== '') this.value = 5;">
+                </div>
+                <div class="number-inputs">
+                    <div class="form-group">
+                        <label>Min A:</label>
+                        <input type="number" id="minA-${levelNum}-${puzzleNum}" value="${numberLine.minA || 1}" 
+                               min="0" max="${numberLine.length || 12}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                    <div class="form-group">
+                        <label>Max A:</label>
+                        <input type="number" id="maxA-${levelNum}-${puzzleNum}" value="${numberLine.maxA || 8}" 
+                               min="0" max="${numberLine.length || 12}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                    <div class="form-group">
+                        <label>Min B:</label>
+                        <input type="number" id="minB-${levelNum}-${puzzleNum}" value="${numberLine.minB || 1}" 
+                               min="0" max="${numberLine.length || 12}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                    <div class="form-group">
+                        <label>Max B:</label>
+                        <input type="number" id="maxB-${levelNum}-${puzzleNum}" value="${numberLine.maxB || 8}" 
+                               min="0" max="${numberLine.length || 12}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                    <div class="form-group">
+                        <label>Max Result:</label>
+                        <input type="number" id="maxResult-${levelNum}-${puzzleNum}" value="${numberLine.maxResult || 12}" 
+                               min="5" max="${numberLine.length || 12}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Equation Type:</label>
+                    <select id="equationType-${levelNum}-${puzzleNum}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum}); toggleTripleInputs(${levelNum}, ${puzzleNum})">
+                        <option value="standard" ${equationType === 'standard' ? 'selected' : ''}>Standard (A+B)</option>
+                        <option value="triple_add" ${equationType === 'triple_add' ? 'selected' : ''}>Triple Add (A+B+C)</option>
+                        <option value="triple_mixed" ${equationType === 'triple_mixed' ? 'selected' : ''}>Triple Mixed (A+B+C, A-B+C or A+B-C)</option>
+                    </select>
+                </div>
+                <div class="number-inputs" id="triple-inputs-${levelNum}-${puzzleNum}" style="display: ${equationType.includes('triple') ? 'grid' : 'none'}">
+                    <div class="form-group">
+                        <label>Min C:</label>
+                        <input type="number" id="minC-${levelNum}-${puzzleNum}" value="${numberLine.minC || 1}" 
+                               min="0" max="${numberLine.length || 12}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                    <div class="form-group">
+                        <label>Max C:</label>
+                        <input type="number" id="maxC-${levelNum}-${puzzleNum}" value="${numberLine.maxC || 4}" 
+                               min="0" max="${numberLine.length || 12}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateDivisionConfig(levelNum, puzzleNum, puzzleData) {
+            const division = puzzleData.division || {};
+            
+            return `
+                <div class="number-inputs">
+                    <div class="form-group">
+                        <label>Max A:</label>
+                        <input type="number" id="maxA-${levelNum}-${puzzleNum}" value="${division.maxA || 12}" 
+                               min="12" 
+                               onchange="updateDivisionValidation(${levelNum}, ${puzzleNum}); updatePuzzleConfig(${levelNum}, ${puzzleNum})"
+                               onblur="updateDivisionValidation(${levelNum}, ${puzzleNum}); updatePuzzleConfig(${levelNum}, ${puzzleNum})"
+                               oninput="if(this.value < 12 && this.value !== '') this.value = 12;">
+                    </div>
+                    <div class="form-group">
+                        <label>Max B:</label>
+                        <input type="number" id="maxB-${levelNum}-${puzzleNum}" value="${division.maxB || 10}" 
+                               min="1" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                    <div class="form-group">
+                        <label>Max Answer:</label>
+                        <input type="number" id="maxAnswer-${levelNum}-${puzzleNum}" value="${division.maxAnswer || 10}" 
+                               min="1" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="excludeIdentity-${levelNum}-${puzzleNum}" 
+                               ${division.excludeIdentity !== false ? 'checked' : ''} onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                        Exclude Identity (A ÷ A)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="excludeA1-${levelNum}-${puzzleNum}" 
+                               ${division.excludeA1 !== false ? 'checked' : ''} onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                        Exclude A = 1
+                    </label>
+                </div>
+            `;
+        }
+        
+        function generateMultiplicationConfig(levelNum, puzzleNum, puzzleData) {
+            const multiplication = puzzleData.multiplication || {};
+            
+            return `
+                <div class="number-inputs">
+                    <div class="form-group">
+                        <label>Max Answer:</label>
+                        <input type="number" id="maxProduct-${levelNum}-${puzzleNum}" value="${multiplication.maxProduct || 20}" 
+                               min="1" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                    <div class="form-group">
+                        <label>Min A:</label>
+                        <input type="number" id="minFactor-${levelNum}-${puzzleNum}" value="${multiplication.minFactor || 2}" 
+                               min="1" max="10" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                    <div class="form-group">
+                        <label>Max B:</label>
+                        <input type="number" id="maxFactor-${levelNum}-${puzzleNum}" value="${multiplication.maxFactor || 10}" 
+                               min="1" max="10" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="excludeOne-${levelNum}-${puzzleNum}" 
+                               ${multiplication.excludeOne !== false ? 'checked' : ''} onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                        Exclude One
+                    </label>
+                </div>
+            `;
+        }
+        
+        function generateLetterIdConfig(levelNum, puzzleNum, puzzleData) {
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            const excludedLetters = puzzleData.excludeLetters || [];
+            
+            return `
+                <div class="form-group">
+                    <label>Exclude letters:</label>
+                    <div class="checkbox-group">
+                        ${alphabet.map(letter => `
+                            <label>
+                                <input type="checkbox" value="${letter}" 
+                                       ${excludedLetters.includes(letter) ? 'checked' : ''}
+                                       onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                                ${letter}
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Event handlers
+        function toggleDrawer(levelNum) {
+            const drawer = document.getElementById(`level-${levelNum}`);
+            const content = document.getElementById(`content-${levelNum}`);
+            const chevron = document.getElementById(`chevron-${levelNum}`);
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                drawer.classList.remove('open');
+                chevron.classList.remove('open');
+            } else {
+                content.classList.add('open');
+                drawer.classList.add('open');
+                chevron.classList.add('open');
+            }
+        }
+        
+        function updatePlayableStatus(levelNum, isPlayable) {
+            const puzzle1Section = document.getElementById(`puzzle-section-${levelNum}-1`);
+            const puzzle2Section = document.getElementById(`puzzle-section-${levelNum}-2`);
+            const puzzleDisplay = document.getElementById(`puzzle-display-${levelNum}`);
+            
+            if (isPlayable) {
+                puzzle1Section.classList.remove('disabled');
+                puzzle2Section.classList.remove('disabled');
+                puzzle1Section.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                puzzle2Section.querySelectorAll('input, select').forEach(el => el.disabled = false);
+            } else {
+                puzzle1Section.classList.add('disabled');
+                puzzle2Section.classList.add('disabled');
+                puzzle1Section.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                puzzle2Section.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                puzzleDisplay.textContent = 'Not playable';
+            }
+            
+            // Update config
+            if (!currentConfig.levels[levelNum]) {
+                currentConfig.levels[levelNum] = {};
+            }
+            currentConfig.levels[levelNum].playable = isPlayable;
+            
+            if (!isPlayable) {
+                currentConfig.levels[levelNum].puzzles = [];
+            }
+            
+            updatePuzzleDisplay(levelNum);
+        }
+        
+        function updatePuzzleType(levelNum, puzzleNum, puzzleType) {
+            const configDiv = document.getElementById(`config-${levelNum}-${puzzleNum}`);
+            
+            if (puzzleType) {
+                configDiv.classList.add('active');
+                configDiv.innerHTML = generatePuzzleConfig(levelNum, puzzleNum, puzzleType, {});
+            } else {
+                configDiv.classList.remove('active');
+                configDiv.innerHTML = '';
+            }
+            
+            // Show/hide second puzzle section based on selection
+            const puzzle2Section = document.getElementById(`puzzle-section-${levelNum}-2`);
+            if (puzzleNum === 1) {
+                if (puzzleType) {
+                    puzzle2Section.style.display = 'block';
+                } else {
+                    puzzle2Section.style.display = 'none';
+                    // Clear second puzzle if first is cleared
+                    document.getElementById(`puzzle-select-${levelNum}-2`).value = '';
+                    document.getElementById(`config-${levelNum}-2`).innerHTML = '';
+                    document.getElementById(`config-${levelNum}-2`).classList.remove('active');
+                }
+            }
+            
+            updatePuzzleConfig(levelNum, puzzleNum);
+            updatePuzzleDisplay(levelNum);
+        }
+        
+        function updatePuzzleConfig(levelNum, puzzleNum) {
+            // Get current puzzle type
+            const puzzleSelect = document.getElementById(`puzzle-select-${levelNum}-${puzzleNum}`);
+            const puzzleType = puzzleSelect ? puzzleSelect.value : '';
+            
+            if (!puzzleType) return;
+            
+            // Initialize level config if needed
+            if (!currentConfig.levels[levelNum]) {
+                currentConfig.levels[levelNum] = { playable: true, puzzles: [] };
+            }
+            
+            // Ensure puzzles array has enough elements
+            while (currentConfig.levels[levelNum].puzzles.length < puzzleNum) {
+                currentConfig.levels[levelNum].puzzles.push({ type: '', config: {} });
+            }
+            
+            // Update puzzle config based on type
+            const puzzleConfig = { type: puzzleType };
+            
+            switch (puzzleType) {
+                case 'word_emoji_matching':
+                    const wordListLevel = document.getElementById(`wordListLevel-${levelNum}-${puzzleNum}`)?.value || 'beginner';
+                    
+                    puzzleConfig.wordListLevel = wordListLevel;
+                    puzzleConfig.tracking = {
+                        preventRepetition: true,
+                        usedWords: [],
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'simple_arithmetic':
+                    const operations = Array.from(document.querySelectorAll(`#config-${levelNum}-${puzzleNum} input[type="checkbox"]:checked`))
+                        .map(cb => cb.value).filter(v => ['addition', 'subtraction'].includes(v));
+                    const maxA = parseInt(document.getElementById(`maxA-${levelNum}-${puzzleNum}`)?.value) || 10;
+                    const maxB = parseInt(document.getElementById(`maxB-${levelNum}-${puzzleNum}`)?.value) || 10;
+                    const maxResult = parseInt(document.getElementById(`maxResult-${levelNum}-${puzzleNum}`)?.value) || 12;
+                    
+                    puzzleConfig.operations = operations;
+                    puzzleConfig.limits = { maxA, maxB, maxResult };
+                    puzzleConfig.tracking = {
+                        preventRepetition: true,
+                        maxAttempts: 3,
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'digraph_sounds':
+                    const selectedDigraphs = Array.from(document.querySelectorAll(`#config-${levelNum}-${puzzleNum} input[type="checkbox"]:checked`))
+                        .map(cb => cb.value).filter(v => availableDigraphs.includes(v));
+                    
+                    puzzleConfig.digraphs = selectedDigraphs;
+                    puzzleConfig.tracking = {
+                        preventRepetition: true,
+                        usedDigraphs: [],
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'number_line':
+                    const nlOperations = Array.from(document.querySelectorAll(`#config-${levelNum}-${puzzleNum} input[type="checkbox"]:checked`))
+                        .map(cb => cb.value).filter(v => ['addition', 'subtraction'].includes(v));
+                    const length = parseInt(document.getElementById(`length-${levelNum}-${puzzleNum}`)?.value) || 12;
+                    const minA = parseInt(document.getElementById(`minA-${levelNum}-${puzzleNum}`)?.value) || 1;
+                    const maxANL = parseInt(document.getElementById(`maxA-${levelNum}-${puzzleNum}`)?.value) || 8;
+                    const minB = parseInt(document.getElementById(`minB-${levelNum}-${puzzleNum}`)?.value) || 1;
+                    const maxBNL = parseInt(document.getElementById(`maxB-${levelNum}-${puzzleNum}`)?.value) || 8;
+                    const maxResultNL = parseInt(document.getElementById(`maxResult-${levelNum}-${puzzleNum}`)?.value) || 12;
+                    const equationType = document.getElementById(`equationType-${levelNum}-${puzzleNum}`)?.value || 'standard';
+                    
+                    puzzleConfig.operations = nlOperations;
+                    puzzleConfig.numberLine = { length, minA, maxA: maxANL, minB, maxB: maxBNL, maxResult: maxResultNL };
+                    
+                    if (equationType.includes('triple')) {
+                        const minC = parseInt(document.getElementById(`minC-${levelNum}-${puzzleNum}`)?.value) || 1;
+                        const maxC = parseInt(document.getElementById(`maxC-${levelNum}-${puzzleNum}`)?.value) || 4;
+                        puzzleConfig.numberLine.minC = minC;
+                        puzzleConfig.numberLine.maxC = maxC;
+                        puzzleConfig.numberLine.equationType = equationType;
+                    }
+                    
+                    puzzleConfig.tracking = {
+                        preventRepetition: true,
+                        maxAttempts: 3,
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'division_visual':
+                    const maxADiv = parseInt(document.getElementById(`maxA-${levelNum}-${puzzleNum}`)?.value) || 12;
+                    const maxBDiv = parseInt(document.getElementById(`maxB-${levelNum}-${puzzleNum}`)?.value) || 10;
+                    const maxAnswer = parseInt(document.getElementById(`maxAnswer-${levelNum}-${puzzleNum}`)?.value) || 10;
+                    const excludeIdentity = document.getElementById(`excludeIdentity-${levelNum}-${puzzleNum}`)?.checked !== false;
+                    const excludeA1 = document.getElementById(`excludeA1-${levelNum}-${puzzleNum}`)?.checked !== false;
+                    
+                    puzzleConfig.division = { 
+                        maxA: maxADiv, 
+                        maxB: maxBDiv, 
+                        maxAnswer, 
+                        excludeIdentity, 
+                        excludeA1 
+                    };
+                    puzzleConfig.tracking = {
+                        preventRepetition: true,
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'multiplication_groups':
+                    const maxProduct = parseInt(document.getElementById(`maxProduct-${levelNum}-${puzzleNum}`)?.value) || 20;
+                    const minFactor = parseInt(document.getElementById(`minFactor-${levelNum}-${puzzleNum}`)?.value) || 2;
+                    const maxFactor = parseInt(document.getElementById(`maxFactor-${levelNum}-${puzzleNum}`)?.value) || 10;
+                    const excludeOne = document.getElementById(`excludeOne-${levelNum}-${puzzleNum}`)?.checked !== false;
+                    
+                    puzzleConfig.operations = ["multiplication"];
+                    puzzleConfig.multiplication = { 
+                        maxProduct, 
+                        minFactor, 
+                        maxFactor, 
+                        excludeOne 
+                    };
+                    puzzleConfig.tracking = {
+                        preventRepetition: true,
+                        maxAttempts: 3,
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'letter_identification':
+                    const excludedLetters = Array.from(document.querySelectorAll(`#config-${levelNum}-${puzzleNum} input[type="checkbox"]:checked`))
+                        .map(cb => cb.value);
+                    
+                    if (excludedLetters.length > 0) {
+                        puzzleConfig.excludeLetters = excludedLetters;
+                    }
+                    puzzleConfig.tracking = {
+                        preventRepetition: true,
+                        usedLetters: [],
+                        trackingScope: "level"
+                    };
+                    break;
+            }
+            
+            currentConfig.levels[levelNum].puzzles[puzzleNum - 1] = puzzleConfig;
+            updatePuzzleDisplay(levelNum);
+        }
+        
+        function toggleTripleInputs(levelNum, puzzleNum) {
+            const equationType = document.getElementById(`equationType-${levelNum}-${puzzleNum}`).value;
+            const tripleInputs = document.getElementById(`triple-inputs-${levelNum}-${puzzleNum}`);
+            
+            if (equationType.includes('triple')) {
+                tripleInputs.style.display = 'grid';
+            } else {
+                tripleInputs.style.display = 'none';
+            }
+        }
+        
+        function updatePuzzleDisplay(levelNum) {
+            const puzzleDisplay = document.getElementById(`puzzle-display-${levelNum}`);
+            const levelConfig = currentConfig.levels[levelNum];
+            
+            if (!levelConfig || !levelConfig.playable) {
+                puzzleDisplay.textContent = 'Not playable';
+                return;
+            }
+            
+            const puzzles = levelConfig.puzzles || [];
+            if (puzzles.length === 0) {
+                puzzleDisplay.textContent = 'No puzzles configured';
+                return;
+            }
+            
+            const puzzleNames = puzzles
+                .filter(p => p.type)
+                .map(p => {
+                    const puzzleType = puzzleTypes.find(pt => pt.value === p.type);
+                    return puzzleType ? puzzleType.label : p.type;
+                });
+                
+            puzzleDisplay.textContent = puzzleNames.join(' & ') || 'No puzzles configured';
+        }
+        
+        function generateFinalConfig() {
+            // Merge with original config to preserve all other settings
+            const finalConfig = JSON.parse(JSON.stringify(gameConfig));
+            
+            // Update only the levels that were modified
+            Object.keys(currentConfig.levels).forEach(levelNum => {
+                if (!finalConfig.levels) finalConfig.levels = {};
+                finalConfig.levels[levelNum] = {
+                    ...finalConfig.levels[levelNum],
+                    ...currentConfig.levels[levelNum]
+                };
+            });
+            
+            return finalConfig;
+        }
+        
+        function cancelAndReturnToCharacterSelection() {
+            // Return to character selection without applying changes
+            if (window.parent && window.parent.returnToCharacterSelection) {
+                window.parent.returnToCharacterSelection();
+            } else {
+                // Fallback for testing - just close or redirect
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
+        }
+        
+        function applyConfigAndStartGame() {
+            const finalConfig = generateFinalConfig();
+            const selectedCharacter = sessionStorage.getItem('selectedCharacter');
+            
+            console.log('Applying config to game...');
+            
+            // Pass the config and character to the main game and start
+            if (window.parent && window.parent.applyCustomConfigAndStartGame) {
+                window.parent.applyCustomConfigAndStartGame(finalConfig, selectedCharacter);
+            } else {
+                // Fallback for testing - store in localStorage and redirect
+                localStorage.setItem('customGameConfig', JSON.stringify(finalConfig));
+                if (selectedCharacter) {
+                    localStorage.setItem('selectedCharacter', selectedCharacter);
+                }
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // Function for parent window to get current config
+        function getCurrentConfig() {
+            return generateFinalConfig();
+        }
+        
+        // Make functions available globally for parent window access
+        window.getCurrentConfig = getCurrentConfig;
+        window.applyConfigAndStartGame = applyConfigAndStartGame;
+        window.cancelAndReturnToCharacterSelection = cancelAndReturnToCharacterSelection;
+        
+        // Validation functions
+        function updateNumberLineValidation(levelNum, puzzleNum) {
+            const lengthInput = document.getElementById(`length-${levelNum}-${puzzleNum}`);
+            let length = parseInt(lengthInput.value) || 12;
+            
+            // Enforce length constraints (5-20)
+            if (length < 5) {
+                length = 5;
+                lengthInput.value = 5;
+            } else if (length > 20) {
+                length = 20;
+                lengthInput.value = 20;
+            }
+            
+            // Update max values for all A, B, C, and Result inputs
+            const inputs = ['minA', 'maxA', 'minB', 'maxB', 'maxResult', 'minC', 'maxC'];
+            inputs.forEach(inputId => {
+                const input = document.getElementById(`${inputId}-${levelNum}-${puzzleNum}`);
+                if (input) {
+                    input.max = length;
+                    // Adjust value if it exceeds new max
+                    let value = parseInt(input.value) || 0;
+                    if (value > length) {
+                        input.value = length;
+                    }
+                    // Ensure minimum values
+                    if (value < 0) {
+                        input.value = 0;
+                    }
+                }
+            });
+            
+            // Special case for maxResult - minimum is 5
+            const maxResultInput = document.getElementById(`maxResult-${levelNum}-${puzzleNum}`);
+            if (maxResultInput) {
+                let value = parseInt(maxResultInput.value) || 5;
+                if (value < 5) {
+                    maxResultInput.value = 5;
+                } else if (value > length) {
+                    maxResultInput.value = length;
+                }
+            }
+        }
+        
+        function updateDivisionValidation(levelNum, puzzleNum) {
+            const maxAInput = document.getElementById(`maxA-${levelNum}-${puzzleNum}`);
+            const maxBInput = document.getElementById(`maxB-${levelNum}-${puzzleNum}`);
+            
+            if (maxAInput && maxBInput) {
+                let maxA = parseInt(maxAInput.value) || 12;
+                
+                // Enforce Max A >= 12
+                if (maxA < 12) {
+                    maxA = 12;
+                    maxAInput.value = 12;
+                }
+                
+                // Max B must be less than Max A
+                maxBInput.max = maxA - 1;
+                let maxB = parseInt(maxBInput.value) || 1;
+                
+                // Adjust Max B if it's too high or too low
+                if (maxB >= maxA) {
+                    maxBInput.value = Math.max(1, maxA - 1);
+                } else if (maxB < 1) {
+                    maxBInput.value = 1;
+                }
+            }
+        }
+        
+        // Generic validation function for number inputs
+        function validateNumberInput(input, min, max) {
+            if (!input) return;
+            
+            let value = parseInt(input.value);
+            if (isNaN(value)) {
+                input.value = min || 0;
+                return;
+            }
+            
+            if (min !== undefined && value < min) {
+                input.value = min;
+            } else if (max !== undefined && value > max) {
+                input.value = max;
+            }
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>
