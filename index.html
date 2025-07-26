@@ -188,6 +188,7 @@
     <script src="digraph-puzzle.js"></script>
     <script src="multiplication-groups-puzzle.js"></script>
     <script src="letter-identification.js"></script>
+    <script src="audio-reading-puzzle.js"></script>
     <script src="debug-manager.js"></script>
     
     <script>
@@ -1959,6 +1960,12 @@
                             if (!usedModular) {
                                 showPuzzle(blockingDoor.type, blockingDoor);
                             }
+                        } else if (blockingDoor.type === 'audio_reading') {
+                            // Use modular system for audio reading puzzles
+                            const usedModular = showAudioReadingPuzzle(blockingDoor);
+                            if (!usedModular) {
+                                showPuzzle(blockingDoor.type, blockingDoor);
+                            }
                         } else if (blockingDoor.type === 'division_visual') {
                             // Use modular system for division puzzles
                             const usedModular = showDivisionPuzzle(blockingDoor);
@@ -2071,6 +2078,18 @@
             if (door.type === 'letter_identification') {
                 console.log(`Using modular letter identification puzzle for door type: ${door.type}`);
                 const puzzle = new LetterIdentificationPuzzle(door);
+                puzzle.render();
+                return true; // Indicates modular system was used
+            }
+            
+            return false; // Fall back to original system
+        }
+
+        function showAudioReadingPuzzle(door) {
+            // Only handle audio_reading door type
+            if (door.type === 'audio_reading') {
+                console.log(`Using modular audio reading puzzle for door type: ${door.type}`);
+                const puzzle = new AudioReadingPuzzle(door);
                 puzzle.render();
                 return true; // Indicates modular system was used
             }

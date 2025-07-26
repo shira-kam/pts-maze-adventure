@@ -77,6 +77,15 @@
         "maxAttempts": 3,
         "trackingScope": "level"
       }
+    },
+    "audio_reading": {
+      "mode": "match_speech_to_text",
+      "wordLists": ["silent-e"],
+      "tracking": {
+        "preventRepetition": true,
+        "maxAttempts": 3,
+        "trackingScope": "level"
+      }
     }
   },
   "levels": {
@@ -463,15 +472,12 @@
       }
     },
     "12": {
-      "playable": false,
+      "playable": true,
       "puzzles": [
         {
-          "type": "letter_identification",
-          "tracking": {
-            "preventRepetition": true,
-            "usedLetters": [],
-            "trackingScope": "level"
-          }
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["silent-e"]
         },
         {
           "type": "multiplication_groups",
@@ -486,7 +492,7 @@
       ],
       "assets": {
         "celebration": {
-          "frames": 54,
+          "frames": 62,
           "frameWidth": 200,
           "frameHeight": 200
         },

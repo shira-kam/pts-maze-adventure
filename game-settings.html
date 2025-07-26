@@ -279,7 +279,8 @@
             { value: 'number_line', label: 'Number Line (A+B+C=?)' },
             { value: 'division_visual', label: 'Division puzzle (A:B=?)' },
             { value: 'multiplication_groups', label: 'Multiplication puzzle (AxB=?)' },
-            { value: 'letter_identification', label: 'Letter Identification' }
+            { value: 'letter_identification', label: 'Letter Identification' },
+            { value: 'audio_reading', label: 'Audio Reading' }
         ];
         
         // Available digraphs from digraph-sounds.txt
@@ -385,6 +386,15 @@
       }
     },
     "letter_identification": {
+      "tracking": {
+        "preventRepetition": true,
+        "maxAttempts": 3,
+        "trackingScope": "level"
+      }
+    },
+    "audio_reading": {
+      "mode": "match_speech_to_text",
+      "wordLists": ["silent-e"],
       "tracking": {
         "preventRepetition": true,
         "maxAttempts": 3,
@@ -969,6 +979,8 @@
                     return generateMultiplicationConfig(levelNum, puzzleNum, puzzleData);
                 case 'letter_identification':
                     return generateLetterIdConfig(levelNum, puzzleNum, puzzleData);
+                case 'audio_reading':
+                    return generateAudioReadingConfig(levelNum, puzzleNum, puzzleData);
                 default:
                     return '';
             }
@@ -1221,6 +1233,45 @@
             `;
         }
         
+        function generateAudioReadingConfig(levelNum, puzzleNum, puzzleData) {
+            const mode = puzzleData.mode || 'match_speech_to_text';
+            const selectedWordLists = puzzleData.wordLists || ['silent-e'];
+            const availableWordLists = ['silent-e', 'cvc']; // Available word lists from directory
+            
+            return `
+                <div class="form-group">
+                    <label>Mode:</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="mode-${levelNum}-${puzzleNum}" value="match_speech_to_text" 
+                                   ${mode === 'match_speech_to_text' ? 'checked' : ''} 
+                                   onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                            Match Speech to Text
+                        </label>
+                        <label>
+                            <input type="radio" name="mode-${levelNum}-${puzzleNum}" value="match_text_to_speech" 
+                                   ${mode === 'match_text_to_speech' ? 'checked' : ''} 
+                                   onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                            Match Text to Speech
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Word Lists:</label>
+                    <div class="checkbox-group">
+                        ${availableWordLists.map(wordList => `
+                            <label>
+                                <input type="checkbox" value="${wordList}" 
+                                       ${selectedWordLists.includes(wordList) ? 'checked' : ''}
+                                       onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                                ${wordList.charAt(0).toUpperCase() + wordList.slice(1)} words
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
         // Event handlers
         function toggleDrawer(levelNum) {
             const drawer = document.getElementById(`level-${levelNum}`);
@@ -1437,6 +1488,20 @@
                     puzzleConfig.tracking = {
                         preventRepetition: true,
                         usedLetters: [],
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'audio_reading':
+                    const selectedMode = document.querySelector(`input[name="mode-${levelNum}-${puzzleNum}"]:checked`)?.value || 'match_speech_to_text';
+                    const selectedWordLists = Array.from(document.querySelectorAll(`#config-${levelNum}-${puzzleNum} input[type="checkbox"]:checked`))
+                        .map(cb => cb.value).filter(v => ['silent-e', 'cvc'].includes(v));
+                    
+                    puzzleConfig.mode = selectedMode;
+                    puzzleConfig.wordLists = selectedWordLists.length > 0 ? selectedWordLists : ['silent-e'];
+                    puzzleConfig.tracking = {
+                        preventRepetition: true,
+                        maxAttempts: 3,
                         trackingScope: "level"
                     };
                     break;

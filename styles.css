@@ -944,6 +944,11 @@ h1 {
     -ms-user-select: none;
 }
 
+/* Audio Puzzle Hidden Title */
+.audio-puzzle-hidden-title {
+    display: none !important;
+}
+
 /* Puzzle Question */
 #puzzleQuestion {
     font-size: 20px;
