@@ -1051,6 +1051,9 @@
         async function initializeGame() {
             console.log(`Initializing game for level ${game.selectedDifficulty} with character ${game.selectedCharacter}`);
             
+            // Show the game container
+            document.getElementById('gameContainer').style.display = 'block';
+            
             // Load game configuration if not already loaded
             if (!configManager.isConfigLoaded()) {
                 console.log('Loading config manager...');
@@ -2423,8 +2426,7 @@
             // Start the game loop
             gameLoop();
             
-            // Force hide all other screens and show character selection
-            document.getElementById('gameContainer').style.display = 'none';
+            // Force hide game screens initially, show character selection
             document.getElementById('difficultyScreen').style.display = 'none';
             document.getElementById('levelSelectionScreen').style.display = 'none';
             
