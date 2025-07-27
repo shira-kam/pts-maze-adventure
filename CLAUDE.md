@@ -323,7 +323,6 @@ The game includes a comprehensive parent settings interface (`game-settings.html
 
 **Standalone Access:**
 - Direct access via `game-settings.html` for configuration testing
-- Fallback character selection if no character pre-selected
 
 ### Interface Architecture
 **Level Drawer System:**
@@ -338,41 +337,6 @@ The game includes a comprehensive parent settings interface (`game-settings.html
 - **Real-time updates**: Configuration changes immediately reflected in level summaries
 - **Validation**: Input validation with appropriate constraints (e.g., number ranges)
 
-### Supported Puzzle Configurations
-
-**All Puzzle Types Include:**
-- **Puzzle type selection**: Dropdown with all available puzzle types
-- **Tracking configuration**: Repetition prevention settings automatically applied
-- **Level-specific overrides**: Per-level customization of puzzle parameters
-
-**Specific Configuration Controls:**
-
-**Word Emoji Matching:**
-- Word list difficulty selection (Beginner/Intermediate/Advanced)
-
-**Simple Math & Number Line:**
-- Operation selection (Addition/Subtraction checkboxes)
-- Numerical constraints (Max A, Max B, Max Result)
-- Number line length configuration
-- Equation type selection (Standard/Triple Add/Triple Mixed)
-
-**Division & Multiplication:**
-- Mathematical constraints (Max values, factors, products)
-- Exclusion rules (Identity operations, A=1 cases)
-
-**Digraph Sounds:**
-- Multi-select digraph combinations (CH, TH, SH, etc.)
-- Comprehensive digraph library with 24 available options
-
-**Letter Identification:**
-- Exclude specific letters (full alphabet checkbox grid)
-- Useful for focusing on problematic letters or age-appropriate subsets
-
-**Audio Reading:**
-- Mode selection (Match Speech to Text / Match Text to Speech)
-- Word list selection (Silent-E words, CVC words, or both)
-- Multi-select support for comprehensive phonics coverage
-
 ### Technical Implementation
 **Configuration Management:**
 - **Deep copying**: Preserves original config while allowing modifications
@@ -382,7 +346,6 @@ The game includes a comprehensive parent settings interface (`game-settings.html
 
 **Parent Communication:**
 - **Apply to Game**: Passes customized configuration back to main game
-- **Character preservation**: Maintains selected character through configuration process
 - **Cancel option**: Returns to character selection without applying changes
 
 **Dynamic Form Generation:**
@@ -401,14 +364,6 @@ The game includes a comprehensive parent settings interface (`game-settings.html
    - Configure puzzle-specific settings
 5. **Parent applies settings** which starts customized game
 6. **Child plays** with personalized configuration
-
-### Benefits for Parents/Educators
-- **No technical knowledge required**: User-friendly form interface
-- **Immediate feedback**: Visual indicators show current configuration
-- **Flexible customization**: Per-level control of all puzzle aspects
-- **Educational targeting**: Focus on specific skills or learning objectives
-- **Difficulty adjustment**: Tailor challenge level to child's abilities
-- **Progress control**: Enable/disable levels based on child's readiness
 
 ### Integration Points
 **Character Selection Integration:**
