@@ -478,16 +478,6 @@
           "type": "audio_reading",
           "mode": "match_text_to_speech",
           "wordLists": ["silent-e"]
-        },
-        {
-          "type": "multiplication_groups",
-          "operations": ["multiplication"],
-          "multiplication": {
-            "maxProduct": 20,
-            "minFactor": 2,
-            "maxFactor": 10,
-            "excludeOne": true
-          }
         }
       ],
       "assets": {
