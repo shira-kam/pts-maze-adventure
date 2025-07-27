@@ -369,6 +369,162 @@ Create a new level directory (e.g., `level-12/`) with **generic assets**:
 3,o,o,o,o,o,o,o,o,o,o,o,o
 ```
 
+## Step 5: Add Parent Settings Configuration
+
+**IMPORTANT**: For puzzles to be fully accessible to parents/educators, they must be configurable through the parent settings interface (`game-settings.html`).
+
+### 5A: Add to Puzzle Types List
+
+**Location**: Around line 275-283 in `game-settings.html`
+
+**Add your puzzle type to the array**:
+```javascript
+const puzzleTypes = [
+    { value: 'word_emoji_matching', label: 'Word Emoji Matching' },
+    { value: 'simple_arithmetic', label: 'Simple Math (A+B=?)' },
+    // ... existing puzzle types ...
+    { value: 'your_puzzle_type', label: 'Your Puzzle Display Name' }
+];
+```
+
+### 5B: Add to Embedded Game Config
+
+**Location**: Around line 393-403 in `game-settings.html`
+
+**Add your puzzle configuration to the embedded config**:
+```javascript
+"your_puzzle_type": {
+  "your_config_options": {
+    "option1": "default_value",
+    "option2": ["default", "array"]
+  },
+  "tracking": {
+    "preventRepetition": true,
+    "maxAttempts": 3,
+    "trackingScope": "level"
+  }
+}
+```
+
+### 5C: Add Configuration Case
+
+**Location**: Around line 982-983 in `game-settings.html`
+
+**Add your case to the generatePuzzleConfig function**:
+```javascript
+case 'your_puzzle_type':
+    return generateYourPuzzleConfig(levelNum, puzzleNum, puzzleData);
+```
+
+### 5D: Create Configuration Generator Function
+
+**Location**: After other generate functions (around line 1273)
+
+**Add your configuration form generator**:
+```javascript
+function generateYourPuzzleConfig(levelNum, puzzleNum, puzzleData) {
+    const option1 = puzzleData.option1 || 'default_value';
+    const selectedOptions = puzzleData.option2 || ['default'];
+    const availableOptions = ['option_a', 'option_b', 'option_c'];
+    
+    return `
+        <div class="form-group">
+            <label>Option 1:</label>
+            <select id="option1-${levelNum}-${puzzleNum}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                <option value="value1" ${option1 === 'value1' ? 'selected' : ''}>Value 1</option>
+                <option value="value2" ${option1 === 'value2' ? 'selected' : ''}>Value 2</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Multiple Options:</label>
+            <div class="checkbox-group">
+                ${availableOptions.map(option => `
+                    <label>
+                        <input type="checkbox" value="${option}" 
+                               ${selectedOptions.includes(option) ? 'checked' : ''}
+                               onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                        ${option.charAt(0).toUpperCase() + option.slice(1)}
+                    </label>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+```
+
+### 5E: Add Update Configuration Case
+
+**Location**: Around line 1507 in `game-settings.html` (in the updatePuzzleConfig switch statement)
+
+**Add your case before the closing bracket**:
+```javascript
+case 'your_puzzle_type':
+    const selectedOption1 = document.getElementById(`option1-${levelNum}-${puzzleNum}`)?.value || 'default_value';
+    const selectedOptions = Array.from(document.querySelectorAll(`#config-${levelNum}-${puzzleNum} input[type="checkbox"]:checked`))
+        .map(cb => cb.value).filter(v => ['option_a', 'option_b', 'option_c'].includes(v));
+    
+    puzzleConfig.option1 = selectedOption1;
+    puzzleConfig.option2 = selectedOptions.length > 0 ? selectedOptions : ['default'];
+    puzzleConfig.tracking = {
+        preventRepetition: true,
+        maxAttempts: 3,
+        trackingScope: "level"
+    };
+    break;
+```
+
+### Parent Settings Benefits
+
+Adding proper parent settings integration provides:
+
+**For Parents/Educators:**
+- **No technical knowledge required**: User-friendly form interface instead of JSON editing
+- **Real-time feedback**: Changes immediately reflected in level summaries
+- **Comprehensive control**: All puzzle parameters accessible through intuitive controls
+- **Educational targeting**: Easy customization for specific learning objectives
+
+**Common Configuration Patterns:**
+
+**Single Select Dropdown:**
+```javascript
+<select id="mode-${levelNum}-${puzzleNum}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+    <option value="mode1" ${mode === 'mode1' ? 'selected' : ''}>Mode 1</option>
+    <option value="mode2" ${mode === 'mode2' ? 'selected' : ''}>Mode 2</option>
+</select>
+```
+
+**Radio Button Group:**
+```javascript
+<div class="radio-group">
+    <label>
+        <input type="radio" name="option-${levelNum}-${puzzleNum}" value="value1" 
+               ${option === 'value1' ? 'checked' : ''} 
+               onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+        Option 1
+    </label>
+</div>
+```
+
+**Multi-Select Checkboxes:**
+```javascript
+<div class="checkbox-group">
+    ${availableOptions.map(option => `
+        <label>
+            <input type="checkbox" value="${option}" 
+                   ${selectedOptions.includes(option) ? 'checked' : ''}
+                   onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+            ${option}
+        </label>
+    `).join('')}
+</div>
+```
+
+**Number Input with Validation:**
+```javascript
+<input type="number" id="maxValue-${levelNum}-${puzzleNum}" value="${maxValue || 10}" 
+       min="1" max="20" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+```
+
 ## What You DON'T Need to Do (vs Old System)
 
 ❌ **No puzzle-specific door codes**: Don't create custom door codes like `'li'`, `'mg'`  
@@ -390,7 +546,13 @@ Use this streamlined checklist when adding a new puzzle:
 - [ ] **Created level directory** with generic assets
 - [ ] **Created generic obstacle textures** (`obstacle1.png`, `obstacle2.png`)
 - [ ] **Updated grid.csv** with generic obstacle codes (`ob1`, `ob2`)
+- [ ] **Added to puzzle types list** in `game-settings.html`
+- [ ] **Added to embedded config** in `game-settings.html`
+- [ ] **Added configuration case** in `generatePuzzleConfig` function
+- [ ] **Created configuration generator function** in `game-settings.html`
+- [ ] **Added update configuration case** in `updatePuzzleConfig` function
 - [ ] **Tested puzzle** in browser
+- [ ] **Tested parent settings configuration** interface
 
 ## Benefits of New System
 

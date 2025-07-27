@@ -310,6 +310,117 @@ All puzzles share common characteristics:
 - Missing character configs default to PT
 - Console logging for debugging asset loading issues
 
+## 6.5. Parent Settings Control System
+
+### Overview
+The game includes a comprehensive parent settings interface (`game-settings.html`) that allows parents/educators to customize level configurations without editing JSON files directly. This system provides a user-friendly way to tailor the game experience to individual child needs.
+
+### Access Methods
+**From Character Selection Screen:**
+- **Customize Levels Button**: Opens settings page with selected character pre-configured
+- **URL Integration**: Settings page receives character selection via URL parameters
+- **Session Storage**: Selected character persists across settings configuration
+
+**Standalone Access:**
+- Direct access via `game-settings.html` for configuration testing
+- Fallback character selection if no character pre-selected
+
+### Interface Architecture
+**Level Drawer System:**
+- **Collapsible drawers**: Each level has its own expandable section
+- **Visual indicators**: Level texture previews and current puzzle summaries
+- **Playable toggle**: Enable/disable levels with radio buttons
+- **Dual puzzle support**: Each level supports up to 2 configurable puzzles
+
+**Puzzle Configuration:**
+- **Dynamic dropdown**: Select puzzle type from comprehensive list
+- **Puzzle-specific forms**: Each puzzle type generates appropriate configuration controls
+- **Real-time updates**: Configuration changes immediately reflected in level summaries
+- **Validation**: Input validation with appropriate constraints (e.g., number ranges)
+
+### Supported Puzzle Configurations
+
+**All Puzzle Types Include:**
+- **Puzzle type selection**: Dropdown with all available puzzle types
+- **Tracking configuration**: Repetition prevention settings automatically applied
+- **Level-specific overrides**: Per-level customization of puzzle parameters
+
+**Specific Configuration Controls:**
+
+**Word Emoji Matching:**
+- Word list difficulty selection (Beginner/Intermediate/Advanced)
+
+**Simple Math & Number Line:**
+- Operation selection (Addition/Subtraction checkboxes)
+- Numerical constraints (Max A, Max B, Max Result)
+- Number line length configuration
+- Equation type selection (Standard/Triple Add/Triple Mixed)
+
+**Division & Multiplication:**
+- Mathematical constraints (Max values, factors, products)
+- Exclusion rules (Identity operations, A=1 cases)
+
+**Digraph Sounds:**
+- Multi-select digraph combinations (CH, TH, SH, etc.)
+- Comprehensive digraph library with 24 available options
+
+**Letter Identification:**
+- Exclude specific letters (full alphabet checkbox grid)
+- Useful for focusing on problematic letters or age-appropriate subsets
+
+**Audio Reading:**
+- Mode selection (Match Speech to Text / Match Text to Speech)
+- Word list selection (Silent-E words, CVC words, or both)
+- Multi-select support for comprehensive phonics coverage
+
+### Technical Implementation
+**Configuration Management:**
+- **Deep copying**: Preserves original config while allowing modifications
+- **Merge strategy**: Only modified levels overwrite default configuration
+- **Session persistence**: Settings maintained during configuration session
+- **Validation**: Client-side validation with appropriate constraints
+
+**Parent Communication:**
+- **Apply to Game**: Passes customized configuration back to main game
+- **Character preservation**: Maintains selected character through configuration process
+- **Cancel option**: Returns to character selection without applying changes
+
+**Dynamic Form Generation:**
+- **Puzzle-specific forms**: Generated based on selected puzzle type
+- **Conditional controls**: Show/hide relevant options (e.g., triple equation inputs)
+- **Auto-validation**: Real-time constraint enforcement and user feedback
+
+### Usage Workflow
+1. **Parent selects character** in main game
+2. **Clicks "Customize Levels"** button
+3. **Settings page opens** with character pre-configured
+4. **Parent configures levels**:
+   - Enable/disable levels as needed
+   - Select appropriate puzzle types
+   - Adjust difficulty parameters
+   - Configure puzzle-specific settings
+5. **Parent applies settings** which starts customized game
+6. **Child plays** with personalized configuration
+
+### Benefits for Parents/Educators
+- **No technical knowledge required**: User-friendly form interface
+- **Immediate feedback**: Visual indicators show current configuration
+- **Flexible customization**: Per-level control of all puzzle aspects
+- **Educational targeting**: Focus on specific skills or learning objectives
+- **Difficulty adjustment**: Tailor challenge level to child's abilities
+- **Progress control**: Enable/disable levels based on child's readiness
+
+### Integration Points
+**Character Selection Integration:**
+- Settings accessible directly from character selection screen
+- Character choice preserved throughout configuration process
+- Seamless return to game with both character and configuration applied
+
+**Game Configuration Integration:**
+- Settings override default `game-config.json` values
+- Maintains all existing configuration structure and validation
+- Compatible with all puzzle types and level configurations
+
 ## 7. Development Roadmap
 
 ### Completed Phases

@@ -64,3 +64,21 @@
 - **Audio**: Speaker button play [letter].mp3 for each of the 3 options
 - **Feedback**: Independent thumbs up/down for each part
 - **Constraints**: Similar sounds filtered out (e.g. j.mp3 is not played as an option for G)
+
+#### 8. Audio Reading Puzzle
+- **Configuration**: Main config file + word lists in `word-lists/audio-reading/` directory
+- **Modes**: Two bidirectional modes configurable per level:
+  - `match_speech_to_text`: Child hears word, selects correct written word from 3 options
+  - `match_text_to_speech`: Child sees written word, selects correct audio pronunciation from 3 options
+- **Word Lists**: Multiple word lists available with distractors:
+  - `silent-e-with-distractors.txt` - Silent-E pattern words (59 words, 6 distractors each)
+  - `cvc-with-distractors.txt` - CVC pattern words (64 words, same-first-letter distractors)
+- **Audio System**: Hybrid approach with fallback:
+  - **Primary**: Recorded pronunciation files in `Pronounciations/[word].mp3` (271+ files)
+  - **Fallback**: Text-to-speech synthesis when audio files unavailable
+- **Title Hiding**: Uses CSS class `audio-puzzle-hidden-title` for clean UI without title interference
+- **Word Tracking**: Prevents repetition within level using same system as word emoji matching
+- **Configuration Properties**:
+  - `mode`: "match_speech_to_text" or "match_text_to_speech"
+  - `wordLists`: Array of word list names (e.g., ["silent-e", "cvc"])
+  - `tracking`: Standard tracking configuration for repetition prevention
