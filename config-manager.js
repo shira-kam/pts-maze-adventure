@@ -206,6 +206,63 @@ class ConfigManager {
     }
 
     /**
+     * Get specific puzzle configuration for a particular door instance
+     * @param {number} level - Level number
+     * @param {string} puzzleType - Puzzle type
+     * @param {string} obstacleCode - Obstacle code (ob1, ob2, etc.)
+     * @returns {object} Puzzle configuration for the specific instance
+     */
+    getSpecificPuzzleConfig(level, puzzleType, obstacleCode) {
+        if (!this.gameConfig || !this.gameConfig.puzzles || !this.gameConfig.puzzles[puzzleType]) {
+            console.warn(`No default puzzle configuration found for type: ${puzzleType}`);
+            return null;
+        }
+
+        // Start with default puzzle configuration
+        const defaultConfig = JSON.parse(JSON.stringify(this.gameConfig.puzzles[puzzleType]));
+        
+        // Get level-specific configuration
+        const levelConfig = this.getLevelConfig(level);
+        if (levelConfig && levelConfig.puzzles && Array.isArray(levelConfig.puzzles)) {
+            // Find the puzzle index based on obstacle code
+            const puzzleIndex = this.getObstacleIndex(level, obstacleCode);
+            
+            if (puzzleIndex !== -1 && puzzleIndex < levelConfig.puzzles.length) {
+                const levelPuzzle = levelConfig.puzzles[puzzleIndex];
+                
+                // Verify this is the correct puzzle type
+                if (levelPuzzle && levelPuzzle.type === puzzleType) {
+                    // Create a copy without the 'type' property for merging
+                    const levelOverrides = { ...levelPuzzle };
+                    delete levelOverrides.type;
+                    
+                    // Deep merge level overrides with defaults
+                    return this.deepMerge(defaultConfig, levelOverrides);
+                }
+            }
+        }
+
+        return defaultConfig;
+    }
+
+    /**
+     * Get the array index for a specific obstacle code
+     * @param {number} level - Level number  
+     * @param {string} obstacleCode - Obstacle code (ob1, ob2, etc.)
+     * @returns {number} Array index (-1 if not found)
+     */
+    getObstacleIndex(level, obstacleCode) {
+        // Extract the number from obstacle code (ob1 -> 1, ob2 -> 2, etc.)
+        const match = obstacleCode.match(/^ob(\d+)$/);
+        if (match) {
+            const obstacleNumber = parseInt(match[1]);
+            // Convert to 0-based array index
+            return obstacleNumber - 1;
+        }
+        return -1;
+    }
+
+    /**
      * Get animation configuration for a specific level
      * @param {number} level - Level number
      * @returns {object} Animation configuration

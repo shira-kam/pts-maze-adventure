@@ -5,9 +5,9 @@ class AudioReadingPuzzle {
     constructor(door) {
         this.door = door;
         
-        // Get puzzle configuration for this level
+        // Get puzzle configuration for this level and specific door instance
         const level = game.selectedDifficulty;
-        const config = configManager.getPuzzleConfig(level, 'audio_reading');
+        const config = configManager.getSpecificPuzzleConfig(level, 'audio_reading', this.door.obstacleCode);
         
         // Initialize tracking system if enabled
         this.tracking = config.tracking || {};

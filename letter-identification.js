@@ -22,34 +22,34 @@ class LetterIdentificationPuzzle {
             this.usedLetters = game[trackingKey];
         }
         
-        // Define letter data - uppercase letters with their sounds and lowercase equivalents
+        // Define letter data - uppercase letters with their sounds, lowercase equivalents, and vowel/consonant classification
         this.letterData = {
-            'A': { sound: 'ay', lowercase: 'a' },
-            'B': { sound: 'buh', lowercase: 'b' },
-            'C': { sound: 'cuh', lowercase: 'c' },
-            'D': { sound: 'duh', lowercase: 'd' },
-            'E': { sound: 'eh', lowercase: 'e' },
-            'F': { sound: 'fuh', lowercase: 'f' },
-            'G': { sound: 'guh', lowercase: 'g' },
-            'H': { sound: 'huh', lowercase: 'h' },
-            'I': { sound: 'ih', lowercase: 'i' },
-            'J': { sound: 'juh', lowercase: 'j' },
-            'K': { sound: 'kuh', lowercase: 'k' },
-            'L': { sound: 'luh', lowercase: 'l' },
-            'M': { sound: 'muh', lowercase: 'm' },
-            'N': { sound: 'nuh', lowercase: 'n' },
-            'O': { sound: 'oh', lowercase: 'o' },
-            'P': { sound: 'puh', lowercase: 'p' },
-            'Q': { sound: 'kwuh', lowercase: 'q' },
-            'R': { sound: 'ruh', lowercase: 'r' },
-            'S': { sound: 'suh', lowercase: 's' },
-            'T': { sound: 'tuh', lowercase: 't' },
-            'U': { sound: 'uh', lowercase: 'u' },
-            'V': { sound: 'vuh', lowercase: 'v' },
-            'W': { sound: 'wuh', lowercase: 'w' },
-            'X': { sound: 'ks', lowercase: 'x' },
-            'Y': { sound: 'yuh', lowercase: 'y' },
-            'Z': { sound: 'zuh', lowercase: 'z' }
+            'A': { sound: 'ay', lowercase: 'a', type: 'vowel' },
+            'B': { sound: 'buh', lowercase: 'b', type: 'consonant' },
+            'C': { sound: 'cuh', lowercase: 'c', type: 'consonant' },
+            'D': { sound: 'duh', lowercase: 'd', type: 'consonant' },
+            'E': { sound: 'eh', lowercase: 'e', type: 'vowel' },
+            'F': { sound: 'fuh', lowercase: 'f', type: 'consonant' },
+            'G': { sound: 'guh', lowercase: 'g', type: 'consonant' },
+            'H': { sound: 'huh', lowercase: 'h', type: 'consonant' },
+            'I': { sound: 'ih', lowercase: 'i', type: 'vowel' },
+            'J': { sound: 'juh', lowercase: 'j', type: 'consonant' },
+            'K': { sound: 'kuh', lowercase: 'k', type: 'consonant' },
+            'L': { sound: 'luh', lowercase: 'l', type: 'consonant' },
+            'M': { sound: 'muh', lowercase: 'm', type: 'consonant' },
+            'N': { sound: 'nuh', lowercase: 'n', type: 'consonant' },
+            'O': { sound: 'oh', lowercase: 'o', type: 'vowel' },
+            'P': { sound: 'puh', lowercase: 'p', type: 'consonant' },
+            'Q': { sound: 'kwuh', lowercase: 'q', type: 'consonant' },
+            'R': { sound: 'ruh', lowercase: 'r', type: 'consonant' },
+            'S': { sound: 'suh', lowercase: 's', type: 'consonant' },
+            'T': { sound: 'tuh', lowercase: 't', type: 'consonant' },
+            'U': { sound: 'uh', lowercase: 'u', type: 'vowel' },
+            'V': { sound: 'vuh', lowercase: 'v', type: 'consonant' },
+            'W': { sound: 'wuh', lowercase: 'w', type: 'consonant' },
+            'X': { sound: 'ks', lowercase: 'x', type: 'consonant' },
+            'Y': { sound: 'yuh', lowercase: 'y', type: 'consonant' },
+            'Z': { sound: 'zuh', lowercase: 'z', type: 'consonant' }
         };
         
         // Get letters to use for this level - start with all 26 letters by default
@@ -74,6 +74,7 @@ class LetterIdentificationPuzzle {
         // Initialize selection state
         this.selectedLowercase = null;
         this.selectedSound = null;
+        this.selectedType = null;
         
         // Audio cache for better performance
         this.audioCache = {};
@@ -167,6 +168,7 @@ class LetterIdentificationPuzzle {
             letter: selectedLetter,
             correctLowercase: letterInfo.lowercase,
             correctSound: letterInfo.sound,
+            correctType: letterInfo.type,
             lowercaseChoices: lowercaseChoices,
             soundChoices: soundChoices,
             correctLowercaseIndex: lowercaseChoices.indexOf(letterInfo.lowercase),
@@ -329,13 +331,61 @@ class LetterIdentificationPuzzle {
     }
 
     /**
+     * Handle type selection (radio button behavior)
+     */
+    selectType(selectedType, buttonElement) {
+        // Play the type name using speech synthesis
+        this.speakType(selectedType);
+        
+        // Clear previous selection - return to unselected state
+        document.querySelectorAll('.type-button').forEach(btn => {
+            if (btn.classList.contains('vowel-button')) {
+                btn.style.background = 'white';
+                btn.style.color = '#FF5252';
+            } else {
+                btn.style.background = 'white';
+                btn.style.color = '#2196F3';
+            }
+        });
+        
+        // Select the clicked button
+        buttonElement.style.background = '#4CAF50';
+        buttonElement.style.color = 'white';
+        
+        // Store selection
+        this.selectedType = selectedType;
+        
+        // Update submit button state
+        this.updateSubmitButton();
+        
+        console.log(`Selected type: ${selectedType}`);
+    }
+
+    /**
+     * Speak vowel or consonant using speech synthesis
+     */
+    speakType(type) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(type);
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            window.speechSynthesis.speak(utterance);
+            console.log('Speaking type:', type);
+        } else {
+            console.warn('Speech synthesis not available');
+        }
+    }
+
+    /**
      * Update submit button enabled/disabled state
      */
     updateSubmitButton() {
         const submitButton = document.querySelector('.submit-button');
         if (submitButton) {
-            const bothSelected = this.selectedLowercase && this.selectedSound;
-            if (bothSelected) {
+            const allSelected = this.selectedLowercase && this.selectedSound && this.selectedType;
+            if (allSelected) {
                 // Enable submit button
                 submitButton.style.background = '#FF9800';
                 submitButton.style.opacity = '1';
@@ -355,8 +405,8 @@ class LetterIdentificationPuzzle {
      * Submit answers and check results
      */
     submitAnswers() {
-        if (!this.selectedLowercase || !this.selectedSound) {
-            // Show message if not both selections made
+        if (!this.selectedLowercase || !this.selectedSound || !this.selectedType) {
+            // Show message if not all selections made
             const result = document.getElementById('puzzleResult');
             result.innerHTML = '❓';
             result.style.color = 'orange';
@@ -371,6 +421,7 @@ class LetterIdentificationPuzzle {
 
         const lowercaseCorrect = this.selectedLowercase === this.currentProblem.correctLowercase;
         const soundCorrect = this.selectedSound === this.currentProblem.correctSound;
+        const typeCorrect = this.selectedType === this.currentProblem.correctType;
         
         // Show feedback on lowercase buttons and disable wrong ones
         document.querySelectorAll('.lowercase-button').forEach(btn => {
@@ -412,8 +463,28 @@ class LetterIdentificationPuzzle {
             }
         });
 
-        // Check if both are correct
-        if (lowercaseCorrect && soundCorrect) {
+        // Show feedback on type buttons and disable wrong ones
+        document.querySelectorAll('.type-button').forEach(btn => {
+            const type = btn.dataset.type;
+            if (type === this.selectedType) {
+                if (typeCorrect) {
+                    // Show thumbs up for correct answer
+                    const currentText = btn.innerHTML;
+                    btn.innerHTML = `${currentText} 👍`;
+                    btn.style.background = '#4CAF50';
+                } else {
+                    // For wrong answer: disable, make gray
+                    btn.style.background = '#CCCCCC';
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                    btn.onclick = null;
+                }
+            }
+        });
+
+        // Check if all three are correct
+        if (lowercaseCorrect && soundCorrect && typeCorrect) {
             // Both correct! Puzzle complete!
             const result = document.getElementById('puzzleResult');
             result.innerHTML = '👍';
@@ -444,7 +515,7 @@ class LetterIdentificationPuzzle {
                 game.puzzleActive = false;
             }, 2000);
         } else {
-            // One or both wrong
+            // One or more wrong
             const result = document.getElementById('puzzleResult');
             result.innerHTML = '👎';
             result.style.color = 'red';
@@ -468,6 +539,7 @@ class LetterIdentificationPuzzle {
     resetSelections() {
         this.selectedLowercase = null;
         this.selectedSound = null;
+        this.selectedType = null;
         
         // Reset lowercase buttons (except disabled ones)
         document.querySelectorAll('.lowercase-button').forEach((btn, index) => {
@@ -485,6 +557,22 @@ class LetterIdentificationPuzzle {
                 btn.innerHTML = `${index + 1}🔊`;
                 btn.style.background = 'white';
                 btn.style.color = 'black';
+            }
+        });
+        
+        // Reset type buttons (except disabled ones)
+        document.querySelectorAll('.type-button').forEach(btn => {
+            if (!btn.disabled) {
+                const type = btn.dataset.type;
+                const letter = type === 'vowel' ? 'V' : 'C';
+                btn.innerHTML = `${letter} 🔊`;
+                if (btn.classList.contains('vowel-button')) {
+                    btn.style.background = 'white';
+                    btn.style.color = '#FF5252';
+                } else {
+                    btn.style.background = 'white';
+                    btn.style.color = '#2196F3';
+                }
             }
         });
         
@@ -554,7 +642,7 @@ class LetterIdentificationPuzzle {
                                 font-size: 32px;
                                 background: white;
                                 color: black;
-                                border: 3px solid #2196F3;
+                                border: 3px solid #4CAF50;
                                 min-width: 120px;
                                 min-height: 80px;
                                 border-radius: 10px;
@@ -564,6 +652,41 @@ class LetterIdentificationPuzzle {
                                 font-weight: bold;
                             " onclick="letterPuzzleInstance.selectSound(${index}, this)">${index + 1}🔊</button>
                         `).join('')}
+                    </div>
+                </div>
+                
+                <!-- Vowel/Consonant classification -->
+                <div style="margin-bottom: 30px;">
+                    <div style="display: flex; gap: 20px; justify-content: center;">
+                        <button class="type-button vowel-button" data-type="vowel" style="
+                            font-size: 28px;
+                            background: white;
+                            color: #FF5252;
+                            border: 3px solid #FF5252;
+                            min-width: 120px;
+                            min-height: 80px;
+                            border-radius: 50%;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            font-family: 'Arial', sans-serif;
+                            font-weight: bold;
+                            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                        " onclick="letterPuzzleInstance.selectType('vowel', this)">V 🔊</button>
+                        
+                        <button class="type-button consonant-button" data-type="consonant" style="
+                            font-size: 28px;
+                            background: white;
+                            color: #2196F3;
+                            border: 3px solid #2196F3;
+                            min-width: 120px;
+                            min-height: 80px;
+                            border-radius: 10px;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            font-family: 'Arial', sans-serif;
+                            font-weight: bold;
+                            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                        " onclick="letterPuzzleInstance.selectType('consonant', this)">C 🔊</button>
                     </div>
                 </div>
                 
@@ -607,6 +730,7 @@ class LetterIdentificationPuzzle {
         // Reset selections
         this.selectedLowercase = null;
         this.selectedSound = null;
+        this.selectedType = null;
         
         // Set title to the uppercase letter
         title.innerHTML = `<div style="font-size: 72px; font-weight: bold; color: #2E8B57; margin-bottom: 15px;">${this.currentProblem.letter}</div>`;

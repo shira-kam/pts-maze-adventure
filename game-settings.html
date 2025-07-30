@@ -293,9 +293,13 @@
             { value: 'advanced', label: 'Advanced' }
         ];
         
+        // Available audio reading word lists (will be populated dynamically)
+        let availableWordLists = [];
+        
         // Initialize the page
         async function initializePage() {
             await loadGameConfig();
+            await discoverWordLists();
             
             // Check if we're being called from character selection with specific character
             const urlParams = new URLSearchParams(window.location.search);
@@ -307,6 +311,77 @@
             }
             
             generateLevelDrawers();
+        }
+        
+        // Dynamically discover available word lists from the audio-reading directory
+        async function discoverWordLists() {
+            availableWordLists = [];
+            
+            try {
+                // Fetch the directory listing page to parse available files
+                const response = await fetch('word-lists/audio-reading/');
+                if (response.ok) {
+                    const html = await response.text();
+                    
+                    // Parse HTML to find files ending with "-with-distractors.txt"
+                    const filePattern = /-with-distractors\.txt/g;
+                    const linkPattern = /href="([^"]*-with-distractors\.txt)"/g;
+                    
+                    let match;
+                    while ((match = linkPattern.exec(html)) !== null) {
+                        const filename = match[1];
+                        // Extract the word list name (remove "-with-distractors.txt")
+                        const listName = filename.replace('-with-distractors.txt', '');
+                        
+                        // Convert filename to display name
+                        const displayName = listName
+                            .split('-')
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                            .join(' ');
+                        
+                        availableWordLists.push({
+                            value: listName,
+                            label: `${displayName} words`
+                        });
+                        console.log(`Found word list: ${listName} (${filename})`);
+                    }
+                }
+            } catch (error) {
+                console.warn('Could not fetch directory listing, falling back to file testing method');
+                
+                // Fallback: Try to fetch a few common word list files individually
+                const commonWordLists = ['basic-magic-e', 'advanced-magic-e', 'silent-e', 'cvc'];
+                for (const listName of commonWordLists) {
+                    try {
+                        const url = `word-lists/audio-reading/${listName}-with-distractors.txt`;
+                        const response = await fetch(url, { method: 'HEAD' });
+                        if (response.ok) {
+                            const displayName = listName
+                                .split('-')
+                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                .join(' ');
+                            
+                            availableWordLists.push({
+                                value: listName,
+                                label: `${displayName} words`
+                            });
+                            console.log(`Found word list: ${listName}`);
+                        }
+                    } catch (error) {
+                        // Silently continue if file doesn't exist
+                    }
+                }
+            }
+            
+            // If no word lists found, add a fallback
+            if (availableWordLists.length === 0) {
+                availableWordLists.push({
+                    value: 'silent-e',
+                    label: 'Silent E words (fallback)'
+                });
+            }
+            
+            console.log('Available word lists:', availableWordLists);
         }
         
         // Load the current game configuration
@@ -1236,7 +1311,6 @@
         function generateAudioReadingConfig(levelNum, puzzleNum, puzzleData) {
             const mode = puzzleData.mode || 'match_speech_to_text';
             const selectedWordLists = puzzleData.wordLists || ['silent-e'];
-            const availableWordLists = ['silent-e', 'cvc']; // Available word lists from directory
             
             return `
                 <div class="form-group">
@@ -1261,10 +1335,10 @@
                     <div class="checkbox-group">
                         ${availableWordLists.map(wordList => `
                             <label>
-                                <input type="checkbox" value="${wordList}" 
-                                       ${selectedWordLists.includes(wordList) ? 'checked' : ''}
+                                <input type="checkbox" value="${wordList.value}" 
+                                       ${selectedWordLists.includes(wordList.value) ? 'checked' : ''}
                                        onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
-                                ${wordList.charAt(0).toUpperCase() + wordList.slice(1)} words
+                                ${wordList.label}
                             </label>
                         `).join('')}
                     </div>
@@ -1495,10 +1569,10 @@
                 case 'audio_reading':
                     const selectedMode = document.querySelector(`input[name="mode-${levelNum}-${puzzleNum}"]:checked`)?.value || 'match_speech_to_text';
                     const selectedWordLists = Array.from(document.querySelectorAll(`#config-${levelNum}-${puzzleNum} input[type="checkbox"]:checked`))
-                        .map(cb => cb.value).filter(v => ['silent-e', 'cvc'].includes(v));
+                        .map(cb => cb.value);
                     
                     puzzleConfig.mode = selectedMode;
-                    puzzleConfig.wordLists = selectedWordLists.length > 0 ? selectedWordLists : ['silent-e'];
+                    puzzleConfig.wordLists = selectedWordLists.length > 0 ? selectedWordLists : (availableWordLists.length > 0 ? [availableWordLists[0].value] : ['silent-e']);
                     puzzleConfig.tracking = {
                         preventRepetition: true,
                         maxAttempts: 3,

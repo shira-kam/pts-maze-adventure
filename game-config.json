@@ -80,7 +80,7 @@
     },
     "audio_reading": {
       "mode": "match_speech_to_text",
-      "wordLists": ["silent-e"],
+      "wordLists": ["basic-magic-e"],
       "tracking": {
         "preventRepetition": true,
         "maxAttempts": 3,
@@ -105,12 +105,15 @@
           }
         },
         {
-          "type": "word_emoji_matching",
-          "wordListLevel": "beginner",
-          "tracking": {
-            "preventRepetition": true,
-            "usedWords": [],
-            "trackingScope": "level"
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 10,
+            "minA": 1,
+            "maxA": 9,
+            "minB": 1,
+            "maxB": 9,
+            "maxResult": 10
           }
         }
       ],
@@ -131,25 +134,17 @@
       "playable": true,
       "puzzles": [
         {
-          "type": "number_line",
-          "operations": ["addition", "subtraction"],
-          "numberLine": {
-            "length": 10,
-            "minA": 1,
-            "maxA": 9,
-            "minB": 1,
-            "maxB": 9,
-            "maxResult": 10
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
           }
         },
         {
-          "type": "word_emoji_matching",
-          "wordListLevel": "beginner",
-          "tracking": {
-            "preventRepetition": true,
-            "usedWords": [],
-            "trackingScope": "level"
-          }
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["cvc"]
         }
       ],
       "assets": {
@@ -170,7 +165,7 @@
       "puzzles": [
         {
           "type": "number_line",
-          "operations": ["addition", "subtraction"],
+          "operations": ["addition"],
           "numberLine": {
             "length": 12,
             "minA": 1,
@@ -181,12 +176,15 @@
           }
         },
         {
-          "type": "word_emoji_matching",
-          "wordListLevel": "intermediate",
-          "tracking": {
-            "preventRepetition": true,
-            "usedWords": [],
-            "trackingScope": "level"
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 12,
+            "minA": 1,
+            "maxA": 11,
+            "minB": 1,
+            "maxB": 11,
+            "maxResult": 12
           }
         }
       ],
@@ -207,15 +205,12 @@
       "playable": true,
       "puzzles": [
         {
-          "type": "number_line",
-          "operations": ["addition", "subtraction"],
-          "numberLine": {
-            "length": 15,
-            "minA": 1,
-            "maxA": 14,
-            "minB": 1,
-            "maxB": 14,
-            "maxResult": 15
+          "type": "word_emoji_matching",
+          "wordListLevel": "intermediate",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
           }
         }
       ],
@@ -236,15 +231,12 @@
       "playable": true,
       "puzzles": [
         {
-          "type": "number_line",
-          "operations": ["addition", "subtraction"],
-          "numberLine": {
-            "length": 17,
-            "minA": 1,
-            "maxA": 16,
-            "minB": 1,
-            "maxB": 16,
-            "maxResult": 17
+          "type": "word_emoji_matching",
+          "wordListLevel": "intermediate",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
           }
         },
         {
@@ -281,8 +273,14 @@
           }
         },
         {
-          "type": "digraph_sounds",
-          "digraphs": ["TR", "PR", "GR", "FR", "DR", "CR", "BR"]
+          "type": "division_visual",
+          "division": {
+            "maxA": 15,
+            "maxB": 15,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
         }
       ],
       "assets": {
@@ -303,18 +301,14 @@
       "puzzles": [
         {
           "type": "digraph_sounds",
-          "digraphs": ["CH", "TH", "SH", "WH", "PH"]
+          "digraphs": ["CH", "TH", "SH", "WH", "PH", "ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
         },
         {
-          "type": "number_line",
-          "operations": ["addition", "subtraction"],
-          "numberLine": {
-            "length": 20,
-            "minA": 1,
-            "maxA": 19,
-            "minB": 1,
-            "maxB": 19,
-            "maxResult": 20
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
           }
         }
       ],
@@ -377,14 +371,8 @@
       "playable": true,
       "puzzles": [
         {
-          "type": "division_visual",
-          "division": {
-            "maxA": 15,
-            "maxB": 15,
-            "maxAnswer": 15,
-            "excludeIdentity": true,
-            "excludeA1": true
-          }
+        "type": "digraph_sounds",
+          "digraphs": ["CH", "TH", "SH", "WH", "PH", "ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
         },
         {
         "type": "word_emoji_matching",
@@ -477,8 +465,36 @@
         {
           "type": "audio_reading",
           "mode": "match_text_to_speech",
-          "wordLists": ["silent-e"]
+          "wordLists": ["basic-magic-e", "cvc"]
         }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 62,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 20
+      }
+    },
+    "13": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["basic-magic-e", "cvc"]
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["basic-magic-e", "cvc"]
+        }
+
       ],
       "assets": {
         "celebration": {
