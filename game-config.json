@@ -533,5 +533,28 @@
       },
       "description": "A mysterious dark figure from another dimension"
     }
+  },
+  "ghost": {
+    "enabled": true,
+    "globalSettings": {
+      "baseSpeed": 1.5,
+      "speedByDifficulty": {
+        "easy": 1.1,
+        "neutral": 1.5,
+        "hard": 2.3
+      },
+      "heartsStolen": {
+        "easy": 1,
+        "neutral": 2,
+        "hard": 3
+      },
+      "puzzlesToWeaken": 1,
+      "strengthLevels": 5
+    },
+    "sprites": {
+      "strong": "ghost-strong.png",
+      "medium": "ghost-medium.png",
+      "weak": "ghost-weak.png"
+    }
   }
 }

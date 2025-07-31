@@ -17,6 +17,7 @@
     <div id="gameContainer">
         <div id="gameInfo">
             <div id="score">♥️♥️♥️♥️♥️</div>
+            <div id="ghostStrength" style="display: none;">☠️☠️☠️☠️☠️</div>
             <div id="level">Level: 1</div>
         </div>
         
@@ -39,6 +40,27 @@
         </div>
     </div>
     
+    <!-- Character Caught By Ghost Modal -->
+    <div id="ghostCaughtModal" style="display: none;">
+        <div id="ghostCaughtContent">
+            <canvas id="ghostCaughtSprite" width="400" height="400"></canvas>
+            <div id="ghostCaughtButtons">
+                <button id="ghostCaughtReplayBtn" onclick="replayCharacterCaughtByGhost()">⟲</button>
+                <button id="ghostCaughtBtn" onclick="dismissCharacterCaughtByGhost()">OK</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Ghost Defeated Modal -->
+    <div id="ghostDefeatedModal" style="display: none;">
+        <div id="ghostDefeatedContent">
+            <canvas id="ghostDefeatedSprite" width="400" height="400"></canvas>
+            <div id="ghostDefeatedButtons">
+                <button id="ghostDefeatedReplayBtn" onclick="replayGhostDefeated()">⟲</button>
+                <button id="ghostDefeatedBtn" onclick="dismissGhostDefeated()">OK</button>
+            </div>
+        </div>
+    </div>
     
     <div id="characterSelectionScreen">
         <div id="characterSelectionContent">
@@ -190,6 +212,7 @@
     <script src="letter-identification.js"></script>
     <script src="audio-reading-puzzle.js"></script>
     <script src="debug-manager.js"></script>
+    <script src="ghost.js"></script>
     
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -651,6 +674,7 @@
             usedDigraphs: [], // Track digraphs used in current level to prevent repetition
         usedMultiplicationProblems: [], // Track multiplication pairs used in current level to prevent repetition
             levelScores: {}, // Track final score for each completed level
+            ghost: null, // Ghost instance for current level
             deathLevel: null, // Track which level the user died on
             gameSession: { // Track current game session
                 startTime: null,
@@ -822,6 +846,33 @@
             game.currentLevelStartingHeartsAdded = false; // Reset flag for new level
             currentCelebrationSprites = loadCelebrationSprite(level);
             initializeGame();
+        }
+        
+        // Ghost initialization function
+        async function initializeGhost() {
+            // Load game configuration if not already loaded
+            if (!configManager.isConfigLoaded()) {
+                await configManager.loadConfig();
+            }
+            
+            const gameConfig = configManager.gameConfig;
+            
+            // Check if ghost is enabled globally and for this level
+            if (!gameConfig.ghost || !gameConfig.ghost.enabled) {
+                console.log('Ghost disabled globally');
+                game.ghost = null;
+                return;
+            }
+            
+            // Create new ghost instance
+            game.ghost = new Ghost(game.selectedDifficulty, gameConfig);
+            
+            // Set ghost difficulty based on selected game difficulty
+            game.ghost.setDifficulty(game.difficultyMode);
+            
+            // Set ghost starting position near endpoint (will be called after maze loads)
+            
+            console.log('Ghost initialized for level', game.selectedDifficulty);
         }
         
         function backToDifficulty() {
@@ -1133,6 +1184,16 @@
                 game.digraphSounds = digraphData.digraphSounds;
                 game.emojiNames = digraphData.emojiNames;
                 console.log(`Loaded digraph data for Level ${game.selectedDifficulty}:`, digraphData);
+            }
+            
+            // Initialize ghost for this level
+            console.log('Initializing ghost for level...');
+            initializeGhost();
+            
+            // Set ghost starting position now that maze data is loaded
+            if (game.ghost && game.ghost.isActive) {
+                game.ghost.setStartingPosition(game.watering_hole, game.paths);
+                game.ghost.initializeSkullDisplay();
             }
             
             // Reset game state with new data
@@ -1825,6 +1886,11 @@
                 ctx.textAlign = 'center';
                 ctx.fillText('🐘', game.player.x + 40 + tileCenter, game.player.y + 40 + tileCenter + 10);
             }
+            
+            // Draw ghost if active
+            if (game.ghost && game.ghost.isActive) {
+                game.ghost.render(ctx, game.tileSize, 40, 40);
+            }
         }
         
         
@@ -2125,6 +2191,11 @@
                 // Update score for correct answers (all puzzle types give +1)
                 updateScore(1);
                 
+                // Weaken ghost when puzzle is solved correctly
+                if (game.ghost && game.ghost.isActive) {
+                    game.ghost.onPuzzleSolved();
+                }
+                
                 // Reset attempt counters
                 door.currentProblemAttempts = 0;
                 door.failedAttempts = 0;
@@ -2380,6 +2451,34 @@
             }
         }
         
+        // Global function for character caught by ghost modal dismissal
+        function dismissCharacterCaughtByGhost() {
+            if (game.ghost) {
+                game.ghost.dismissCharacterCaughtByGhost();
+            }
+        }
+        
+        // Global function for ghost defeated modal dismissal  
+        function dismissGhostDefeated() {
+            if (game.ghost) {
+                game.ghost.dismissGhostDefeated();
+            }
+        }
+        
+        // Global function for character caught by ghost modal replay
+        function replayCharacterCaughtByGhost() {
+            if (game.ghost) {
+                game.ghost.replayCharacterCaughtByGhost();
+            }
+        }
+        
+        // Global function for ghost defeated modal replay  
+        function replayGhostDefeated() {
+            if (game.ghost) {
+                game.ghost.replayGhostDefeated();
+            }
+        }
+        
         function showCelebration() {
             // If boost is active, end it properly
             if (game.rocketCountdown > 0 || game.boostTransitionState !== 'normal') {
@@ -2431,6 +2530,11 @@
             if (game.player.isMoving && game.player.animTimer > 10) {
                 game.player.isMoving = false;
                 game.player.animTimer = 0;
+            }
+            
+            // Update ghost if active
+            if (game.ghost && game.ghost.isActive) {
+                game.ghost.update(Date.now(), game);
             }
             
             if (!game.celebrating) {

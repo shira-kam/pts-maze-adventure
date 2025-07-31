@@ -494,6 +494,11 @@ class LetterIdentificationPuzzle {
             // Mark door as open
             this.door.open = true;
             
+            // Weaken ghost when puzzle is solved correctly
+            if (game.ghost && game.ghost.isActive) {
+                game.ghost.onPuzzleSolved();
+            }
+            
             // Complete rocket boost movement if active
             if (game.rocketBoostActive) {
                 game.rocketBoostMovement.complete();

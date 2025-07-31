@@ -351,6 +351,11 @@ class DigraphPuzzle {
             // Give +1 point for correct answer
             updateScore(1);
             
+            // Weaken ghost when puzzle is solved correctly
+            if (game.ghost && game.ghost.isActive) {
+                game.ghost.onPuzzleSolved();
+            }
+            
             // Reset attempt counters
             this.door.currentProblemAttempts = 0;
             

@@ -463,6 +463,11 @@ class NumberLinePuzzle {
             // Update score
             updateScore(1);
             
+            // Weaken ghost when puzzle is solved correctly
+            if (game.ghost && game.ghost.isActive) {
+                game.ghost.onPuzzleSolved();
+            }
+            
             // Close modal after delay
             setTimeout(() => {
                 const modal = document.getElementById('puzzleModal');

@@ -41,6 +41,29 @@ class ConfigManager {
                         movement: 'PT-sprite.svg',
                         bonus: 'PT-Bonus-Sprite.svg'
                     }
+                },
+                ghost: {
+                    enabled: true,
+                    globalSettings: {
+                        baseSpeed: 0.8,
+                        speedByDifficulty: {
+                            easy: 0.5,
+                            neutral: 0.8,
+                            hard: 1.2
+                        },
+                        heartsStolen: {
+                            easy: 1,
+                            neutral: 2,
+                            hard: 3
+                        },
+                        puzzlesToWeaken: 1,
+                        strengthLevels: 5
+                    },
+                    sprites: {
+                        strong: "ghost-strong.png",
+                        medium: "ghost-medium.png",
+                        weak: "ghost-weak.png"
+                    }
                 }
             };
             this.isLoaded = true;
