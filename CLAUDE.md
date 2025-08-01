@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 1. Project Overview & Setup
 
-"Maze of Marvels" is a sophisticated educational HTML5 Canvas maze game featuring multiple playable characters. The game spans 11 levels with progressive difficulty, incorporating multiple educational puzzle types, advanced movement mechanics, comprehensive scoring systems, and extensive debug capabilities. Built as a single-page application with no external dependencies and fully dynamic character support.
+"Maze of Marvels" is a sophisticated educational HTML5 Canvas maze game featuring multiple playable characters and an optional intelligent ghost opponent. The game spans 13 levels with progressive difficulty, incorporating multiple educational puzzle types, advanced movement mechanics, comprehensive scoring systems, ghost AI with pathfinding, and extensive debug capabilities. Built as a single-page application with no external dependencies and fully dynamic character support.
 
 ### Live Game Access
 **🎉 PLAY ONLINE**: https://shira-kam.github.io/pts-maze-adventure/
@@ -54,24 +54,29 @@ Pre-literate children cannot read instruction text or feedback messages. All com
 
 ### Core Files Structure
 - **`index.html`**: Core game implementation (~2450 lines) containing HTML, CSS, and main game logic
+- **`ghost.js`**: Complete ghost AI system (~1000 lines) with pathfinding, collision detection, and modal interactions
 - **`debug-manager.js`**: Extracted debug system (~400 lines) for comprehensive testing and development
 - **`styles.css`**: Design system and component styling with CSS custom properties
-- **`game-config.json`**: Comprehensive configuration file controlling levels, characters, and puzzles
+- **`game-config.json`**: Comprehensive configuration file controlling levels, characters, puzzles, and ghost behavior
 - **`config-manager.js`**: Configuration management utility for dynamic loading
-- **Level directories** (`level-1/` through `level-11/`): Each contains complete asset sets
+- **`game-settings.html`**: Parent settings interface with dynamic configuration loading
+- **Level directories** (`level-1/` through `level-13/`): Each contains complete asset sets
 - **Educational data files**: `digraph-sounds.txt`, `digraph-emojis.txt`, `distractors.txt`, `emoji-names.txt`
-- **Character assets**: Movement sprites, celebration animations, bonus sprites, game over sprites
+- **Character assets**: Movement sprites, celebration animations, bonus sprites, game over sprites (1.5x scaled)
+- **Ghost assets**: `ghost-strong.png`, `ghost-medium.png`, `ghost-weak.png`, modal animation sprites
 - **Documentation files**: `Current-Puzzle-Types.md`, `New-Puzzle-Integration-Instructions.md`
 
 ### Game States and Flow
-1. **Character Selection**: Choose from dynamically loaded characters
-2. **Difficulty Selection**: Easy Peasy/Neutral (5 hearts) vs Hard Mode (3 hearts)
-3. **Level Selection**: Interactive grid showing all levels with texture previews
-4. **Level Progression**: Player-driven level selection after each completion
-5. **Puzzle Interactions**: Modal-based educational challenges
-6. **Special Mechanics**: Rocket boost, heart collection, bonus systems
-7. **Completion Screens**: Level celebrations, level selection, final scoring when all complete
-8. **Debug Mode**: Comprehensive testing interface (Shift+Ctrl+D activation)
+1. **Character Selection**: Choose from dynamically loaded characters (PT, Enderman)
+2. **Ghost Selection**: Optional ghost opponent with intelligent AI pathfinding
+3. **Difficulty Selection**: Easy Peasy/Neutral (5 hearts) vs Hard Mode (3 hearts)
+4. **Level Selection**: Interactive grid showing all 13 levels with texture previews
+5. **Level Progression**: Player-driven level selection after each completion
+6. **Puzzle Interactions**: Modal-based educational challenges
+7. **Ghost Mechanics**: AI pathfinding, strength-based skull UI, modal interactions
+8. **Special Mechanics**: Rocket boost, heart collection, bonus systems
+9. **Completion Screens**: Level celebrations, level selection, final scoring when all complete
+10. **Debug Mode**: Comprehensive testing interface (Shift+Ctrl+D activation)
 
 ### Dynamic Character System
 The game features a fully dynamic character system that supports multiple playable characters:
@@ -90,6 +95,47 @@ The game features a fully dynamic character system that supports multiple playab
 1. Add character configuration to `game-config.json`
 2. Provide required asset files in appropriate directories
 3. No code changes needed - character will automatically appear in all game functionality
+
+### Ghost System
+The game features an optional intelligent ghost opponent that adds strategic challenge to educational gameplay:
+
+**Ghost Mechanics:**
+- **Optional Gameplay**: Players choose "Ghost" or "No Ghost" after character selection
+- **Intelligent AI**: Uses flood-fill pathfinding to optimally chase the player through maze
+- **Strength System**: Starts with 5 skulls (☠️☠️☠️☠️☠️), loses 1 per puzzle solved correctly
+- **Dynamic Difficulty**: Ghost speed and heart-stealing varies by selected difficulty level
+- **Modal Interactions**: Animated sprite sequences when ghost catches player or is defeated
+
+**Ghost Configuration (`game-config.json`):**
+```json
+"ghost": {
+  "enabled": true,
+  "globalSettings": {
+    "baseSpeed": 1.5,
+    "speedByDifficulty": {"easy": 1.1, "neutral": 1.5, "hard": 2.3},
+    "heartsStolen": {"easy": 1, "neutral": 2, "hard": 3},
+    "puzzlesToWeaken": 1,
+    "strengthLevels": 5
+  },
+  "sprites": {
+    "strong": "ghost-strong.png",
+    "medium": "ghost-medium.png", 
+    "weak": "ghost-weak.png"
+  }
+}
+```
+
+**Ghost Behavior:**
+- **Pathfinding**: Flood-fill algorithm finds optimal path to player, avoiding walls and obstacles
+- **Pausing**: Movement pauses during puzzle modals and bonus sequences
+- **Collision**: When ghost catches player, steals hearts based on difficulty and teleports player to start
+- **Weakening**: Each correctly solved puzzle removes one skull and may change ghost sprite
+- **Victory Conditions**: Ghost disappears when all 5 skulls removed; player wins that encounter
+
+**Ghost Assets Required:**
+- **Sprite files**: `ghost-strong.png`, `ghost-medium.png`, `ghost-weak.png` (40x40 base, scaled 1.5x in-game)
+- **Animation sprites**: `character-caught-by-ghost-sprite.png` (16 frames), `ghost-defeated-sprite.png` (10 frames)
+- **UI Integration**: Skull display system in game info bar
 
 ### Configuration-Driven System
 The game is designed to be fully configurable through a main JSON configuration file:
@@ -338,9 +384,16 @@ The game includes a comprehensive parent settings interface (`game-settings.html
 - **Validation**: Input validation with appropriate constraints (e.g., number ranges)
 
 ### Technical Implementation
+**Dynamic Configuration Loading:**
+- **Live Config Fetching**: Settings page loads current `game-config.json` at runtime via `fetch()`
+- **Perfect Sync**: Always displays actual current game defaults, never outdated embedded config
+- **Automatic Updates**: New levels (like level 13) and puzzle types appear automatically
+- **Fallback System**: Graceful degradation to minimal config if loading fails
+- **Single Source of Truth**: No more manual sync between game config and settings page
+
 **Configuration Management:**
 - **Deep copying**: Preserves original config while allowing modifications
-- **Merge strategy**: Only modified levels overwrite default configuration
+- **Merge strategy**: Only modified levels overwrite default configuration  
 - **Session persistence**: Settings maintained during configuration session
 - **Validation**: Client-side validation with appropriate constraints
 
@@ -352,6 +405,7 @@ The game includes a comprehensive parent settings interface (`game-settings.html
 - **Puzzle-specific forms**: Generated based on selected puzzle type
 - **Conditional controls**: Show/hide relevant options (e.g., triple equation inputs)
 - **Auto-validation**: Real-time constraint enforcement and user feedback
+- **Future-proof**: Supports all current and future puzzle types automatically
 
 ### Usage Workflow
 1. **Parent selects character** in main game
@@ -413,15 +467,47 @@ The game includes a comprehensive parent settings interface (`game-settings.html
 - **Simplified level creation**: Level creators use consistent generic asset naming
 - **Future-proof architecture**: Easy to reorder puzzles or add new types without code changes
 
-### Current Phase: Design System Implementation
-**Status**: 🔄 **FOUNDATION COMPLETE** - Design system created, ready for implementation
+**Phase 4: Ghost System & AI** ✅ **COMPLETED**
+- **Intelligent Ghost AI**: Flood-fill pathfinding algorithm for optimal player pursuit
+- **Optional Gameplay**: Ghost selection screen allows players to choose with/without ghost
+- **Strength-Based Progression**: 5-skull system with visual feedback and weakening mechanics
+- **Modal Interactions**: Animated sequences for ghost encounters and victories
+- **Difficulty Integration**: Ghost speed and heart-stealing scales with selected difficulty
+- **Navigation Flow**: Updated game flow to Character → Ghost → Difficulty → Level → Game
+- **Character Scaling**: Both players and ghost scaled to 1.5x size for better visibility
+- **Configuration Integration**: Full ghost behavior control via `game-config.json`
 
-**Implementation Strategy** (Safe, non-breaking approach):
-1. **Link styles.css to index.html** - Add stylesheet link without removing existing styles
-2. **Gradual component replacement** - Replace existing styles one component type at a time
-3. **Remove old styles** - Only after new styles are confirmed working
-4. **Extract remaining CSS** - Move all embedded CSS to external file
-5. **JS modularization** - Extract functional modules to separate files
+**Phase 5: Dynamic Configuration System** ✅ **COMPLETED**
+- **Dynamic Config Loading**: Parent settings load live `game-config.json` instead of embedded config
+- **Perfect Sync Resolution**: Settings always match current game defaults automatically
+- **Level 13 Integration**: All 13 levels now visible and configurable in parent settings
+- **Future-Proof Settings**: New levels and puzzle types automatically appear in settings interface
+- **Single Source of Truth**: Eliminated manual sync requirements between files
+- **Fallback System**: Graceful degradation when config loading fails
+
+### Current Status: Major Features Complete
+**Status**: ✅ **STABLE RELEASE** - All major systems implemented and functional
+
+**Current Capabilities:**
+- **13 levels** with full educational puzzle integration
+- **Multi-character support** (PT, Enderman) with dynamic loading
+- **Optional ghost opponent** with intelligent AI pathfinding
+- **Parent settings interface** with dynamic configuration
+- **Comprehensive scoring** and progress tracking systems
+- **Desktop-focused design** optimized for keyboard and mouse interaction
+- **Debug mode** for testing and development
+
+### Potential Future Enhancements
+**Medium Priority Improvements:**
+1. **Mobile responsiveness**: Add responsive design for tablets and phones
+2. **Touch controls**: Implement touch-based movement for mobile devices
+3. **Design system implementation**: Apply unified styles across remaining components
+4. **Performance optimization**: Asset loading and rendering improvements
+
+**Low Priority Additions:**
+1. **Additional characters**: Expand character roster with new sprite sets  
+2. **Advanced puzzle types**: Add new educational content types
+3. **Analytics integration**: Track educational progress and performance
 
 ### Next Steps & Future Plans
 
