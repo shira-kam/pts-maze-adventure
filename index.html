@@ -86,6 +86,29 @@
         </div>
     </div>
     
+    <div id="ghostSelectionScreen">
+        <div id="ghostSelectionContent">
+            <div id="ghostSelectionTitle">Ghost?</div>
+            <div id="ghostButtons">
+                <button id="ghostYesBtn" class="character-button" onclick="selectGhost(true)">
+                    <div class="character-preview">
+                        <canvas id="ghostYesPreview" width="100" height="100"></canvas>
+                    </div>
+                </button>
+                <button id="ghostNoBtn" class="character-button" onclick="selectGhost(false)">
+                    <div class="character-preview">
+                        <canvas id="ghostNoPreview" width="100" height="100"></canvas>
+                    </div>
+                </button>
+            </div>
+            <div id="ghostSelectionBackSection">
+                <button id="ghostBackButton" onclick="backToCharacterSelection()">
+                    ←
+                </button>
+            </div>
+        </div>
+    </div>
+    
    <div id="difficultyScreen">
   <div id="difficultyContent">
     <div id="difficultyTitle">Choose Your Difficulty</div>
@@ -105,7 +128,7 @@
       <div class="label">Hard Mode</div>
     </button>
 
-    <button id="backToCharacterBtn" onclick="backToCharacterSelection()">←</button>
+    <button id="backToCharacterBtn" onclick="backToGhostSelection()">←</button>
   </div>
 </div>
     
@@ -675,6 +698,7 @@
         usedMultiplicationProblems: [], // Track multiplication pairs used in current level to prevent repetition
             levelScores: {}, // Track final score for each completed level
             ghost: null, // Ghost instance for current level
+            ghostEnabled: true, // Default ghost functionality enabled
             deathLevel: null, // Track which level the user died on
             gameSession: { // Track current game session
                 startTime: null,
@@ -864,6 +888,13 @@
                 return;
             }
             
+            // Check if ghost is enabled for this game session
+            if (!game.ghostEnabled) {
+                console.log('Ghost disabled for this session');
+                game.ghost = null;
+                return;
+            }
+            
             // Create new ghost instance
             game.ghost = new Ghost(game.selectedDifficulty, gameConfig);
             
@@ -881,6 +912,17 @@
             
             // Show difficulty selection screen
             document.getElementById('difficultyScreen').style.display = 'flex';
+        }
+        
+        function backToGhostSelection() {
+            // Hide difficulty selection screen
+            document.getElementById('difficultyScreen').style.display = 'none';
+            
+            // Show ghost selection screen
+            document.getElementById('ghostSelectionScreen').classList.add('show');
+            
+            // Re-initialize ghost previews
+            initializeGhostSelectionScreen();
         }
         
         // Character selection functions
@@ -985,8 +1027,11 @@
             // Hide character selection screen
             document.getElementById('characterSelectionScreen').style.display = 'none';
             
-            // Show difficulty selection screen
-            document.getElementById('difficultyScreen').style.display = 'flex';
+            // Show ghost selection screen
+            document.getElementById('ghostSelectionScreen').classList.add('show');
+            
+            // Initialize ghost previews
+            initializeGhostSelectionScreen();
         }
         
         function backToCharacterSelection() {
@@ -1865,14 +1910,16 @@
                 }
                 
                 // Draw the sprite frame (160x160 from SVG sprite sheet)
-                // PT should be 45x45 to be bigger than the tile (overlaps slightly)
-                const ptSize = 45;
-                const ptOffset = -2.5; // Negative offset to center the larger sprite
+                // Character should be 1.5x larger than the tile (60px), centered like ghost
+                const tileSize = 40;
+                const characterSize = tileSize * 1.5; // 60px (1.5x the 40px tile)
+                const centerOffsetX = (tileSize - characterSize) / 2; // Center horizontally 
+                const centerOffsetY = (tileSize - characterSize) / 2; // Center vertically
                 
                 ctx.drawImage(
                     currentMovementSprites,
                     frameX, 0, 160, 160, // Source: x, y, width, height from sprite sheet
-                    game.player.x + 40 + ptOffset, game.player.y + 40 + ptOffset, ptSize, ptSize // Centered in tile with thicker border
+                    game.player.x + 40 + centerOffsetX, game.player.y + 40 + centerOffsetY, characterSize, characterSize // 1.5x size, centered
                 );
             } else {
                 // Fallback while sprite loads - bigger and centered
@@ -2476,6 +2523,115 @@
         function replayGhostDefeated() {
             if (game.ghost) {
                 game.ghost.replayGhostDefeated();
+            }
+        }
+        
+        // Global function for ghost selection
+        function selectGhost(withGhost) {
+            game.ghostEnabled = withGhost;
+            console.log('Ghost selection:', withGhost ? 'enabled' : 'disabled');
+            
+            // Hide ghost selection screen
+            document.getElementById('ghostSelectionScreen').classList.remove('show');
+            
+            // Show difficulty screen
+            document.getElementById('difficultyScreen').style.display = 'flex';
+        }
+        
+        // Global function to go back to character selection
+        function backToCharacterSelection() {
+            // Hide ghost selection screen
+            document.getElementById('ghostSelectionScreen').classList.remove('show');
+            
+            // Show character selection screen
+            document.getElementById('characterSelectionScreen').style.display = 'flex';
+        }
+        
+        // Initialize ghost selection screen previews
+        function initializeGhostSelectionScreen() {
+            // Load ghost sprite and draw preview for "With Ghost" button
+            const ghostYesCanvas = document.getElementById('ghostYesPreview');
+            if (ghostYesCanvas) {
+                const ctx = ghostYesCanvas.getContext('2d');
+                ctx.clearRect(0, 0, ghostYesCanvas.width, ghostYesCanvas.height);
+                
+                // Load and draw actual ghost sprite
+                const ghostSprite = new Image();
+                ghostSprite.onload = () => {
+                    // Scale sprite to fit nicely in 100x100 canvas
+                    const scale = 0.8; // 80% of canvas size for padding
+                    const spriteSize = Math.min(ghostYesCanvas.width, ghostYesCanvas.height) * scale;
+                    const offsetX = (ghostYesCanvas.width - spriteSize) / 2;
+                    const offsetY = (ghostYesCanvas.height - spriteSize) / 2;
+                    
+                    ctx.drawImage(ghostSprite, offsetX, offsetY, spriteSize, spriteSize);
+                };
+                ghostSprite.onerror = () => {
+                    console.warn('Failed to load ghost-strong.png, using fallback');
+                    // Fallback to emoji if sprite fails to load
+                    ctx.fillStyle = '#8B0000';
+                    ctx.fillRect(25, 25, 50, 50);
+                    ctx.fillStyle = 'white';
+                    ctx.font = '32px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('👻', 50, 60);
+                };
+                ghostSprite.src = 'ghost-strong.png';
+            }
+            
+            // Draw no ghost preview for "No Ghost" button
+            const ghostNoCanvas = document.getElementById('ghostNoPreview');
+            if (ghostNoCanvas) {
+                const ctx = ghostNoCanvas.getContext('2d');
+                ctx.clearRect(0, 0, ghostNoCanvas.width, ghostNoCanvas.height);
+                
+                // Load and draw actual ghost sprite with prohibition sign
+                const ghostSprite = new Image();
+                ghostSprite.onload = () => {
+                    // Scale sprite to fit nicely in 100x100 canvas
+                    const scale = 0.8; // 80% of canvas size for padding
+                    const spriteSize = Math.min(ghostNoCanvas.width, ghostNoCanvas.height) * scale;
+                    const offsetX = (ghostNoCanvas.width - spriteSize) / 2;
+                    const offsetY = (ghostNoCanvas.height - spriteSize) / 2;
+                    
+                    // Draw ghost sprite
+                    ctx.drawImage(ghostSprite, offsetX, offsetY, spriteSize, spriteSize);
+                    
+                    // Draw red circle with line through it (prohibition sign)
+                    ctx.strokeStyle = '#dc3545';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.arc(ghostNoCanvas.width/2, ghostNoCanvas.height/2, 40, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    
+                    // Draw line through it
+                    ctx.beginPath();
+                    ctx.moveTo(22, 22);
+                    ctx.lineTo(78, 78);
+                    ctx.stroke();
+                };
+                ghostSprite.onerror = () => {
+                    console.warn('Failed to load ghost-strong.png for No Ghost button, using fallback');
+                    // Fallback to emoji if sprite fails to load
+                    ctx.fillStyle = '#8B0000';
+                    ctx.fillRect(25, 25, 50, 50);
+                    ctx.fillStyle = 'white';
+                    ctx.font = '32px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('👻', 50, 60);
+                    
+                    // Draw prohibition sign
+                    ctx.strokeStyle = '#dc3545';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.arc(50, 50, 40, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(22, 22);
+                    ctx.lineTo(78, 78);
+                    ctx.stroke();
+                };
+                ghostSprite.src = 'ghost-strong.png';
             }
         }
         
