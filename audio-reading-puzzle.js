@@ -58,7 +58,7 @@ class AudioReadingPuzzle {
         
         for (const listName of this.wordLists) {
             try {
-                const url = `word-lists/audio-reading/${listName}-with-distractors.txt`;
+                const url = `word-lists/audio-reading/${listName}.txt`;
                 console.log(`Attempting to fetch: ${url}`);
                 const response = await fetch(url);
                 console.log(`Response status for ${listName}:`, response.status);

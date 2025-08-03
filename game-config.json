@@ -86,6 +86,13 @@
         "maxAttempts": 3,
         "trackingScope": "level"
       }
+    },
+    "rhyming": {
+      "tracking": {
+        "preventRepetition": true,
+        "maxAttempts": 3,
+        "trackingScope": "level"
+      }
     }
   },
   "levels": {
@@ -438,10 +445,9 @@
       "playable": true,
       "puzzles": [
         {
-          "type": "letter_identification",
+          "type": "rhyming",
           "tracking": {
             "preventRepetition": true,
-            "usedLetters": [],
             "trackingScope": "level"
           }
         }

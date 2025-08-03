@@ -1,0 +1,7 @@
+snow: stay, sheep, sea  
+row: road, rain, rob  
+slow: snow, stay, sheep  
+grow: glue, gain, goat  
+show: snow, stay, sheep  
+blow: blue, boat, bee  
+low: lie, load, lot

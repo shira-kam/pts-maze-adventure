@@ -280,7 +280,8 @@
             { value: 'division_visual', label: 'Division puzzle (A:B=?)' },
             { value: 'multiplication_groups', label: 'Multiplication puzzle (AxB=?)' },
             { value: 'letter_identification', label: 'Letter Identification' },
-            { value: 'audio_reading', label: 'Audio Reading' }
+            { value: 'audio_reading', label: 'Audio Reading' },
+            { value: 'rhyming', label: 'Rhyming Sounds' }
         ];
         
         // Available digraphs from digraph-sounds.txt
@@ -323,17 +324,16 @@
                 if (response.ok) {
                     const html = await response.text();
                     
-                    // Parse HTML to find files ending with "-with-distractors.txt"
-                    const filePattern = /-with-distractors\.txt/g;
-                    const linkPattern = /href="([^"]*-with-distractors\.txt)"/g;
+                    // Parse HTML to find all .txt files
+                    const linkPattern = /href="([^"]*\.txt)"/g;
                     
                     let match;
                     while ((match = linkPattern.exec(html)) !== null) {
                         const filename = match[1];
-                        // Extract the word list name (remove "-with-distractors.txt")
-                        const listName = filename.replace('-with-distractors.txt', '');
+                        // Extract the word list name (remove ".txt")
+                        const listName = filename.replace('.txt', '');
                         
-                        // Convert filename to display name
+                        // Convert filename to display name - remove dashes and capitalize
                         const displayName = listName
                             .split('-')
                             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
@@ -341,7 +341,7 @@
                         
                         availableWordLists.push({
                             value: listName,
-                            label: `${displayName} words`
+                            label: displayName
                         });
                         console.log(`Found word list: ${listName} (${filename})`);
                     }
@@ -350,11 +350,13 @@
                 console.warn('Could not fetch directory listing, falling back to file testing method');
                 
                 // Fallback: Try to fetch a few common word list files individually
-                const commonWordLists = ['basic-magic-e', 'advanced-magic-e', 'silent-e', 'cvc'];
+                const commonWordLists = ['basic-magic-e', 'advanced-magic-e', 'silent-e', 'cvc', 'vowel-teams-ai-ay-ee-ea-oa-ow-ie-ue'];
                 for (const listName of commonWordLists) {
                     try {
-                        const url = `word-lists/audio-reading/${listName}-with-distractors.txt`;
+                        const url = `word-lists/audio-reading/${listName}.txt`;
+                        console.log(`Testing file: ${url}`);
                         const response = await fetch(url, { method: 'HEAD' });
+                        console.log(`Response for ${listName}: status=${response.status}, ok=${response.ok}`);
                         if (response.ok) {
                             const displayName = listName
                                 .split('-')
@@ -363,12 +365,14 @@
                             
                             availableWordLists.push({
                                 value: listName,
-                                label: `${displayName} words`
+                                label: displayName
                             });
-                            console.log(`Found word list: ${listName}`);
+                            console.log(`✓ Found word list: ${listName} -> ${displayName}`);
+                        } else {
+                            console.log(`✗ Failed to load: ${listName} (${response.status})`);
                         }
                     } catch (error) {
-                        // Silently continue if file doesn't exist
+                        console.log(`✗ Error loading ${listName}:`, error.message);
                     }
                 }
             }
@@ -377,7 +381,7 @@
             if (availableWordLists.length === 0) {
                 availableWordLists.push({
                     value: 'basic-magic-e',
-                    label: 'Basic Magic E words (fallback)'
+                    label: 'Basic Magic E (fallback)'
                 });
             }
             
@@ -429,6 +433,13 @@
                             }
                         },
                         "letter_identification": {
+                            "tracking": {
+                                "preventRepetition": true,
+                                "maxAttempts": 3,
+                                "trackingScope": "level"
+                            }
+                        },
+                        "rhyming": {
                             "tracking": {
                                 "preventRepetition": true,
                                 "maxAttempts": 3,
@@ -602,6 +613,8 @@
                     return generateLetterIdConfig(levelNum, puzzleNum, puzzleData);
                 case 'audio_reading':
                     return generateAudioReadingConfig(levelNum, puzzleNum, puzzleData);
+                case 'rhyming':
+                    return generateRhymingConfig(levelNum, puzzleNum, puzzleData);
                 default:
                     return '';
             }
@@ -891,6 +904,18 @@
                 </div>
             `;
         }
+
+        function generateRhymingConfig(levelNum, puzzleNum, puzzleData) {
+            return `
+                <div class="form-group">
+                    <label>Rhyming Puzzle Configuration:</label>
+                    <p style="color: #666; font-size: 14px; margin: 5px 0;">
+                        This puzzle teaches phonetic awareness by having children identify words that rhyme. 
+                        The puzzle automatically uses all available rhyming word groups from the word list.
+                    </p>
+                </div>
+            `;
+        }
         
         // Event handlers
         function toggleDrawer(levelNum) {
@@ -1119,6 +1144,14 @@
                     
                     puzzleConfig.mode = selectedMode;
                     puzzleConfig.wordLists = selectedWordLists.length > 0 ? selectedWordLists : (availableWordLists.length > 0 ? [availableWordLists[0].value] : ['basic-magic-e']);
+                    puzzleConfig.tracking = {
+                        preventRepetition: true,
+                        maxAttempts: 3,
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'rhyming':
                     puzzleConfig.tracking = {
                         preventRepetition: true,
                         maxAttempts: 3,

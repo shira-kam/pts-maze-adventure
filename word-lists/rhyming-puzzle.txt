@@ -1,0 +1,39 @@
+cat, bat, hat, fat, mat, pat, rat, vat; dog, bead, bean, bed, bee, bike, bite, blade
+big, dig, pig, wig; blame, blow, blue, boat, bone, brave, breeze, broke
+run, sun, fun; bug, bus, cake, came, cape, car, care, cave
+say, way, day, may, play, stay; cheese, choke, chop, chose, clay, close, clue, coat
+man, can, van, tan, plan; come, cone, cope, core, cream, cub, cube, cue
+top, hop, stop, chop; play, cut, cute, dare, days, deep, den, die
+wet, net, pet, get, let, jet, vet; dig, dime, dive, dog, dome, dot, dote, dream
+red, bed, shed; drive, duck, due, eat, face, fade, fame, fare
+pen, ten, den; fat, fate, feet, file, fin, fine, fire, five
+sit, hit, lit, kit; flame, fox, frame, free, freeze, from, fun, gain
+map, cap, tap, gap, lap; game, gate, gave, gem, get, glide, glob, gum
+box, fox; globe, glue, goat, gone, got, grab, grace, grade
+hot, pot, got, lot, dot, not; grape, grove, grow, gum, hat, hide, hike, hit
+sad, bad, mad; hive, hole, home, hop, hope, hot, how, hug
+cut, nut; huge, jam, jet, job, join, joke, jug, jump
+zip, tip; keep, key, kid, kind, king, kit, kite, lace
+win, tin, pin, fin; lake, lane, lap, late, leg, let, lie, like
+six, mix; lime, line, lit, lite, live, load, log, lot
+came, name, same, game, fame, blame, shame, frame, flame; low, mad, made, mail, main, make, man, map
+make, take, cake, lake, wake, rake; mat, may, meat, mime, mine, mix, moan, moon
+bite, kite, white, write, quite, lite, site; more, mud, mute, nail, name, need, net, nine
+time, lime, dime, mime; not, note, nut, pace, pain, pat, peak, pen
+bone, cone, tone, stone, phone, zone; pet, pie, pig, pike, pile, pine, place, plan
+hope, cope, rope; plan, plane, play, pole, pore, pot, pride, prize
+blue, true, due, clue, glue, cue; rate, red, ride, rise, road, rob, robe, rock
+tree, free, bee, see, tea, key; rode, role, rope, row, rug, run, sad, safe
+boat, coat, goat; sail, same, save, say, scheme, shade, shape, share
+deep, sleep, sheep, keep; shave, shed, shin, shine, show, side, sire, sit
+grow, slow, snow, blow, show, row, low; shine, side, sire, sit, site, six, size, sleep
+pride, ride, side, wide, hide, slide, glide; slow, smile, smog, smoke, snow, soap, space, spin
+dream, team, cream; space, spin, spine, spite, spoke, stay, stone, stop
+pain, rain, gain, main; store, style, sun, tail, take, tan, tap, tape
+tail, mail, sail, nail; tea, team, the, them, theme, these, this, those
+seed, need; tie, time, tin, tip, toad, ton, tone, top
+road, load, toad; toy, trace, trade, tray, tree, true, tube, van
+place, face, race, space, trace, grace, lace; vat, vet, view, vine, voice, vote, wait, wake
+smile, file, while, style; wave, way, web, wet, while, whit, white, whole
+drive, five, hive; wide, wig, wilt, win, wine, wise, wool, write
+store, more, core, pore; zap, zero, zest, zip, zone, zoo, zoom, back

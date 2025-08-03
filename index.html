@@ -234,6 +234,7 @@
     <script src="multiplication-groups-puzzle.js"></script>
     <script src="letter-identification.js"></script>
     <script src="audio-reading-puzzle.js"></script>
+    <script src="rhyming-puzzle.js"></script>
     <script src="debug-manager.js"></script>
     <script src="ghost.js"></script>
     
@@ -2079,6 +2080,12 @@
                             if (!usedModular) {
                                 showPuzzle(blockingDoor.type, blockingDoor);
                             }
+                        } else if (blockingDoor.type === 'rhyming') {
+                            // Use modular system for rhyming puzzles
+                            const usedModular = showRhymingPuzzle(blockingDoor);
+                            if (!usedModular) {
+                                showPuzzle(blockingDoor.type, blockingDoor);
+                            }
                         } else if (blockingDoor.type === 'division_visual') {
                             // Use modular system for division puzzles
                             const usedModular = showDivisionPuzzle(blockingDoor);
@@ -2203,6 +2210,18 @@
             if (door.type === 'audio_reading') {
                 console.log(`Using modular audio reading puzzle for door type: ${door.type}`);
                 const puzzle = new AudioReadingPuzzle(door);
+                puzzle.render();
+                return true; // Indicates modular system was used
+            }
+            
+            return false; // Fall back to original system
+        }
+
+        function showRhymingPuzzle(door) {
+            // Only handle rhyming door type
+            if (door.type === 'rhyming') {
+                console.log(`Using modular rhyming puzzle for door type: ${door.type}`);
+                const puzzle = new RhymingPuzzle(door);
                 puzzle.render();
                 return true; // Indicates modular system was used
             }
