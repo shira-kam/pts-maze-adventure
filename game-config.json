@@ -538,6 +538,17 @@
         "10": "level-10/Enderman-Bonus-Sprite.svg"
       },
       "description": "A mysterious dark figure from another dimension"
+    },
+    "Ori": {
+      "name": "Ori",
+      "movement": "Ori-sprite.svg",
+      "celebration": "Ori-celebrate.png",
+      "gameOver": "Ori-game-over.png",
+      "bonus": {
+        "9": "level-9/Ori-Bonus-Sprite.svg",
+        "10": "level-10/Ori-Bonus-Sprite.svg"
+      },
+      "description": "A luminous spirit of light and forest magic"
     }
   },
   "ghost": {
