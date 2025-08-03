@@ -1,38 +1,61 @@
 {
   "id": "advanced-reading",
   "name": "Advanced Reading",
-  "description": "Master complex phonics patterns, advanced vocabulary, and reading fluency",
-  "prerequisites": "Solid foundation in basic phonics and CVC word reading",
-  "skills": "Magic-e patterns, complex digraphs, advanced vocabulary, reading fluency, rhyming mastery",
-  "icon": "📖",
+  "description": "13 levels of advanced phonics, vocabulary building, and reading fluency practice.",
+  "prerequisites": "Confident with phonics basics and CVC word reading.",
+  "skills": "     Magic-e, vowel teams, complex digraphs, advanced decoding, and fluent audio-text matching.",
   "levels": {
     "1": {
-      "playable": false
-    },
-    "2": {
       "playable": true,
       "puzzles": [
-        {
+         {
           "type": "audio_reading",
           "mode": "match_text_to_speech",
           "wordLists": ["cvc"]
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["magic-e"]
+        }
+      ]
+    },
+    "2": {
+      "playable": true,
+       "puzzles": [
+         {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["cvc"]
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["magic-e"]
         }
       ]
     },
     "3": {
-      "playable": false
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["vowel-teams-ai-ay-ee-ea-oa-ie-ue"]
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["vowel-teams-ai-ay-ee-ea-oa-ie-ue"]
+        }
+      ]
     },
     "4": {
       "playable": true,
       "puzzles": [
         {
-          "type": "word_emoji_matching",
-          "wordListLevel": "advanced",
-          "tracking": {
-            "preventRepetition": true,
-            "usedWords": [],
-            "trackingScope": "level"
-          }
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC","FL", "BL", "GL", "SL", "TR","PR","GR","FR","DR","CR","BR"]
         }
       ]
     },
@@ -40,61 +63,105 @@
       "playable": true,
       "puzzles": [
         {
-          "type": "word_emoji_matching",
-          "wordListLevel": "advanced",
-          "tracking": {
-            "preventRepetition": true,
-            "usedWords": [],
-            "trackingScope": "level"
-          }
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC","FL", "BL", "GL", "SL", "TR","PR","GR","FR","DR","CR","BR"]
         },
         {
-          "type": "digraph_sounds",
-          "digraphs": ["CH", "TH", "SH", "WH", "PH", "ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["advanced-magic-e"]
         }
       ]
     },
     "6": {
-      "playable": false
+      "playable": true,
+      "puzzles": [
+         {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["cvc"]
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["advanced-magic-e"]
+        }
+      ]
     },
     "7": {
       "playable": true,
       "puzzles": [
         {
-          "type": "digraph_sounds",
-          "digraphs": ["CH", "TH", "SH", "WH", "PH", "ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["cvc"]
         }
       ]
     },
     "8": {
-      "playable": false
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["cvc", "magic-e"]
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["cvc","magic-e"]
+        }
+      ]
     },
     "9": {
       "playable": true,
       "puzzles": [
+         {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["magic-e","vowel-teams-ai-ay-ee-ea-oa-ie-ue"]
+        },
         {
-          "type": "word_emoji_matching",
-          "wordListLevel": "advanced",
-          "tracking": {
-            "preventRepetition": true,
-            "usedWords": [],
-            "trackingScope": "level"
-          }
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["magic-e","vowel-teams-ai-ay-ee-ea-oa-ie-ue"]
         }
       ]
     },
     "10": {
-      "playable": false
+      "playable": true,
+      "puzzles": [
+         {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["advanced-magic-e","magic-e","vowel-teams-ai-ay-ee-ea-oa-ie-ue"]
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["advanced-magic-e","magic-e","vowel-teams-ai-ay-ee-ea-oa-ie-ue"]
+        }
+      ]
     },
     "11": {
       "playable": true,
       "puzzles": [
         {
-          "type": "rhyming",
-          "tracking": {
-            "preventRepetition": true,
-            "trackingScope": "level"
-          }
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC","FL", "BL", "GL", "SL", "TR","PR","GR","FR","DR","CR","BR"]
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["advanced-magic-e","magic-e","vowel-teams-ai-ay-ee-ea-oa-ie-ue"]
         }
       ]
     },
@@ -102,9 +169,12 @@
       "playable": true,
       "puzzles": [
         {
-          "type": "audio_reading",
-          "mode": "match_text_to_speech",
-          "wordLists": ["basic-magic-e", "cvc"]
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
         }
       ]
     },
@@ -114,12 +184,12 @@
         {
           "type": "audio_reading",
           "mode": "match_speech_to_text",
-          "wordLists": ["basic-magic-e", "cvc"]
+          "wordLists": ["advanced-magic-e","magic-e","vowel-teams-ai-ay-ee-ea-oa-ie-ue"]
         },
         {
           "type": "audio_reading",
           "mode": "match_text_to_speech",
-          "wordLists": ["basic-magic-e", "cvc"]
+          "wordLists": ["advanced-magic-e","magic-e","vowel-teams-ai-ay-ee-ea-oa-ie-ue"]
         }
       ]
     }

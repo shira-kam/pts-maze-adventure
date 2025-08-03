@@ -1,11 +1,26 @@
 {
-  "id": "math-foundations",
-  "name": "Intermediate Math",
-  "description": "10 levels of advanced arithmetic puzzles designed to build computational fluency and mathematical reasoning.",
-  "prerequisites": "Comfortable with basic addition and subtraction up to 15.",
-  "skills": "Builds mastery in multi-term addition and subtraction up to 20, introduces multiplication and division concepts using visual representations and group-based problems.",
+  "id": "intermediate-learner",
+  "name": "Intermediate Learner",
+  "description": "13 levels alternating reading and math puzzles designed to strengthen decoding skills and computational thinking.",
+  "prerequisites": "Comfortable with basic letter sounds and simple addition/subtraction skills up to 10.",
+  "skills": "Builds proficiency in audio-text matching and digraph recognition, introduces multiplication and division concepts with multi-term arithmetic problems.",
+  "icon": "📚",
   "levels": {
     "1": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["cvc"]
+        },
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC","FL", "BL", "GL", "SL", "TR","PR","GR","FR","DR","CR","BR"]
+        }
+      ]
+    },
+    "2": {
       "playable": true,
       "puzzles": [
         {
@@ -37,7 +52,26 @@
         }      
       ]
     },
-    "2": {
+    "3": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["cvc"]
+        },
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "intermediate",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "4": {
       "playable": true,
       "puzzles": [
         {
@@ -62,7 +96,25 @@
         }
       ]
     },
-    "3": {
+    "5": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["cvc"]
+        }
+      ]
+    },
+    "6": {
       "playable": true,
       "puzzles": [
         {
@@ -92,7 +144,17 @@
         }
       ]
     },
-    "4": {
+    "7": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["cvc"]
+        }   
+      ]
+    },
+    "8": {
       "playable": true,
       "puzzles": [
         {
@@ -107,7 +169,24 @@
         }
       ]    
     },
-    "5": {
+    "9": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC","FL", "BL", "GL", "SL", "TR","PR","GR","FR","DR","CR","BR"]
+        },
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "10": {
       "playable": true,
       "puzzles": [
         {
@@ -132,7 +211,26 @@
         }
       ]    
     },
-    "6": {
+    "11": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["cvc"]
+        },
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "intermediate",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "12": {
       "playable": true,
       "puzzles": [
         {
@@ -161,123 +259,20 @@
         }
       ]
     },
-    "7": {
-      "playable": true,
-      "puzzles": [
-        {
-          "type": "division_visual",
-          "division": {
-            "maxA": 18,
-            "maxB": 18,
-            "maxAnswer": 18,
-            "excludeIdentity": true,
-            "excludeA1": true
-          }
-        },
-        {
-          "type": "multiplication_groups",
-          "operations": ["multiplication"],
-          "multiplication": {
-            "maxProduct": 18,
-            "minFactor": 1,
-            "maxFactor": 18,
-            "excludeOne": true
-          }
-        }
-      ]    },
-    "8": {
-      "playable": true,
-      "puzzles": [
-        {
-          "type": "multiplication_groups",
-          "operations": ["multiplication"],
-          "multiplication": {
-            "maxProduct": 20,
-            "minFactor": 2,
-            "maxFactor": 20,
-            "excludeOne": true
-          }
-        },
-        {
-          "type": "number_line",
-          "operations": ["subtraction"],
-          "numberLine": {
-            "length": 20,
-            "minA": 1,
-            "maxA": 19,
-            "minB": 1,
-            "maxB": 19,
-            "maxC": 18,
-            "minC": 1,
-            "maxResult": 20,
-            "equationType": "triple_add"
-          }
-        }
-      ]    },
-    "9": {
-      "playable": true,
-      "puzzles": [
-        {
-          "type": "division_visual",
-          "division": {
-            "maxA": 18,
-            "maxB": 18,
-            "maxAnswer": 18,
-            "excludeIdentity": true,
-            "excludeA1": true
-          }
-        },
-        {
-          "type": "multiplication_groups",
-          "operations": ["multiplication"],
-          "multiplication": {
-            "maxProduct": 18,
-            "minFactor": 1,
-            "maxFactor": 18,
-            "excludeOne": true
-          }
-        }
-      ]
-    },
-    "10": {
-      "playable": true,
-      "puzzles": [
-        {
-          "type": "multiplication_groups",
-          "operations": ["multiplication"],
-          "multiplication": {
-            "maxProduct": 15,
-            "minFactor": 2,
-            "maxFactor": 8,
-            "excludeOne": true
-          }
-        },
-                {
-          "type": "number_line",
-          "operations": ["subtraction", "addition"],
-          "numberLine": {
-            "length": 20,
-            "minA": 1,
-            "maxA": 19,
-            "minB": 1,
-            "maxB": 19,
-            "maxC": 18,
-            "minC": 1,
-            "maxResult": 20,
-            "equationType": "triple_add"
-          }
-        }
-
-      ]
-    },
-    "11": {
-      "playable": false
-    },
-    "12": {
-      "playable": false
-    },
     "13": {
-      "playable": false
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["cvc"]
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["cvc"]
+        }
+      ]
     }
   }
 }

@@ -1,0 +1,304 @@
+{
+  "id": "new-learner",
+  "name": "New Learner",
+  "description": "13 levels alternating early math and reading puzzles to build core skills.",
+  "prerequisites": "Recognizes numbers and letters up to 10.",
+  "skills": "Introductory addition, subtraction, letter recognition, phonics blends, and rhyming.",
+  "icon": "🌱",
+  "levels": {
+    "1": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        }
+      ]
+    },
+    "2": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        },
+        {
+          "type": "rhyming",
+          "tracking": {
+            "preventRepetition": true,
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "3": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        }
+      ]
+    },
+    "4": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC"]
+        },
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "5": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        }
+      ]
+    },
+    "6": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        },
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["TR","PR","GR","FR","DR","CR","BR"]
+        }
+      ]
+    },
+    "7": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        }
+      ]
+    },
+    "8": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "basic",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "9": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        }
+      ]
+    },
+    "10": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["FL", "BL", "GL", "SL", "TR","PR","GR","FR","DR","CR","BR"]
+        },
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "11": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        }
+      ]
+    },
+    "12": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["CH", "TH", "SH", "WH", "PH"]
+        },
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "intermediate",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "13": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["CH", "TH", "SH", "WH", "PH"]
+        },
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    }
+  }
+}

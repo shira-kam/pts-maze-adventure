@@ -336,18 +336,8 @@
             }
 
             // Balanced category
-            if (categories.balanced.length > 0 || true) { // Always show this category
+            if (categories.balanced.length > 0) {
                 html += `<div class="category-header">Balanced Learning</div>`;
-                
-                // Add default configuration card first
-                html += createPresetCard({
-                    id: 'default',
-                    name: 'Default Configuration',
-                    description: 'Complete curriculum with all levels and puzzle types enabled',
-                    prerequisites: 'None - starts from the beginning',
-                    skills: 'All reading and math skills across 13 progressive levels'
-                });
-                
                 categories.balanced.forEach(preset => {
                     html += createPresetCard(preset);
                 });

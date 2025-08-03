@@ -31,22 +31,28 @@
       "order": 2
     },
     {
-      "id": "advanced-math",
-      "file": "advanced-math.json",
-      "category": "math",
-      "order": 3
-    },
-    {
-      "id": "kindergarten-ready",
-      "file": "kindergarten-ready.json",
+      "id": "new-learner",
+      "file": "new-learner.json",
       "category": "balanced",
       "order": 1
     },
     {
-      "id": "balanced-learning", 
-      "file": "balanced-learning.json",
+      "id": "intermediate-learner",
+      "file": "intermediate-learner.json",
       "category": "balanced",
       "order": 2
+    },
+    {
+      "id": "advanced-learner",
+      "file": "advanced-learner.json", 
+      "category": "balanced",
+      "order": 3
+    },
+    {
+      "id": "default",
+      "file": "balanced-learning.json",
+      "category": "balanced",
+      "order": 4
     }
   ]
 }

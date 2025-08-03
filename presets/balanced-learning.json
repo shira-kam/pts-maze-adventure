@@ -1,11 +1,10 @@
 {
-  "id": "balanced-learning",
-  "name": "Balanced Learning",
-  "description": "Comprehensive mix of reading and math skills for well-rounded educational development",
-  "prerequisites": "Basic letter recognition, simple phonics awareness, and counting skills",
-  "skills": "Reading fluency, phonics mastery, arithmetic operations, word comprehension, mathematical reasoning",
-  "icon": "⚖️",
-  "levels": {
+  "id": "default",
+  "name": "Default Settings",
+  "description": "13 levels combining reading and math puzzles for balanced early learning.",
+  "prerequisites": "Knows letter names, basic phonics sounds, and can count.",
+  "skills": "Skills: CVC decoding, digraphs, rhyming, word comprehension, arithmetic, and visual math reasoning.",
+   "levels": {
     "1": {
       "playable": true,
       "puzzles": [
@@ -13,27 +12,39 @@
           "type": "number_line",
           "operations": ["addition"],
           "numberLine": {
-            "length": 12,
+            "length": 10,
             "minA": 1,
-            "maxA": 11,
+            "maxA": 9,
             "minB": 1,
-            "maxB": 11,
-            "maxResult": 12
+            "maxB": 9,
+            "maxResult": 10
           }
         },
         {
           "type": "number_line",
           "operations": ["subtraction"],
           "numberLine": {
-            "length": 12,
+            "length": 10,
             "minA": 1,
-            "maxA": 11,
+            "maxA": 9,
             "minB": 1,
-            "maxB": 11,
-            "maxResult": 12
+            "maxB": 9,
+            "maxResult": 10
           }
         }
-      ]
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 9,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
     },
     "2": {
       "playable": true,
@@ -51,7 +62,19 @@
           "mode": "match_text_to_speech",
           "wordLists": ["cvc"]
         }
-      ]
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 62,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
     },
     "3": {
       "playable": true,
@@ -60,27 +83,39 @@
           "type": "number_line",
           "operations": ["addition"],
           "numberLine": {
-            "length": 15,
+            "length": 12,
             "minA": 1,
-            "maxA": 14,
+            "maxA": 11,
             "minB": 1,
-            "maxB": 14,
-            "maxResult": 15
+            "maxB": 11,
+            "maxResult": 12
           }
         },
         {
           "type": "number_line",
           "operations": ["subtraction"],
           "numberLine": {
-            "length": 15,
+            "length": 12,
             "minA": 1,
-            "maxA": 14,
+            "maxA": 11,
             "minB": 1,
-            "maxB": 14,
-            "maxResult": 15
+            "maxB": 11,
+            "maxResult": 12
           }
         }
-      ]
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 41,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
     },
     "4": {
       "playable": true,
@@ -94,7 +129,19 @@
             "trackingScope": "level"
           }
         }
-      ]
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 62,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
     },
     "5": {
       "playable": true,
@@ -112,7 +159,19 @@
           "type": "digraph_sounds",
           "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
         }
-      ]
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 52,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": false,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
     },
     "6": {
       "playable": true,
@@ -139,7 +198,19 @@
             "excludeA1": true
           }
         }
-      ]
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 30,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
     },
     "7": {
       "playable": true,
@@ -156,7 +227,19 @@
             "trackingScope": "level"
           }
         }
-      ]
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 28,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
     },
     "8": {
       "playable": true,
@@ -170,26 +253,79 @@
             "excludeIdentity": true,
             "excludeA1": true
           }
+        },
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 20,
+            "minA": 1,
+            "maxA": 19,
+            "minB": 1,
+            "maxB": 19,
+            "minC": 1,
+            "maxC": 4,
+            "maxResult": 20,
+            "equationType": "triple_add"
+          }
         }
-      ]
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 24,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 25
+      }
     },
     "9": {
       "playable": true,
       "puzzles": [
         {
-          "type": "word_emoji_matching",
-          "wordListLevel": "advanced",
+        "type": "digraph_sounds",
+          "digraphs": ["CH", "TH", "SH", "WH", "PH", "ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
+        },
+        {
+        "type": "word_emoji_matching",
+        "wordListLevel": "advanced",
           "tracking": {
             "preventRepetition": true,
             "usedWords": [],
             "trackingScope": "level"
           }
         }
-      ]
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 27,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": true
+      },
+      "animation": {
+        "frameDelay": 25
+      }
     },
     "10": {
       "playable": true,
-      "puzzles": [
+       "puzzles": [
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 20,
+            "maxB": 20,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        },
         {
           "type": "multiplication_groups",
           "operations": ["multiplication"],
@@ -200,7 +336,19 @@
             "excludeOne": true
           }
         }
-      ]
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 53,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": true
+      },
+      "animation": {
+        "frameDelay": 25
+      }
     },
     "11": {
       "playable": true,
@@ -212,7 +360,19 @@
             "trackingScope": "level"
           }
         }
-      ]
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 54,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 20
+      }
     },
     "12": {
       "playable": true,
@@ -222,10 +382,47 @@
           "mode": "match_text_to_speech",
           "wordLists": ["basic-magic-e", "cvc"]
         }
-      ]
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 62,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 20
+      }
     },
     "13": {
-      "playable": false
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["basic-magic-e", "cvc"]
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["basic-magic-e", "cvc"]
+        }
+
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 62,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": false
+      },
+      "animation": {
+        "frameDelay": 20
+      }
     }
   }
-}
+} 

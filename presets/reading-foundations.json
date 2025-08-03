@@ -1,15 +1,44 @@
 {
   "id": "reading-foundations",
-  "name": "Reading Foundations",
-  "description": "Build core reading skills with phonics, word recognition, and audio-text connections",
+  "name": "Decodeing & Reading Foundations",
+  "description": "8 levels of phonics, digraphs, word recognition, and audio-text matching activities.",
   "prerequisites": "Letter recognition and basic sound awareness",
-  "skills": "Phonics decoding, CVC words, word-emoji matching, audio reading comprehension",
-  "icon": "📚",
+  "skills": "Decoding CVC words, digraph recognition, matching speech to text, and early reading comprehension.",
   "levels": {
     "1": {
-      "playable": false
+      "playable": true,
+      "puzzles": [
+         {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["cvc"]
+        },
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC","FL", "BL", "GL", "SL", "TR","PR","GR","FR","DR","CR","BR"]
+        }
+      ]
     },
     "2": {
+      "playable": true,
+       "puzzles": [
+         {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["cvc"]
+        },
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "intermediate",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "3": {
       "playable": true,
       "puzzles": [
         {
@@ -27,27 +56,42 @@
         }
       ]
     },
-    "3": {
-      "playable": false
-    },
     "4": {
       "playable": true,
       "puzzles": [
         {
-          "type": "word_emoji_matching",
-          "wordListLevel": "intermediate",
-          "tracking": {
-            "preventRepetition": true,
-            "usedWords": [],
-            "trackingScope": "level"
-          }
-        }
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["cvc"]
+        }   
       ]
     },
     "5": {
       "playable": true,
       "puzzles": [
         {
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC","FL", "BL", "GL", "SL", "TR","PR","GR","FR","DR","CR","BR"]
+        },
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "6": {
+      "playable": true,
+      "puzzles": [
+         {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["cvc"]
+        },
+        {
           "type": "word_emoji_matching",
           "wordListLevel": "intermediate",
           "tracking": {
@@ -55,66 +99,53 @@
             "usedWords": [],
             "trackingScope": "level"
           }
-        },
-        {
-          "type": "digraph_sounds",
-          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
         }
       ]
-    },
-    "6": {
-      "playable": false
     },
     "7": {
       "playable": true,
       "puzzles": [
         {
-          "type": "digraph_sounds",
-          "digraphs": ["CH", "TH", "SH", "WH", "PH", "ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["cvc"]
         }
       ]
     },
     "8": {
-      "playable": false
-    },
-    "9": {
-      "playable": true,
-      "puzzles": [
-        {
-          "type": "word_emoji_matching",
-          "wordListLevel": "advanced",
-          "tracking": {
-            "preventRepetition": true,
-            "usedWords": [],
-            "trackingScope": "level"
-          }
-        }
-      ]
-    },
-    "10": {
-      "playable": false
-    },
-    "11": {
-      "playable": true,
-      "puzzles": [
-        {
-          "type": "rhyming",
-          "tracking": {
-            "preventRepetition": true,
-            "trackingScope": "level"
-          }
-        }
-      ]
-    },
-    "12": {
       "playable": true,
       "puzzles": [
         {
           "type": "audio_reading",
           "mode": "match_text_to_speech",
-          "wordLists": ["basic-magic-e", "cvc"]
+          "wordLists": ["cvc"]
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["cvc"]
         }
       ]
+    },
+    "9": {
+      "playable": false
+    },
+    "10": {
+      "playable": false
+    },
+    "11": {
+      "playable": false
+    },
+    "12": {
+      "playable": false
     },
     "13": {
       "playable": false

@@ -1,10 +1,9 @@
 {
   "id": "early-math",
   "name": "Beginning Math",
-  "description": "Introduction to basic addition and subtraction",
-  "prerequisites": "Number recognition 1-15",
-  "skills": "Addition and subtraction within 15, number line concepts, visual math understanding",
-  "icon": "🧮",
+  "description": "8 levels of early addition and subtraction puzzles designed to build number sense and confidence.",
+  "prerequisites": "Comfortable recognizing and naming numbers up to 15.",
+  "skills": "Builds fluency in early addition and subtraction, beginning with two-number combinations up to 10 and advancing to three-number problems with totals up to 15.",
   "levels": {
     "1": {
       "playable": true,

@@ -1,17 +1,37 @@
 {
   "id": "early-phonics",
-  "name": "Early Phonics",
-  "description": "Focus on letter recognition, basic sounds, and word-sound relationships",
-  "prerequisites": "Basic familiarity with letters and sounds",
-  "skills": "Letter identification, digraph sounds, simple word recognition, rhyming patterns",
-  "icon": "🔤",
+  "name": "Foundations of Phonics",
+  "description": "7 levels of interactive puzzles that build letter & rhyme recognition, phonics, digraphs, and bledning/sounding out.",
+  "prerequisites": "Recognizes most letters and is familiar with basic letter sounds.",
+  "skills": "Builds foundational phonics skills including letter identification, digraph and blend recognition (e.g., ST, CH, BR), early word-sound mapping, and rhyming awareness.",
   "levels": {
     "1": {
-      "playable": false
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        },
+        {
+          "type": "rhyming",
+          "tracking": {
+            "preventRepetition": true,
+            "trackingScope": "level"
+          }
+        }
+      ]
     },
     "2": {
       "playable": true,
-      "puzzles": [
+       "puzzles": [
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC"]
+        },
         {
           "type": "letter_identification",
           "tracking": {
@@ -23,7 +43,21 @@
       ]
     },
     "3": {
-      "playable": false
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        },
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["TR","PR","GR","FR","DR","CR","BR"]
+        }
+      ]
     },
     "4": {
       "playable": true,
@@ -44,12 +78,35 @@
       "puzzles": [
         {
           "type": "digraph_sounds",
-          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC"]
+          "digraphs": ["FL", "BL", "GL", "SL", "TR","PR","GR","FR","DR","CR","BR"]
+        },
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
         }
       ]
     },
     "6": {
-      "playable": false
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["CH", "TH", "SH", "WH", "PH"]
+        },
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "intermediate",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
     },
     "7": {
       "playable": true,
@@ -78,16 +135,7 @@
       "playable": false
     },
     "11": {
-      "playable": true,
-      "puzzles": [
-        {
-          "type": "rhyming",
-          "tracking": {
-            "preventRepetition": true,
-            "trackingScope": "level"
-          }
-        }
-      ]
+      "playable": false
     },
     "12": {
       "playable": false
