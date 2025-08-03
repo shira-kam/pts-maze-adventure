@@ -1,0 +1,127 @@
+{
+  "id": "advanced-reading",
+  "name": "Advanced Reading",
+  "description": "Master complex phonics patterns, advanced vocabulary, and reading fluency",
+  "prerequisites": "Solid foundation in basic phonics and CVC word reading",
+  "skills": "Magic-e patterns, complex digraphs, advanced vocabulary, reading fluency, rhyming mastery",
+  "icon": "📖",
+  "levels": {
+    "1": {
+      "playable": false
+    },
+    "2": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["cvc"]
+        }
+      ]
+    },
+    "3": {
+      "playable": false
+    },
+    "4": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "advanced",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "5": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "advanced",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        },
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["CH", "TH", "SH", "WH", "PH", "ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
+        }
+      ]
+    },
+    "6": {
+      "playable": false
+    },
+    "7": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["CH", "TH", "SH", "WH", "PH", "ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
+        }
+      ]
+    },
+    "8": {
+      "playable": false
+    },
+    "9": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "advanced",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "10": {
+      "playable": false
+    },
+    "11": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "rhyming",
+          "tracking": {
+            "preventRepetition": true,
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "12": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["basic-magic-e", "cvc"]
+        }
+      ]
+    },
+    "13": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_speech_to_text",
+          "wordLists": ["basic-magic-e", "cvc"]
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["basic-magic-e", "cvc"]
+        }
+      ]
+    }
+  }
+}

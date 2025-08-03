@@ -69,8 +69,8 @@
                 <!-- Character buttons will be generated dynamically -->
             </div>
             <div id="parentSettingsSection">
-                <button id="gameSettingsButton" onclick="openGameSettings()">
-                    Game Settings (for parents)
+                <button id="gameSettingsButton" onclick="openPresetChoice()">
+                    Customize Levels (for parents)
                 </button>
                 <div id="settingsAppliedMessage" style="display: none;">
                     ✅ Custom settings applied
@@ -237,6 +237,7 @@
     <script src="rhyming-puzzle.js"></script>
     <script src="debug-manager.js"></script>
     <script src="ghost.js"></script>
+    <script src="preset-manager.js"></script>
     
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -374,6 +375,7 @@
             // Load config if not already loaded
             if (!configManager.isConfigLoaded()) {
                 await configManager.loadConfig();
+                
                 // Check for and apply custom config if available
                 configManager.checkAndApplyCustomConfig();
             }
@@ -930,6 +932,20 @@
         async function showCharacterSelection() {
             await generateCharacterButtons();
             document.getElementById('characterSelectionScreen').style.display = 'flex';
+            
+            // Check if settings were just applied and show success message
+            if (sessionStorage.getItem('settingsApplied') === 'true') {
+                const message = document.getElementById('settingsAppliedMessage');
+                if (message) {
+                    message.style.display = 'block';
+                    // Auto-hide after 5 seconds
+                    setTimeout(() => {
+                        message.style.display = 'none';
+                    }, 5000);
+                }
+                // Clear the flag
+                sessionStorage.removeItem('settingsApplied');
+            }
         }
         
         async function generateCharacterButtons() {
@@ -1043,16 +1059,12 @@
         }
 
         // Game Settings Modal Functions
-        function openGameSettings() {
-            const modal = document.getElementById('settingsModal');
-            const iframe = document.getElementById('settingsIframe');
+        function openPresetChoice() {
+            // Get the selected character
+            const selectedCharacter = game.selectedCharacter || 'PT';
             
-            // Reset iframe source to ensure fresh load
-            iframe.src = 'game-settings.html';
-            modal.style.display = 'flex';
-            
-            // Hide the settings applied message when opening settings
-            document.getElementById('settingsAppliedMessage').style.display = 'none';
+            // Navigate to preset choice page with character parameter
+            window.location.href = `preset-choice.html?character=${selectedCharacter}`;
         }
 
         function closeGameSettings() {
@@ -1068,6 +1080,9 @@
             // Store the custom config globally for the game to use
             window.customGameConfig = customConfig;
             
+            // Also persist in localStorage for future sessions
+            localStorage.setItem('customGameConfig', JSON.stringify(customConfig));
+            
             // Force reload the configuration with custom settings
             if (configManager.isConfigLoaded()) {
                 await configManager.reloadWithCustomConfig();
@@ -1076,14 +1091,11 @@
             // Close the settings modal
             closeGameSettings();
             
-            // Show the settings applied message
-            const message = document.getElementById('settingsAppliedMessage');
-            message.style.display = 'block';
+            // Set flag to show success message on character selection
+            sessionStorage.setItem('settingsApplied', 'true');
             
-            // Auto-hide the message after 5 seconds
-            setTimeout(() => {
-                message.style.display = 'none';
-            }, 5000);
+            // Return to character selection to show the success message
+            showCharacterSelection();
             
             console.log('Custom game config applied:', customConfig);
         }
@@ -2721,6 +2733,18 @@
         // Initialize character selection screen on game start
         // Character selection -> difficulty selection -> level selection -> game start
         document.addEventListener('DOMContentLoaded', () => {
+            // Check for stored custom config from presets or settings
+            const storedConfig = localStorage.getItem('customGameConfig');
+            if (storedConfig) {
+                try {
+                    window.customGameConfig = JSON.parse(storedConfig);
+                    console.log('Loaded stored custom configuration');
+                } catch (error) {
+                    console.error('Failed to parse stored custom config:', error);
+                    localStorage.removeItem('customGameConfig');
+                }
+            }
+            
             // Start the game loop
             gameLoop();
             

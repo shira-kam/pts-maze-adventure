@@ -1,0 +1,260 @@
+{
+  "id": "early-math",
+  "name": "Beginning Math",
+  "description": "Introduction to basic addition and subtraction",
+  "prerequisites": "Number recognition 1-15",
+  "skills": "Addition and subtraction within 15, number line concepts, visual math understanding",
+  "icon": "🧮",
+  "levels": {
+    "1": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        }
+      ]
+    },
+    "2": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "maxResult": 10
+          }
+        }
+      ]
+    },
+    "3": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 12,
+            "minA": 0,
+            "maxA": 12,
+            "minB": 0,
+            "maxB": 12,
+            "maxResult": 12
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 12,
+            "minA": 0,
+            "maxA": 12,
+            "minB": 0,
+            "maxB": 12,
+            "maxResult": 12
+          }
+        }
+      ]
+    },
+    "4": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 12,
+            "minA": 0,
+            "maxA": 12,
+            "minB": 0,
+            "maxB": 12,
+            "maxResult": 12
+          }
+        }
+      ]
+    },
+    "5": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 15,
+            "minA": 0,
+            "maxA": 15,
+            "minB": 1,
+            "maxB": 15,
+            "maxResult": 15
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 15,
+            "minA": 1,
+            "maxA": 15,
+            "minB": 0,
+            "maxB": 15,
+            "maxResult": 15
+          }
+        }
+      ]
+    },
+    "6": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 10,
+            "minA": 1,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "minC": 1,
+            "maxC": 9,
+            "maxResult": 10,
+            "equationType": "triple_add"
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 10,
+            "minA": 1,
+            "maxA": 10,
+            "minB": 0,
+            "maxB": 10,
+            "minC": 1,
+            "maxC": 9,
+            "maxResult": 10,
+            "equationType": "triple_add"
+          }
+        }      
+      ]
+    },
+    "7": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition","subtraction"],
+          "numberLine": {
+            "length": 15,
+            "minA": 0,
+            "maxA": 15,
+            "minB": 0,
+            "maxB": 15,
+            "maxResult": 15
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 12,
+            "minA": 1,
+            "maxA": 12,
+            "minB": 0,
+            "maxB": 12,
+            "minC": 1,
+            "maxC": 11,
+            "maxResult": 12,
+            "equationType": "triple_add"
+          }
+        }      
+      ]
+    },
+    "8": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 15,
+            "minA": 1,
+            "maxA": 15,
+            "minB": 0,
+            "maxB": 15,
+            "minC": 1,
+            "maxC": 14,
+            "maxResult": 15,
+            "equationType": "triple_add"
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 15,
+            "minA": 1,
+            "maxA": 12,
+            "minB": 0,
+            "maxB": 12,
+            "minC": 1,
+            "maxC": 11,
+            "maxResult": 12,
+            "equationType": "triple_add"
+          }
+        }      
+      ]
+    },
+    "9": {
+      "playable": false
+    },
+    "10": {
+      "playable": false
+    },
+    "11": {
+      "playable": false
+    },
+    "12": {
+      "playable": false
+    },
+    "13": {
+      "playable": false
+    }
+  }
+}

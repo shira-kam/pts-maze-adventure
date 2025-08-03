@@ -1,0 +1,52 @@
+{
+  "presets": [
+    {
+      "id": "early-phonics",
+      "file": "early-phonics.json",
+      "category": "reading",
+      "order": 1
+    },
+    {
+      "id": "reading-foundations", 
+      "file": "reading-foundations.json",
+      "category": "reading",
+      "order": 2
+    },
+    {
+      "id": "advanced-reading",
+      "file": "advanced-reading.json", 
+      "category": "reading",
+      "order": 3
+    },
+    {
+      "id": "early-math",
+      "file": "early-math.json",
+      "category": "math", 
+      "order": 1
+    },
+    {
+      "id": "math-foundations",
+      "file": "math-foundations.json",
+      "category": "math",
+      "order": 2
+    },
+    {
+      "id": "advanced-math",
+      "file": "advanced-math.json",
+      "category": "math",
+      "order": 3
+    },
+    {
+      "id": "kindergarten-ready",
+      "file": "kindergarten-ready.json",
+      "category": "balanced",
+      "order": 1
+    },
+    {
+      "id": "balanced-learning", 
+      "file": "balanced-learning.json",
+      "category": "balanced",
+      "order": 2
+    }
+  ]
+}

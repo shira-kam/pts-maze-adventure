@@ -1,0 +1,123 @@
+{
+  "id": "reading-foundations",
+  "name": "Reading Foundations",
+  "description": "Build core reading skills with phonics, word recognition, and audio-text connections",
+  "prerequisites": "Letter recognition and basic sound awareness",
+  "skills": "Phonics decoding, CVC words, word-emoji matching, audio reading comprehension",
+  "icon": "📚",
+  "levels": {
+    "1": {
+      "playable": false
+    },
+    "2": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        },
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["cvc"]
+        }
+      ]
+    },
+    "3": {
+      "playable": false
+    },
+    "4": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "intermediate",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "5": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "intermediate",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        },
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
+        }
+      ]
+    },
+    "6": {
+      "playable": false
+    },
+    "7": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["CH", "TH", "SH", "WH", "PH", "ST", "SP", "SN", "SM", "SK", "SC", "SL", "PL", "GL", "BL"]
+        }
+      ]
+    },
+    "8": {
+      "playable": false
+    },
+    "9": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "advanced",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "10": {
+      "playable": false
+    },
+    "11": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "rhyming",
+          "tracking": {
+            "preventRepetition": true,
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "12": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "audio_reading",
+          "mode": "match_text_to_speech",
+          "wordLists": ["basic-magic-e", "cvc"]
+        }
+      ]
+    },
+    "13": {
+      "playable": false
+    }
+  }
+}

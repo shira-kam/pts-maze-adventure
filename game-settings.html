@@ -6,21 +6,31 @@
     <title>Customize Levels</title>
     <style>
         body {
+            margin: 0;
+            padding: 20px;
             font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .settings-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px 30px 0 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            min-height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
         }
         
         .header {
             text-align: center;
             margin-bottom: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            color: #2d3748;
         }
         
         .header h1 {
@@ -182,20 +192,23 @@
             pointer-events: none;
         }
         
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+
         .action-buttons {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 1200px;
             display: flex;
             justify-content: flex-end;
             gap: 15px;
             background: white;
-            padding: 20px 52px 20px 20px;
+            padding: 20px 30px;
+            margin: 0 -30px 0 -30px;
             border-top: 1px solid #e0e0e0;
+            border-radius: 0 0 20px 20px;
             box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            margin-top: auto;
         }
         
         .cancel-button, .apply-button {
@@ -247,26 +260,28 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Customize Levels</h1>
+    <div class="settings-container">
+        <div class="header">
+            <h1>Customize Levels</h1>
+        </div>
+        
+        <div class="content-area">
+            <div id="level-drawers">
+                <!-- Level drawers will be generated here -->
+            </div>
+        </div>
+        
+        <div class="action-buttons" id="actionButtons">
+            <button class="cancel-button" onclick="cancelAndReturnToCharacterSelection()">
+                Cancel
+            </button>
+            <button class="apply-button" onclick="applyConfigAndStartGame()">
+                Apply to Game
+            </button>
+        </div>
     </div>
-    
-    <div id="level-drawers">
-        <!-- Level drawers will be generated here -->
-    </div>
-    
-    <div class="action-buttons" id="actionButtons">
-        <button class="cancel-button" onclick="cancelAndReturnToCharacterSelection()">
-            Cancel
-        </button>
-        <button class="apply-button" onclick="applyConfigAndStartGame()">
-            Apply to Game
-        </button>
-    </div>
-    
-    <!-- Bottom spacer to ensure content doesn't get hidden behind fixed buttons -->
-    <div style="height: 100px;"></div>
 
+    <script src="preset-manager.js"></script>
     <script>
         let gameConfig = {};
         let currentConfig = {};
@@ -297,6 +312,39 @@
         // Available audio reading word lists (will be populated dynamically)
         let availableWordLists = [];
         
+        // Load preset as base configuration for customization
+        async function loadPresetAsBase(presetId) {
+            try {
+                // Load preset manager if not already loaded
+                await presetManager.loadBaseConfig();
+                await presetManager.loadAvailablePresets();
+                
+                // Get preset from parameter or session
+                const targetPresetId = presetId || presetManager.getBasePresetFromSession()?.id;
+                
+                if (targetPresetId) {
+                    const mergedConfig = presetManager.applyPreset(targetPresetId);
+                    if (mergedConfig) {
+                        // Use merged config as base instead of default
+                        gameConfig = mergedConfig;
+                        currentConfig = JSON.parse(JSON.stringify(mergedConfig));
+                        
+                        const preset = presetManager.getCurrentPreset();
+                        console.log(`Loaded preset as base: ${preset.name}`);
+                        
+                        // Add indicator that we're customizing a preset
+                        const header = document.querySelector('h1');
+                        if (header) {
+                            header.innerHTML = `Customize Levels<br><small style="color: #666; font-size: 0.6em;">Based on: ${preset.name}</small>`;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load preset as base:', error);
+                // Continue with default configuration
+            }
+        }
+        
         // Initialize the page
         async function initializePage() {
             await loadGameConfig();
@@ -305,10 +353,16 @@
             // Check if we're being called from character selection with specific character
             const urlParams = new URLSearchParams(window.location.search);
             const selectedCharacter = urlParams.get('character');
+            const presetId = urlParams.get('preset');
             
             if (selectedCharacter) {
                 // Store the selected character for when we return to the game
                 sessionStorage.setItem('selectedCharacter', selectedCharacter);
+            }
+            
+            // Check for preset to load as base configuration
+            if (presetId || presetManager.getBasePresetFromSession()) {
+                await loadPresetAsBase(presetId);
             }
             
             generateLevelDrawers();
@@ -1232,8 +1286,10 @@
                 // Fallback for testing - store in localStorage and redirect
                 localStorage.setItem('customGameConfig', JSON.stringify(finalConfig));
                 if (selectedCharacter) {
-                    localStorage.setItem('selectedCharacter', selectedCharacter);
+                    sessionStorage.setItem('selectedCharacter', selectedCharacter);
                 }
+                // Set flag to show success message
+                sessionStorage.setItem('settingsApplied', 'true');
                 window.location.href = 'index.html';
             }
         }

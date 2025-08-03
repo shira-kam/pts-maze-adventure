@@ -1,0 +1,149 @@
+{
+  "id": "math-foundations",
+  "name": "Math Foundations",
+  "description": "Build solid arithmetic skills with addition, subtraction, and introduction to multiplication",
+  "prerequisites": "Comfortable with basic addition and subtraction within 10",
+  "skills": "Number line operations up to 20, basic multiplication concepts, visual division understanding",
+  "icon": "➕",
+  "levels": {
+    "1": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 15,
+            "minA": 1,
+            "maxA": 14,
+            "minB": 1,
+            "maxB": 14,
+            "maxResult": 15
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 15,
+            "minA": 1,
+            "maxA": 14,
+            "minB": 1,
+            "maxB": 14,
+            "maxResult": 15
+          }
+        }
+      ]
+    },
+    "2": {
+      "playable": false
+    },
+    "3": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 20,
+            "minA": 1,
+            "maxA": 19,
+            "minB": 1,
+            "maxB": 19,
+            "maxResult": 20
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 20,
+            "minA": 1,
+            "maxA": 19,
+            "minB": 1,
+            "maxB": 19,
+            "maxResult": 20
+          }
+        }
+      ]
+    },
+    "4": {
+      "playable": false
+    },
+    "5": {
+      "playable": false
+    },
+    "6": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 20,
+            "minA": 1,
+            "maxA": 19,
+            "minB": 1,
+            "maxB": 19,
+            "maxResult": 20
+          }
+        },
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 12,
+            "maxB": 10,
+            "maxAnswer": 10,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        }
+      ]
+    },
+    "7": {
+      "playable": false
+    },
+    "8": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 15,
+            "maxB": 15,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        }
+      ]
+    },
+    "9": {
+      "playable": false
+    },
+    "10": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "multiplication_groups",
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 15,
+            "minFactor": 2,
+            "maxFactor": 8,
+            "excludeOne": true
+          }
+        }
+      ]
+    },
+    "11": {
+      "playable": false
+    },
+    "12": {
+      "playable": false
+    },
+    "13": {
+      "playable": false
+    }
+  }
+}

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Learning Package - Maze of Marvels</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .preset-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .preset-card {
+            background: white;
+            border: 3px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .preset-card:hover {
+            border-color: #4299e1;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .preset-card.selected {
+            border-color: #38a169;
+            background: #f0fff4;
+        }
+
+        .preset-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .preset-description {
+            color: #4a5568;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            font-size: 0.95em;
+        }
+
+        .preset-skills {
+            background: #edf2f7;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .preset-skills h4 {
+            margin: 0 0 12px 0;
+            color: #2d3748;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .preset-skills p {
+            margin: 0 0 15px 0;
+            color: #4a5568;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        .preset-skills p:last-child {
+            margin-bottom: 0;
+        }
+
+        .category-header {
+            grid-column: 1 / -1;
+            text-align: left;
+            margin: 30px 0 10px 0;
+            padding: 0;
+            color: #2d3748;
+            font-size: 1.6em;
+            font-weight: bold;
+        }
+
+        .category-header:first-child {
+            margin-top: 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+
+        .btn-primary {
+            background: #38a169;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2f855a;
+        }
+
+        .btn-primary:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #edf2f7;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e0;
+        }
+
+        .btn-secondary:disabled {
+            background: #f7fafc;
+            color: #a0aec0;
+            border-color: #e2e8f0;
+            cursor: not-allowed;
+        }
+
+        .btn-tertiary {
+            background: #edf2f7;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-tertiary:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e0;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            border: none;
+        }
+
+        .btn-cancel:hover {
+            background: #545b62;
+        }
+
+        .custom-option {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: left;
+        }
+
+        .custom-option h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+            font-weight: bold;
+        }
+
+        .custom-option p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .preset-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="preset-container">
+        <div class="header">
+            <h1>Choose Your Learning Package</h1>
+        </div>
+
+        <div class="custom-option">
+            <h3>Want Complete Control?</h3>
+            <p>Create your own custom configuration with full control over every level and puzzle type.</p>
+            <button class="btn btn-tertiary" id="custom-settings-btn">Create Custom Settings</button>
+        </div>
+
+        <div class="preset-grid" id="preset-grid">
+            <!-- Preset cards will be populated by JavaScript -->
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-cancel" id="cancel-btn">Cancel</button>
+            <button class="btn btn-secondary" id="modify-preset-btn" disabled>Customize This Package</button>
+            <button class="btn btn-primary" id="use-preset-btn" disabled>Use This Package</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedCharacter = '';
+        let selectedPreset = null;
+        let availablePresets = [];
+
+        // Get character from URL parameters
+        function getCharacterFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('character') || 'PT';
+        }
+
+        // Load available presets
+        async function loadPresets() {
+            try {
+                const response = await fetch('presets/index.json');
+                const data = await response.json();
+                
+                // Load each preset file
+                const presetPromises = data.presets.map(async (presetInfo) => {
+                    try {
+                        const presetResponse = await fetch(`presets/${presetInfo.file}`);
+                        const presetData = await presetResponse.json();
+                        return {
+                            ...presetData,
+                            category: presetInfo.category,
+                            order: presetInfo.order
+                        };
+                    } catch (error) {
+                        console.warn(`Failed to load preset: ${presetInfo.file}`, error);
+                        return null;
+                    }
+                });
+
+                const presets = await Promise.all(presetPromises);
+                availablePresets = presets.filter(preset => preset !== null);
+                
+                console.log('Loaded presets:', availablePresets);
+                renderPresets();
+            } catch (error) {
+                console.error('Failed to load presets:', error);
+                // Show fallback message
+                document.getElementById('preset-grid').innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #666;">
+                        <h3>Unable to load preset packages</h3>
+                        <p>Please use the custom settings option below.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Render preset cards grouped by category
+        function renderPresets() {
+            const grid = document.getElementById('preset-grid');
+            
+            // Group presets by category
+            const categories = {
+                reading: availablePresets.filter(p => p.category === 'reading').sort((a, b) => a.order - b.order),
+                math: availablePresets.filter(p => p.category === 'math').sort((a, b) => a.order - b.order),
+                balanced: availablePresets.filter(p => p.category === 'balanced').sort((a, b) => a.order - b.order)
+            };
+
+            let html = '';
+
+            // Reading category
+            if (categories.reading.length > 0) {
+                html += `<div class="category-header">Reading Focus</div>`;
+                categories.reading.forEach(preset => {
+                    html += createPresetCard(preset);
+                });
+            }
+
+            // Math category  
+            if (categories.math.length > 0) {
+                html += `<div class="category-header">Math Focus</div>`;
+                categories.math.forEach(preset => {
+                    html += createPresetCard(preset);
+                });
+            }
+
+            // Balanced category
+            if (categories.balanced.length > 0 || true) { // Always show this category
+                html += `<div class="category-header">Balanced Learning</div>`;
+                
+                // Add default configuration card first
+                html += createPresetCard({
+                    id: 'default',
+                    name: 'Default Configuration',
+                    description: 'Complete curriculum with all levels and puzzle types enabled',
+                    prerequisites: 'None - starts from the beginning',
+                    skills: 'All reading and math skills across 13 progressive levels'
+                });
+                
+                categories.balanced.forEach(preset => {
+                    html += createPresetCard(preset);
+                });
+            }
+
+            grid.innerHTML = html;
+
+            // Add click handlers
+            document.querySelectorAll('.preset-card').forEach(card => {
+                card.addEventListener('click', () => selectPreset(card.dataset.presetId));
+            });
+        }
+
+        // Create a preset card HTML
+        function createPresetCard(preset) {
+            return `
+                <div class="preset-card" data-preset-id="${preset.id}">
+                    <div class="preset-title">${preset.name}</div>
+                    <div class="preset-description">${preset.description}</div>
+                    <div class="preset-skills">
+                        <h4>Prerequisites:</h4>
+                        <p>${preset.prerequisites}</p>
+                        <h4>Skills Developed:</h4>
+                        <p>${preset.skills}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Select a preset
+        function selectPreset(presetId) {
+            // Remove previous selection
+            document.querySelectorAll('.preset-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selection to clicked card
+            const selectedCard = document.querySelector(`[data-preset-id="${presetId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+                selectedPreset = availablePresets.find(p => p.id === presetId);
+                
+                // Enable action buttons
+                document.getElementById('use-preset-btn').disabled = false;
+                document.getElementById('modify-preset-btn').disabled = false;
+            }
+        }
+
+        // Apply preset and start game
+        async function usePreset() {
+            if (!selectedPreset) return;
+
+            try {
+                if (selectedPreset.id === 'default') {
+                    // For default configuration, clear any custom configs
+                    localStorage.removeItem('customGameConfig');
+                    delete window.customGameConfig;
+                    console.log('Applied default configuration');
+                } else {
+                    // Apply preset using the same system as custom settings
+                    const presetCustomConfig = {
+                        levels: selectedPreset.levels
+                    };
+                    
+                    // Store as custom config for the game to use
+                    window.customGameConfig = presetCustomConfig;
+                    
+                    // Also store in localStorage for persistence across page loads
+                    localStorage.setItem('customGameConfig', JSON.stringify(presetCustomConfig));
+                    
+                    console.log('Applied preset configuration:', selectedPreset.name);
+                }
+                
+                // Store selected character and settings applied flag
+                sessionStorage.setItem('selectedCharacter', selectedCharacter);
+                sessionStorage.setItem('settingsApplied', 'true');
+                
+                // Go directly to the main game (maintaining kid flow)
+                window.location.href = `index.html?character=${selectedCharacter}`;
+                
+            } catch (error) {
+                console.error('Failed to apply preset:', error);
+                alert('Failed to apply preset. Please try again.');
+            }
+        }
+
+        // Modify preset (go to settings with preset pre-loaded)
+        function modifyPreset() {
+            if (!selectedPreset) return;
+
+            if (selectedPreset.id === 'default') {
+                // For default configuration, go to settings without preset
+                sessionStorage.setItem('selectedCharacter', selectedCharacter);
+                window.location.href = `game-settings.html?character=${selectedCharacter}`;
+            } else {
+                // Store preset as base configuration
+                sessionStorage.setItem('basePreset', JSON.stringify(selectedPreset));
+                sessionStorage.setItem('selectedCharacter', selectedCharacter);
+
+                // Go to custom settings with preset loaded
+                window.location.href = `game-settings.html?character=${selectedCharacter}&preset=${selectedPreset.id}`;
+            }
+        }
+
+        // Go to custom settings
+        function customSettings() {
+            // Clear any preset selection
+            sessionStorage.removeItem('selectedPreset');
+            sessionStorage.removeItem('basePreset');
+            sessionStorage.setItem('selectedCharacter', selectedCharacter);
+
+            // Go to custom settings
+            window.location.href = `game-settings.html?character=${selectedCharacter}`;
+        }
+
+        // Cancel and return to character selection with default config
+        function cancelAndReturn() {
+            // Clear any custom configurations
+            localStorage.removeItem('customGameConfig');
+            sessionStorage.removeItem('selectedPreset');
+            sessionStorage.removeItem('basePreset');
+            delete window.customGameConfig;
+            
+            // Return to main game with selected character
+            window.location.href = `index.html?character=${selectedCharacter}`;
+        }
+
+        // Initialize page
+        function init() {
+            selectedCharacter = getCharacterFromURL();
+            
+            // Load presets
+            loadPresets();
+
+            // Add event listeners
+            document.getElementById('use-preset-btn').addEventListener('click', usePreset);
+            document.getElementById('modify-preset-btn').addEventListener('click', modifyPreset);
+            document.getElementById('custom-settings-btn').addEventListener('click', customSettings);
+            document.getElementById('cancel-btn').addEventListener('click', cancelAndReturn);
+        }
+
+        // Start when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

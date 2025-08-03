@@ -1,0 +1,162 @@
+{
+  "id": "advanced-math",
+  "name": "Advanced Math",
+  "description": "Master complex arithmetic with multi-step problems, advanced multiplication, and division",
+  "prerequisites": "Solid foundation in basic addition, subtraction, and multiplication tables",
+  "skills": "Triple equations, advanced multiplication and division, complex number relationships, multi-step problem solving",
+  "icon": "🧮",
+  "levels": {
+    "1": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "length": 20,
+            "minA": 5,
+            "maxA": 19,
+            "minB": 5,
+            "maxB": 19,
+            "maxResult": 20
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "length": 20,
+            "minA": 5,
+            "maxA": 19,
+            "minB": 5,
+            "maxB": 19,
+            "maxResult": 20
+          }
+        }
+      ]
+    },
+    "2": {
+      "playable": false
+    },
+    "3": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 20,
+            "minA": 3,
+            "maxA": 19,
+            "minB": 3,
+            "maxB": 19,
+            "maxResult": 20
+          }
+        }
+      ]
+    },
+    "4": {
+      "playable": false
+    },
+    "5": {
+      "playable": false
+    },
+    "6": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 20,
+            "minA": 1,
+            "maxA": 19,
+            "minB": 1,
+            "maxB": 19,
+            "maxResult": 20
+          }
+        },
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 20,
+            "maxB": 15,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        }
+      ]
+    },
+    "7": {
+      "playable": false
+    },
+    "8": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 20,
+            "maxB": 20,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["addition", "subtraction"],
+          "numberLine": {
+            "length": 20,
+            "minA": 1,
+            "maxA": 19,
+            "minB": 1,
+            "maxB": 19,
+            "minC": 1,
+            "maxC": 4,
+            "maxResult": 20,
+            "equationType": "triple_add"
+          }
+        }
+      ]
+    },
+    "9": {
+      "playable": false
+    },
+    "10": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 20,
+            "maxB": 20,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        },
+        {
+          "type": "multiplication_groups",
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 20,
+            "minFactor": 2,
+            "maxFactor": 10,
+            "excludeOne": true
+          }
+        }
+      ]
+    },
+    "11": {
+      "playable": false
+    },
+    "12": {
+      "playable": false
+    },
+    "13": {
+      "playable": false
+    }
+  }
+}

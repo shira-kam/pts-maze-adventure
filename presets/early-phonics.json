@@ -1,0 +1,99 @@
+{
+  "id": "early-phonics",
+  "name": "Early Phonics",
+  "description": "Focus on letter recognition, basic sounds, and word-sound relationships",
+  "prerequisites": "Basic familiarity with letters and sounds",
+  "skills": "Letter identification, digraph sounds, simple word recognition, rhyming patterns",
+  "icon": "🔤",
+  "levels": {
+    "1": {
+      "playable": false
+    },
+    "2": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "3": {
+      "playable": false
+    },
+    "4": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "word_emoji_matching",
+          "wordListLevel": "basic",
+          "tracking": {
+            "preventRepetition": true,
+            "usedWords": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "5": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["ST", "SP", "SN", "SM", "SK", "SC"]
+        }
+      ]
+    },
+    "6": {
+      "playable": false
+    },
+    "7": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "digraph_sounds",
+          "digraphs": ["CH", "TH", "SH", "WH", "PH"]
+        },
+        {
+          "type": "letter_identification",
+          "tracking": {
+            "preventRepetition": true,
+            "usedLetters": [],
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "8": {
+      "playable": false
+    },
+    "9": {
+      "playable": false
+    },
+    "10": {
+      "playable": false
+    },
+    "11": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "rhyming",
+          "tracking": {
+            "preventRepetition": true,
+            "trackingScope": "level"
+          }
+        }
+      ]
+    },
+    "12": {
+      "playable": false
+    },
+    "13": {
+      "playable": false
+    }
+  }
+}
