@@ -257,6 +257,138 @@
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 15px;
         }
+        
+        /* ===== PUZZLE MODAL STYLES - EXACT replica from real game ===== */
+        
+        /* Puzzle button styling to match main game */
+        .puzzle-button {
+            margin: 10px 5px !important;
+            padding: 10px 15px !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            font-family: Arial, sans-serif !important;
+            font-weight: bold !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .puzzle-button:hover {
+            transform: scale(1.05) !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+        }
+        
+        .puzzle-button:disabled {
+            opacity: 0.6 !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+        }
+        
+        /* Word emoji puzzle specific styling - only applied when class is present */
+        #puzzleOptions.word-emoji-options {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 10px !important;
+            margin: 20px 0 !important;
+        }
+        
+        /* Letter identification puzzle specific styling - only applied when class is present */
+        #puzzleOptions.letter-identification-options {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 10px !important;
+            margin: 20px 0 !important;
+        }
+        
+        #puzzleModal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0, 0, 0, 0.8) !important;
+            z-index: 10000 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        #puzzleContent {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 90vw;
+            max-height: 90vh;
+            width: 1000px; /* Increased to 1000px to fully accommodate number lines up to 20 */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center; /* Center all content like real game */
+            /* Removed min-height to let content determine size */
+        }
+        
+        #puzzleTitle {
+            margin: 0 0 20px 0;
+            font-size: 1.5em;
+            color: black; /* Black text on white background like real game */
+            text-align: center;
+        }
+        
+        #puzzleQuestion {
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+        
+        #puzzleOptions {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        #puzzleResult {
+            margin: 20px 0;
+            text-align: center; /* Center feedback like real game */
+            font-size: 48px; /* Large emoji size */
+        }
+        
+        #puzzlePreviewQuestion {
+            font-size: 1.2em;
+            color: #333;
+            margin: 0;
+            text-align: center;
+        }
+        
+        #puzzlePreviewOptions {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-height: 200px;
+        }
+        
+        #puzzlePreviewResult {
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            min-height: 30px;
+        }
+        
+        /* Preview mode indicator */
+        #puzzlePreviewModal::before {
+            content: "PUZZLE PREVIEW MODE";
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #007bff;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 10001;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+        }
+        
+        /* Responsive design - placeholder for future mobile support */
     </style>
 </head>
 <body>
@@ -281,7 +413,29 @@
         </div>
     </div>
 
+    <!-- Puzzle Modal - EXACT replica from real game -->
+    <div id="puzzleModal" style="display: none !important;">
+        <div id="puzzleContent">
+            <h2 id="puzzleTitle">Puzzle Time!</h2>
+            <p id="puzzleQuestion"></p>
+            <div id="puzzleOptions"></div>
+            <div id="puzzleResult"></div>
+        </div>
+    </div>
+
     <script src="preset-manager.js"></script>
+    
+    <!-- Include puzzle scripts for preview functionality -->
+    <script src="simple-math-puzzle.js"></script>
+    <script src="word-emoji-puzzle.js"></script>
+    <script src="digraph-puzzle.js"></script>
+    <script src="number-line-puzzle.js"></script>
+    <script src="division-puzzle.js"></script>
+    <script src="multiplication-groups-puzzle.js"></script>
+    <script src="letter-identification.js"></script>
+    <script src="audio-reading-puzzle.js"></script>
+    <!-- Note: rhyming puzzle doesn't have separate JS file - integrated in main game -->
+    
     <script>
         let gameConfig = {};
         let currentConfig = {};
@@ -347,6 +501,13 @@
         
         // Initialize the page
         async function initializePage() {
+            // Preload PT sprite for preview functionality
+            if (!window.currentMovementSprites) {
+                window.currentMovementSprites = new Image();
+                window.currentMovementSprites.src = 'PT-sprite.svg';
+                console.log('Preloading PT sprite for preview');
+            }
+            
             await loadGameConfig();
             await discoverWordLists();
             
@@ -378,15 +539,14 @@
                 if (response.ok) {
                     const html = await response.text();
                     
-                    // Parse HTML to find files ending with "-with-distractors.txt"
-                    const filePattern = /-with-distractors\.txt/g;
-                    const linkPattern = /href="([^"]*-with-distractors\.txt)"/g;
+                    // Parse HTML to find all .txt files
+                    const linkPattern = /href="([^"]*\.txt)"/g;
                     
                     let match;
                     while ((match = linkPattern.exec(html)) !== null) {
                         const filename = match[1];
-                        // Extract the word list name (remove "-with-distractors.txt")
-                        const listName = filename.replace('-with-distractors.txt', '');
+                        // Extract the word list name (remove ".txt")
+                        const listName = filename.replace('.txt', '');
                         
                         // Convert filename to display name
                         const displayName = listName
@@ -408,7 +568,7 @@
                 const commonWordLists = ['basic-magic-e', 'advanced-magic-e', 'silent-e', 'cvc'];
                 for (const listName of commonWordLists) {
                     try {
-                        const url = `word-lists/audio-reading/${listName}-with-distractors.txt`;
+                        const url = `word-lists/audio-reading/${listName}.txt`;
                         const response = await fetch(url, { method: 'HEAD' });
                         if (response.ok) {
                             const displayName = listName
@@ -1390,6 +1550,686 @@
                 input.value = max;
             }
         }
+        
+        // ===== PREVIEW CONFIG MANAGEMENT FUNCTIONS =====
+        
+        /**
+         * Generate preview configuration for a specific puzzle
+         * @param {number} levelNum - The level number
+         * @param {number} puzzleIndex - The puzzle index (0-based)
+         * @returns {Object} Preview configuration object
+         */
+        function generatePreviewConfig(levelNum, puzzleIndex) {
+            const puzzleConfig = getCurrentPuzzleFormData(levelNum, puzzleIndex);
+            
+            if (!puzzleConfig) {
+                console.error(`No puzzle configuration found for level ${levelNum}, puzzle ${puzzleIndex}`);
+                return null;
+            }
+            
+            return {
+                levels: {
+                    "mock": {
+                        playable: true,
+                        puzzles: [puzzleConfig] // Single puzzle for preview
+                    }
+                },
+                characters: {
+                    "PT": {
+                        name: "PT the Elephant",
+                        movement: "PT-sprite.svg",
+                        celebration: "PT-celebrate.png",
+                        gameOver: "PT-game-over.png",
+                        description: "Preview character"
+                    }
+                }
+            };
+        }
+        
+        /**
+         * Get current form data for a specific puzzle
+         * @param {number} levelNum - The level number
+         * @param {number} puzzleIndex - The puzzle index (0-based)
+         * @returns {Object} Current puzzle configuration from form
+         */
+        function getCurrentPuzzleFormData(levelNum, puzzleIndex) {
+            const puzzleNum = puzzleIndex + 1; // Convert to 1-based for DOM IDs
+            
+            // Get current puzzle type
+            const puzzleSelect = document.getElementById(`puzzle-select-${levelNum}-${puzzleNum}`);
+            if (!puzzleSelect || !puzzleSelect.value) {
+                console.error(`No puzzle type selected for level ${levelNum}, puzzle ${puzzleNum}`);
+                return null;
+            }
+            
+            const puzzleType = puzzleSelect.value;
+            const puzzleConfig = { type: puzzleType };
+            
+            // Extract configuration based on puzzle type (using same logic as updatePuzzleConfig)
+            switch (puzzleType) {
+                case 'word_emoji_matching':
+                    const wordListLevel = document.getElementById(`wordListLevel-${levelNum}-${puzzleNum}`)?.value || 'beginner';
+                    puzzleConfig.wordListLevel = wordListLevel;
+                    puzzleConfig.tracking = {
+                        preventRepetition: false, // Disabled for preview - no need to track used words
+                        usedWords: [],
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'simple_arithmetic':
+                    const operations = [];
+                    if (document.getElementById(`addition-${levelNum}-${puzzleNum}`)?.checked) operations.push('addition');
+                    if (document.getElementById(`subtraction-${levelNum}-${puzzleNum}`)?.checked) operations.push('subtraction');
+                    
+                    puzzleConfig.operations = operations.length > 0 ? operations : ['addition'];
+                    puzzleConfig.limits = {
+                        maxA: parseInt(document.getElementById(`maxA-${levelNum}-${puzzleNum}`)?.value) || 10,
+                        maxB: parseInt(document.getElementById(`maxB-${levelNum}-${puzzleNum}`)?.value) || 10,
+                        maxResult: parseInt(document.getElementById(`maxResult-${levelNum}-${puzzleNum}`)?.value) || 12
+                    };
+                    puzzleConfig.tracking = {
+                        preventRepetition: true,
+                        maxAttempts: 3,
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'digraph_sounds':
+                    const selectedDigraphs = [];
+                    document.querySelectorAll(`input[name="digraphs-${levelNum}-${puzzleNum}"]:checked`).forEach(checkbox => {
+                        selectedDigraphs.push(checkbox.value);
+                    });
+                    
+                    puzzleConfig.digraphs = selectedDigraphs.length > 0 ? selectedDigraphs : ['CH', 'SH', 'TH'];
+                    puzzleConfig.tracking = {
+                        preventRepetition: true,
+                        usedDigraphs: [],
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'number_line':
+                    const nlOperations = [];
+                    if (document.getElementById(`addition-${levelNum}-${puzzleNum}`)?.checked) nlOperations.push('addition');
+                    if (document.getElementById(`subtraction-${levelNum}-${puzzleNum}`)?.checked) nlOperations.push('subtraction');
+                    
+                    const equationType = document.getElementById(`equationType-${levelNum}-${puzzleNum}`)?.value || 'standard';
+                    
+                    puzzleConfig.operations = nlOperations.length > 0 ? nlOperations : ['addition'];
+                    puzzleConfig.numberLine = {
+                        length: parseInt(document.getElementById(`length-${levelNum}-${puzzleNum}`)?.value) || 12,
+                        minA: parseInt(document.getElementById(`minA-${levelNum}-${puzzleNum}`)?.value) || 1,
+                        maxA: parseInt(document.getElementById(`maxA-${levelNum}-${puzzleNum}`)?.value) || 8,
+                        minB: parseInt(document.getElementById(`minB-${levelNum}-${puzzleNum}`)?.value) || 1,
+                        maxB: parseInt(document.getElementById(`maxB-${levelNum}-${puzzleNum}`)?.value) || 8,
+                        maxResult: parseInt(document.getElementById(`maxResult-${levelNum}-${puzzleNum}`)?.value) || 12
+                    };
+                    
+                    if (equationType.includes('triple')) {
+                        puzzleConfig.numberLine.equationType = equationType;
+                        puzzleConfig.numberLine.minC = parseInt(document.getElementById(`minC-${levelNum}-${puzzleNum}`)?.value) || 1;
+                        puzzleConfig.numberLine.maxC = parseInt(document.getElementById(`maxC-${levelNum}-${puzzleNum}`)?.value) || 4;
+                    }
+                    
+                    puzzleConfig.tracking = {
+                        preventRepetition: false, // Disabled for preview - no need to track used problems
+                        maxAttempts: 3,
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'division_visual':
+                    puzzleConfig.division = {
+                        maxA: parseInt(document.getElementById(`maxA-${levelNum}-${puzzleNum}`)?.value) || 12,
+                        maxB: parseInt(document.getElementById(`maxB-${levelNum}-${puzzleNum}`)?.value) || 10,
+                        maxAnswer: parseInt(document.getElementById(`maxAnswer-${levelNum}-${puzzleNum}`)?.value) || 10,
+                        excludeIdentity: document.getElementById(`excludeIdentity-${levelNum}-${puzzleNum}`)?.checked || false,
+                        excludeA1: document.getElementById(`excludeA1-${levelNum}-${puzzleNum}`)?.checked || false
+                    };
+                    break;
+                    
+                case 'multiplication_groups':
+                    const multOperations = [];
+                    if (document.getElementById(`multiplication-${levelNum}-${puzzleNum}`)?.checked) multOperations.push('multiplication');
+                    
+                    puzzleConfig.operations = multOperations.length > 0 ? multOperations : ['multiplication'];
+                    puzzleConfig.multiplication = {
+                        maxProduct: parseInt(document.getElementById(`maxProduct-${levelNum}-${puzzleNum}`)?.value) || 20,
+                        minFactor: parseInt(document.getElementById(`minFactor-${levelNum}-${puzzleNum}`)?.value) || 2,
+                        maxFactor: parseInt(document.getElementById(`maxFactor-${levelNum}-${puzzleNum}`)?.value) || 10,
+                        excludeOne: document.getElementById(`excludeOne-${levelNum}-${puzzleNum}`)?.checked || true
+                    };
+                    break;
+                    
+                case 'letter_identification':
+                    const excludedLetters = [];
+                    document.querySelectorAll(`input[type="checkbox"][onchange*="updatePuzzleConfig(${levelNum}, ${puzzleNum})"]:checked`).forEach(checkbox => {
+                        if (checkbox.value && checkbox.value.length === 1 && checkbox.value.match(/[A-Z]/)) {
+                            excludedLetters.push(checkbox.value);
+                        }
+                    });
+                    
+                    puzzleConfig.excludeLetters = excludedLetters;
+                    puzzleConfig.tracking = {
+                        preventRepetition: false, // Disabled for preview to test different letters
+                        usedLetters: [],
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                case 'audio_reading':
+                    const mode = document.getElementById(`mode-${levelNum}-${puzzleNum}`)?.value || 'match_text_to_speech';
+                    const selectedWordLists = [];
+                    document.querySelectorAll(`input[name="wordLists-${levelNum}-${puzzleNum}"]:checked`).forEach(checkbox => {
+                        selectedWordLists.push(checkbox.value);
+                    });
+                    
+                    puzzleConfig.mode = mode;
+                    puzzleConfig.wordLists = selectedWordLists.length > 0 ? selectedWordLists : ['cvc'];
+                    break;
+                    
+                case 'rhyming':
+                    puzzleConfig.tracking = {
+                        preventRepetition: true,
+                        trackingScope: "level"
+                    };
+                    break;
+                    
+                default:
+                    console.error(`Unknown puzzle type: ${puzzleType}`);
+                    return null;
+            }
+            
+            return puzzleConfig;
+        }
+        
+        /**
+         * Launch puzzle preview popup
+         * @param {number} levelNum - The level number
+         * @param {number} puzzleIndex - The puzzle index (0-based)
+         */
+        async function previewPuzzle(levelNum, puzzleIndex) {
+            try {
+                // Get current puzzle configuration from form
+                const puzzleConfig = getCurrentPuzzleFormData(levelNum, puzzleIndex);
+                
+                if (!puzzleConfig) {
+                    alert('Unable to generate preview. Please check your puzzle configuration.');
+                    return;
+                }
+                
+                console.log(`Starting preview for Level ${levelNum}, Puzzle ${puzzleIndex + 1}:`, puzzleConfig);
+                
+                // Show the modal
+                showPuzzlePreviewModal();
+                
+                // Set up minimal game state for puzzle compatibility
+                setupPreviewGameState();
+                
+                // Trigger the specific puzzle
+                await triggerPreviewPuzzleByType(puzzleConfig);
+                
+            } catch (error) {
+                console.error('Failed to launch puzzle preview:', error);
+                alert('Failed to launch preview. Please try again.');
+            }
+        }
+        
+        /**
+         * Show the puzzle preview modal
+         */
+        function showPuzzlePreviewModal() {
+            window.isPreviewMode = true; // Set preview mode flag
+            
+            const modal = document.getElementById('puzzleModal');
+            modal.style.setProperty('display', 'flex', 'important'); // Override !important rule
+            
+            // Explicitly ensure centering (in case of CSS conflicts)
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            
+            // Clear previous content
+            document.getElementById('puzzleQuestion').textContent = '';
+            document.getElementById('puzzleOptions').innerHTML = '';
+            document.getElementById('puzzleResult').innerHTML = '';
+        }
+        
+        /**
+         * Close the puzzle preview modal
+         */
+        function closePuzzlePreview() {
+            window.isPreviewMode = false; // Clear preview mode flag
+            
+            const modal = document.getElementById('puzzleModal');
+            modal.style.setProperty('display', 'none', 'important'); // Override !important rule
+            
+            // Clean up any puzzle-specific elements
+            document.getElementById('puzzleOptions').innerHTML = '';
+            document.getElementById('puzzleOptions').className = ''; // Reset any puzzle-specific classes
+            document.getElementById('puzzleResult').innerHTML = '';
+            
+            // Clean up puzzle instances to prevent memory leaks
+            if (window.letterPuzzleInstance) {
+                // Stop any playing audio
+                if (window.letterPuzzleInstance.audioCache) {
+                    Object.values(window.letterPuzzleInstance.audioCache).forEach(audio => {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    });
+                }
+                window.letterPuzzleInstance = null;
+            }
+            
+            if (window.multiplicationPuzzleInstance) {
+                window.multiplicationPuzzleInstance = null;
+            }
+            
+            // Restore any DOM overrides
+            if (window.previewModalOverride) {
+                window.previewModalOverride.restore();
+            }
+        }
+        
+        /**
+         * Set up minimal game state for puzzle compatibility
+         */
+        function setupPreviewGameState() {
+            // Create minimal game object for puzzle scripts
+            if (!window.game) {
+                window.game = {};
+            }
+            
+            window.game.level = 'preview';
+            window.game.score = 5;
+            window.game.difficulty = 'easy';
+            window.game.selectedDifficulty = 1; // CRITICAL: Must be NUMBER like real game, not string
+            window.game.character = 'PT';
+            window.game.puzzleActive = true;
+            window.game.testMode = false; // Add testMode property like real game
+            
+            // Initialize legacy compatibility globals for multiplication puzzle
+            if (!window.game.usedMultiplicationProblems) {
+                window.game.usedMultiplicationProblems = [];
+            }
+            
+            // Create minimal configManager for puzzle compatibility
+            if (!window.configManager) {
+                window.configManager = {
+                    getPuzzleConfig: function(level, puzzleType) {
+                        // Return the current puzzle config from the preview
+                        return window.currentPreviewPuzzleConfig || {};
+                    }
+                };
+            }
+            
+            // PT sprite should already be preloaded during page initialization
+            
+            // Map modal elements - now using EXACT same structure as real game
+            window.puzzleModal = document.getElementById('puzzleModal');
+            window.puzzleContent = document.getElementById('puzzleContent');
+            window.puzzleTitle = document.getElementById('puzzleTitle');
+            window.puzzleQuestion = document.getElementById('puzzleQuestion');
+            window.puzzleOptions = document.getElementById('puzzleOptions');
+            window.puzzleResult = document.getElementById('puzzleResult');
+        }
+        
+        /**
+         * Trigger puzzle based on type
+         */
+        async function triggerPreviewPuzzleByType(puzzleConfig) {
+            const puzzleType = puzzleConfig.type;
+            
+            try {
+                // Store current config for puzzle scripts to access
+                window.currentPreviewPuzzleConfig = puzzleConfig;
+                
+                // Reset puzzle options styling (clean slate for each puzzle)
+                document.getElementById('puzzleOptions').className = '';
+                
+                // Update modal title
+                document.getElementById('puzzleTitle').textContent = `Preview: ${getPuzzleTypeName(puzzleType)}`;
+                
+                switch (puzzleType) {
+                    case 'word_emoji_matching':
+                        if (typeof WordEmojiPuzzle === 'function') {
+                            // Add specific styling class for word emoji layout
+                            document.getElementById('puzzleOptions').className = 'word-emoji-options';
+                            
+                            const mockDoor = createWordEmojiDoorMock(puzzleConfig);
+                            const puzzle = new WordEmojiPuzzle(mockDoor);
+                            await puzzle.render(); // Note: async render method
+                        } else {
+                            showPreviewError('Word emoji puzzle function not available');
+                        }
+                        break;
+                        
+                    case 'simple_arithmetic':
+                        if (typeof SimpleMathPuzzle === 'function') {
+                            // TODO: Implement SimpleMathPuzzle preview
+                            showPreviewError('Simple math puzzle preview not yet implemented');
+                        } else {
+                            showPreviewError('Simple math puzzle function not available');
+                        }
+                        break;
+                        
+                    case 'digraph_sounds':
+                        if (typeof DigraphPuzzle === 'function') {
+                            // TODO: Implement DigraphPuzzle preview - requires digraph data loading
+                            showPreviewError('Digraph puzzle preview not yet implemented');
+                        } else {
+                            showPreviewError('Digraph puzzle function not available');
+                        }
+                        break;
+                        
+                    case 'number_line':
+                        if (typeof NumberLinePuzzle === 'function') {
+                            // Create comprehensive door mock with canvas system
+                            const mockDoor = createNumberLineDoorMock(puzzleConfig);
+                            const puzzle = new NumberLinePuzzle(mockDoor);
+                            puzzle.render();
+                        } else {
+                            showPreviewError('Number line puzzle function not available');
+                        }
+                        break;
+                        
+                    case 'division_visual':
+                        if (typeof DivisionPuzzle === 'function') {
+                            // TODO: Implement DivisionPuzzle preview
+                            showPreviewError('Division puzzle preview not yet implemented');
+                        } else {
+                            showPreviewError('Division puzzle function not available');
+                        }
+                        break;
+                        
+                    case 'multiplication_groups':
+                        if (typeof MultiplicationGroupsPuzzle === 'function') {
+                            const mockDoor = createMultiplicationDoorMock(puzzleConfig);
+                            window.multiplicationPuzzleInstance = new MultiplicationGroupsPuzzle(mockDoor);
+                            
+                            // Override setTimeout to intercept the 1500ms delay used by MultiplicationGroupsPuzzle
+                            const originalSetTimeout = window.setTimeout;
+                            window.setTimeout = function(callback, delay) {
+                                // If this is the 1500ms timeout from MultiplicationGroupsPuzzle for modal closing
+                                if (window.isPreviewMode && delay === 1500 && callback.toString().includes('puzzleModal')) {
+                                    // Use much shorter delay for preview
+                                    return originalSetTimeout(() => {
+                                        closePuzzlePreview();
+                                    }, 500);
+                                }
+                                // For all other timeouts, use original
+                                return originalSetTimeout(callback, delay);
+                            };
+                            
+                            multiplicationPuzzleInstance.showModal(); // NOTE: Uses showModal() not render()
+                            
+                            // Store the original setTimeout override for cleanup
+                            window.previewModalOverride = {
+                                originalSetTimeout: originalSetTimeout,
+                                restore: function() {
+                                    window.setTimeout = originalSetTimeout;
+                                    window.previewModalOverride = null;
+                                }
+                            };
+                        } else {
+                            showPreviewError('Multiplication puzzle function not available');
+                        }
+                        break;
+                        
+                    case 'letter_identification':
+                        if (typeof LetterIdentificationPuzzle === 'function') {
+                            // Add specific styling class for letter identification layout
+                            document.getElementById('puzzleOptions').className = 'letter-identification-options';
+                            
+                            const mockDoor = createLetterIdentificationDoorMock(puzzleConfig);
+                            window.letterPuzzleInstance = new LetterIdentificationPuzzle(mockDoor);
+                            
+                            // Override setTimeout to intercept the 2000ms delay used by LetterIdentificationPuzzle
+                            const originalSetTimeout = window.setTimeout;
+                            window.setTimeout = function(callback, delay) {
+                                // If this is the 2000ms timeout from LetterIdentificationPuzzle for modal closing
+                                if (window.isPreviewMode && delay === 2000 && callback.toString().includes('puzzleModal')) {
+                                    // Use much shorter delay for preview
+                                    return originalSetTimeout(() => {
+                                        closePuzzlePreview();
+                                    }, 500);
+                                }
+                                // For all other timeouts, use original
+                                return originalSetTimeout(callback, delay);
+                            };
+                            
+                            // Render the puzzle with unmodified logic
+                            letterPuzzleInstance.render();
+                            
+                            // Store the original setTimeout override for cleanup
+                            window.previewModalOverride = {
+                                originalSetTimeout: originalSetTimeout,
+                                restore: function() {
+                                    window.setTimeout = originalSetTimeout;
+                                    window.previewModalOverride = null;
+                                }
+                            };
+                            
+                            // Force audio preloading for better performance in preview
+                            if (letterPuzzleInstance.audioCache) {
+                                Object.keys(letterPuzzleInstance.audioCache).forEach(letter => {
+                                    const audio = letterPuzzleInstance.audioCache[letter];
+                                    audio.load(); // Force immediate load
+                                });
+                            }
+                        } else {
+                            showPreviewError('Letter identification puzzle function not available');
+                        }
+                        break;
+                        
+                    case 'audio_reading':
+                        if (typeof AudioReadingPuzzle === 'function') {
+                            // TODO: Implement AudioReadingPuzzle preview
+                            showPreviewError('Audio reading puzzle preview not yet implemented');
+                        } else {
+                            showPreviewError('Audio reading puzzle function not available');
+                        }
+                        break;
+                        
+                    case 'rhyming':
+                        // Rhyming puzzle is integrated in main game - we'll need to handle this specially
+                        showPreviewError('Rhyming puzzle preview not yet implemented');
+                        break;
+                        
+                    default:
+                        showPreviewError(`Unknown puzzle type: ${puzzleType}`);
+                        break;
+                }
+            } catch (error) {
+                console.error('Error triggering puzzle preview:', error);
+                showPreviewError('Failed to load puzzle preview');
+            }
+        }
+        
+        /**
+         * Get user-friendly puzzle type name
+         */
+        function getPuzzleTypeName(puzzleType) {
+            const typeNames = {
+                'word_emoji_matching': 'Word Emoji Matching',
+                'simple_arithmetic': 'Simple Math',
+                'digraph_sounds': 'Digraph Sounds',
+                'number_line': 'Number Line',
+                'division_visual': 'Division Visual',
+                'multiplication_groups': 'Multiplication Groups',
+                'letter_identification': 'Letter Identification',
+                'audio_reading': 'Audio Reading',
+                'rhyming': 'Rhyming'
+            };
+            return typeNames[puzzleType] || puzzleType;
+        }
+        
+        /**
+         * Show error in preview modal
+         */
+        function showPreviewError(message) {
+            document.getElementById('puzzleQuestion').textContent = 'Preview Error';
+            document.getElementById('puzzleOptions').innerHTML = `
+                <div style="text-align: center; color: #d63384; padding: 20px;">
+                    <p>${message}</p>
+                    <button onclick="closePuzzlePreview()" style="margin-top: 15px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+                </div>
+            `;
+        }
+        
+        /**
+         * Handle puzzle completion (called by puzzle scripts)
+         */
+        function handlePuzzleCompletion(isCorrect) {
+            console.log('Preview puzzle completed:', isCorrect);
+            
+            if (isCorrect) {
+                // Show success message briefly, then close modal
+                document.getElementById('puzzleResult').innerHTML = '👍 <span style="color: #28a745;">Correct!</span>';
+                setTimeout(() => {
+                    closePuzzlePreview();
+                }, 1500);
+            } else {
+                // Show failure message (puzzle stays open like in real game)
+                document.getElementById('puzzleResult').innerHTML = '👎 <span style="color: #dc3545;">Try again!</span>';
+            }
+        }
+        
+        /**
+         * Create comprehensive door mock for NumberLinePuzzle
+         */
+        function createNumberLineDoorMock(puzzleConfig) {
+            return {
+                type: 'number_line',
+                config: puzzleConfig,
+                foxPosition: 0,
+                mathStartPosition: 0,
+                ptCanvases: {} // NumberLinePuzzle will populate this during initializeNumberLine()
+            };
+        }
+
+        /**
+         * Create door mock for WordEmojiPuzzle (simpler than NumberLine - no canvas system needed)
+         */
+        function createWordEmojiDoorMock(puzzleConfig) {
+            return {
+                type: 'word_emoji_matching',
+                config: puzzleConfig
+                // Simpler than NumberLinePuzzle - no canvas system needed
+            };
+        }
+
+        /**
+         * Create door mock for LetterIdentificationPuzzle
+         */
+        function createLetterIdentificationDoorMock(puzzleConfig) {
+            return {
+                type: 'letter_identification',
+                config: puzzleConfig
+                // Simple door object - puzzle manages complex state internally
+            };
+        }
+
+        /**
+         * Create door mock for MultiplicationGroupsPuzzle
+         */
+        function createMultiplicationDoorMock(puzzleConfig) {
+            return {
+                type: 'multiplication_groups',
+                config: puzzleConfig
+                // Simple door object - puzzle manages its own state
+            };
+        }
+
+        /**
+         * Number Line Puzzle Integration for Preview (copied from main game)
+         */
+        function showNumberLinePuzzle(door) {
+            // Only handle number_line door type
+            if (door.type === 'number_line') {
+                console.log(`Using modular number line puzzle for preview`);
+                const puzzle = new NumberLinePuzzle(door);
+                puzzle.render();
+                return true; // Indicates modular system was used
+            }
+            
+            return false; // Fall back to original system
+        }
+        
+        // Make functions available globally for puzzle scripts (exact signatures from real game)
+        window.showCelebration = function() { /* No-op for preview */ };
+        window.updateScore = function(points) { /* No-op for preview */ };
+        window.getCurrentLevel = function() { return 'preview'; };
+        window.getCurrentDifficulty = function() { return 'easy'; };
+        window.speakEmojiWord = function(emoji) { /* No-op for preview */ };
+        window.completeRocketBoostMovement = function() { /* No-op for preview */ };
+        window.closePuzzlePreview = closePuzzlePreview;
+        window.showNumberLinePuzzle = showNumberLinePuzzle;
+        
+        // Store flag to track when we're in preview mode
+        window.isPreviewMode = false;
+        window.checkAnswer = function(correct, type, door, buttonElement, selectedEmoji = null) {
+            // EXACT replica of real game's checkAnswer function
+            const result = document.getElementById('puzzleResult');
+            
+            // Track attempts for this problem (like real game)
+            if (!door.currentProblemAttempts) door.currentProblemAttempts = 0;
+            door.currentProblemAttempts++;
+            
+            if (correct) {
+                result.innerHTML = '👍'; // EXACT real game feedback - just emoji
+                result.style.color = 'green';
+                result.style.fontSize = '48px'; // Make thumbs up bigger like real game
+                door.open = true;
+                
+                // Reset attempt counters like real game
+                door.currentProblemAttempts = 0;
+                door.failedAttempts = 0;
+                
+                // Change door color like real game
+                door.color = '#B8F2B8';
+                
+                setTimeout(() => {
+                    document.getElementById('puzzleModal').style.setProperty('display', 'none', 'important');
+                    result.innerHTML = '';
+                    result.style.fontSize = ''; // Reset font size
+                    window.game.puzzleActive = false;
+                }, 800); // Same timing as real game
+            } else {
+                result.innerHTML = '👎'; // EXACT real game feedback - just emoji
+                result.style.color = 'red';
+                
+                // Disable the wrong answer button like real game
+                buttonElement.disabled = true;
+                buttonElement.style.backgroundColor = '#ccc';
+                buttonElement.style.cursor = 'not-allowed';
+                
+                // Track failed attempts like real game
+                if (!door.failedAttempts) door.failedAttempts = 0;
+                door.failedAttempts++;
+            }
+        };
+        
+        // Make preview function available globally
+        window.previewPuzzle = previewPuzzle;
+        
+        // Add keyboard support for modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('puzzleModal');
+                if (modal && modal.style.display === 'flex') {
+                    closePuzzlePreview();
+                }
+            }
+        });
+        
+        // Close modal when clicking overlay (but not content)
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('puzzleModal');
+            if (event.target === modal) {
+                closePuzzlePreview();
+            }
+        });
         
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', initializePage);
