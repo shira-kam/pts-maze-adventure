@@ -1825,6 +1825,10 @@
                 window.multiplicationPuzzleInstance = null;
             }
             
+            if (window.divisionPuzzleInstance) {
+                window.divisionPuzzleInstance = null;
+            }
+            
             // Restore any DOM overrides
             if (window.previewModalOverride) {
                 window.previewModalOverride.restore();
@@ -1851,6 +1855,17 @@
             // Initialize legacy compatibility globals for multiplication puzzle
             if (!window.game.usedMultiplicationProblems) {
                 window.game.usedMultiplicationProblems = [];
+            }
+            
+            // Initialize legacy compatibility globals for division puzzle
+            if (!window.game.hasUsedAnswerOne) {
+                window.game.hasUsedAnswerOne = false;
+            }
+            if (!window.game.hasUsedDivideByOne) {
+                window.game.hasUsedDivideByOne = false;
+            }
+            if (!window.game.usedDivisionProblems) {
+                window.game.usedDivisionProblems = new Set();
             }
             
             // Create minimal configManager for puzzle compatibility
@@ -1935,8 +1950,33 @@
                         
                     case 'division_visual':
                         if (typeof DivisionPuzzle === 'function') {
-                            // TODO: Implement DivisionPuzzle preview
-                            showPreviewError('Division puzzle preview not yet implemented');
+                            const mockDoor = createDivisionDoorMock(puzzleConfig);
+                            window.divisionPuzzleInstance = new DivisionPuzzle(mockDoor);
+                            
+                            // Override setTimeout to intercept the 1500ms delay used by DivisionPuzzle
+                            const originalSetTimeout = window.setTimeout;
+                            window.setTimeout = function(callback, delay) {
+                                // If this is the 1500ms timeout from DivisionPuzzle for modal closing
+                                if (window.isPreviewMode && delay === 1500 && callback.toString().includes('puzzleModal')) {
+                                    // Use much shorter delay for preview
+                                    return originalSetTimeout(() => {
+                                        closePuzzlePreview();
+                                    }, 500);
+                                }
+                                // For all other timeouts, use original
+                                return originalSetTimeout(callback, delay);
+                            };
+                            
+                            divisionPuzzleInstance.render(); // Synchronous render
+                            
+                            // Store the original setTimeout override for cleanup
+                            window.previewModalOverride = {
+                                originalSetTimeout: originalSetTimeout,
+                                restore: function() {
+                                    window.setTimeout = originalSetTimeout;
+                                    window.previewModalOverride = null;
+                                }
+                            };
                         } else {
                             showPreviewError('Division puzzle function not available');
                         }
@@ -2136,6 +2176,17 @@
         function createMultiplicationDoorMock(puzzleConfig) {
             return {
                 type: 'multiplication_groups',
+                config: puzzleConfig
+                // Simple door object - puzzle manages its own state
+            };
+        }
+
+        /**
+         * Create door mock for DivisionPuzzle
+         */
+        function createDivisionDoorMock(puzzleConfig) {
+            return {
+                type: 'division_visual',
                 config: puzzleConfig
                 // Simple door object - puzzle manages its own state
             };
