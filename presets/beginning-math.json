@@ -1,5 +1,5 @@
 {
-  "id": "early-math",
+  "id": "beginning-math",
   "name": "Beginning Math",
   "description": "8 levels of early addition and subtraction puzzles designed to build number sense and confidence.",
   "prerequisites": "Comfortable recognizing and naming numbers up to 15.",
@@ -17,7 +17,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         },
         {
@@ -29,7 +30,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         }
       ]
@@ -46,7 +48,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         },
         {
@@ -58,7 +61,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         }
       ]
@@ -75,7 +79,8 @@
             "maxA": 12,
             "minB": 0,
             "maxB": 12,
-            "maxResult": 12
+            "maxResult": 12,
+            "terms": "2"
           }
         },
         {
@@ -87,7 +92,8 @@
             "maxA": 12,
             "minB": 0,
             "maxB": 12,
-            "maxResult": 12
+            "maxResult": 12,
+            "terms": "2"
           }
         }
       ]
@@ -104,7 +110,8 @@
             "maxA": 12,
             "minB": 0,
             "maxB": 12,
-            "maxResult": 12
+            "maxResult": 12,
+            "terms": "2"
           }
         }
       ]
@@ -121,7 +128,8 @@
             "maxA": 15,
             "minB": 1,
             "maxB": 15,
-            "maxResult": 15
+            "maxResult": 15,
+            "terms": "2"
           }
         },
         {
@@ -133,7 +141,8 @@
             "maxA": 15,
             "minB": 0,
             "maxB": 15,
-            "maxResult": 15
+            "maxResult": 15,
+            "terms": "2"
           }
         }
       ]
@@ -153,7 +162,8 @@
             "minC": 1,
             "maxC": 9,
             "maxResult": 10,
-            "equationType": "triple_add"
+            "operations": ["addition"],
+            "terms": "3"
           }
         },
         {
@@ -168,7 +178,8 @@
             "minC": 1,
             "maxC": 9,
             "maxResult": 10,
-            "equationType": "triple_add"
+            "operations": ["addition"],
+            "terms": "3"
           }
         }      
       ]
@@ -185,7 +196,8 @@
             "maxA": 15,
             "minB": 0,
             "maxB": 15,
-            "maxResult": 15
+            "maxResult": 15,
+            "terms": "2"
           }
         },
         {
@@ -200,7 +212,8 @@
             "minC": 1,
             "maxC": 11,
             "maxResult": 12,
-            "equationType": "triple_add"
+            "operations": ["addition"],
+            "terms": "3"
           }
         }      
       ]
@@ -220,7 +233,8 @@
             "minC": 1,
             "maxC": 14,
             "maxResult": 15,
-            "equationType": "triple_add"
+            "operations": ["addition"],
+            "terms": "3"
           }
         },
         {
@@ -235,7 +249,8 @@
             "minC": 1,
             "maxC": 11,
             "maxResult": 12,
-            "equationType": "triple_add"
+            "operations": ["addition"],
+            "terms": "3"
           }
         }      
       ]

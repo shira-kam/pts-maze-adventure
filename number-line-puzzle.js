@@ -9,8 +9,9 @@ class NumberLinePuzzle {
         const level = game.selectedDifficulty;
         const config = configManager.getPuzzleConfig(level, 'number_line');
         
-        // Determine equation type from config, default to 'simple' (2 terms)
-        this.equationType = config.numberLine?.equationType || 'simple';
+        // Get operations and terms from new configuration structure
+        this.operations = config.numberLine?.operations || config.operations || ['addition'];
+        this.terms = config.numberLine?.terms || '2';
         
         // Initialize tracking system if enabled
         this.tracking = config.tracking || {};
@@ -25,7 +26,7 @@ class NumberLinePuzzle {
             this.usedProblems = game[trackingKey];
         }
         
-        console.log(`Level ${level} number line equation type: ${this.equationType}`);
+        console.log(`Level ${level} number line operations: ${this.operations.join(', ')}, terms: ${this.terms}`);
         console.log(`Problem tracking enabled: ${this.preventRepetition}`);
     }
 
@@ -79,48 +80,96 @@ class NumberLinePuzzle {
         const config = configManager.getPuzzleConfig(level, 'number_line');
         const numberLineConfig = config.numberLine || {};
         
+        const minA = numberLineConfig.minA || 1;
+        const maxA = numberLineConfig.maxA || 8;
+        const minB = numberLineConfig.minB || 1;
+        const maxB = numberLineConfig.maxB || 8;
+        const maxResult = numberLineConfig.maxResult || 12;
+
         let equation, answer, title, num1, num2, num3;
         
-        if (this.equationType === 'simple') {
-            // Simple addition or subtraction
-            const isAddition = Math.random() < 0.5;
-            const minA = numberLineConfig.minA || 1;
-            const maxA = numberLineConfig.maxA || 8;
-            const minB = numberLineConfig.minB || 1;
-            const maxB = numberLineConfig.maxB || 8;
-            const maxResult = numberLineConfig.maxResult || 12;
+        if (this.terms === '2') {
+            // 2 terms: A+B and/or A-B based on operations selection
+            const availableOps = [];
+            if (this.operations.includes('addition')) availableOps.push('addition');
+            if (this.operations.includes('subtraction')) availableOps.push('subtraction');
             
-            if (isAddition) {
+            // If no operations selected, default to addition
+            if (availableOps.length === 0) availableOps.push('addition');
+            
+            const selectedOp = availableOps[Math.floor(Math.random() * availableOps.length)];
+            
+            if (selectedOp === 'addition') {
+                // A + B
                 num1 = Math.floor(Math.random() * (maxA - minA + 1)) + minA;
                 const maxNum2 = Math.min(maxB, maxResult - num1);
-                num2 = Math.floor(Math.random() * (maxNum2 - minB + 1)) + minB;
-                answer = num1 + num2;
-                equation = `${num1} + ${num2}`;
-                title = `${num1} + ${num2} = ?`;
+                if (maxNum2 >= minB) {
+                    num2 = Math.floor(Math.random() * (maxNum2 - minB + 1)) + minB;
+                    answer = num1 + num2;
+                    equation = `${num1} + ${num2}`;
+                    title = `${num1} + ${num2} = ?`;
+                } else {
+                    // Fallback if constraints too tight
+                    num1 = minA;
+                    num2 = minB;
+                    answer = num1 + num2;
+                    equation = `${num1} + ${num2}`;
+                    title = `${num1} + ${num2} = ?`;
+                }
             } else {
+                // A - B
                 num1 = Math.floor(Math.random() * (maxA - minA + 1)) + minA;
-                const maxNum2 = Math.min(maxB, num1 - 1);
-                num2 = Math.floor(Math.random() * (maxNum2 - minB + 1)) + minB;
-                answer = num1 - num2;
-                equation = `${num1} - ${num2}`;
-                title = `${num1} - ${num2} = ?`;
+                const maxNum2 = Math.min(maxB, num1);
+                if (maxNum2 >= minB) {
+                    num2 = Math.floor(Math.random() * (maxNum2 - minB + 1)) + minB;
+                    answer = num1 - num2;
+                    equation = `${num1} - ${num2}`;
+                    title = `${num1} - ${num2} = ?`;
+                } else {
+                    // Fallback if constraints too tight
+                    num1 = Math.max(minA, minB);
+                    num2 = minB;
+                    answer = num1 - num2;
+                    equation = `${num1} - ${num2}`;
+                    title = `${num1} - ${num2} = ?`;
+                }
             }
-        } else if (this.equationType === 'triple_add') {
-            // Triple term logic: supports A+B+C, A-B+C, A+B-C
-            const minA = numberLineConfig.minA || 1;
-            const maxA = numberLineConfig.maxA || 4;
-            const minB = numberLineConfig.minB || 1;
-            const maxB = numberLineConfig.maxB || 4;
+        } else if (this.terms === '3') {
+            // 3 terms: Generate patterns based on selected operations
             const minC = numberLineConfig.minC || 1;
             const maxC = numberLineConfig.maxC || 4;
-            const maxResult = numberLineConfig.maxResult || 12;
-
-            // Randomly pick an operation pattern
-            const patterns = [
-                { ops: ['+', '+'], fmt: (a, b, c) => `${a} + ${b} + ${c}`, title: (a, b, c) => `<span style="color: red;">${a}</span> + <span style="color: blue;">${b}</span> + <span style="color: green;">${c}</span> = ?`, calc: (a, b, c) => a + b + c },
-                { ops: ['-', '+'], fmt: (a, b, c) => `${a} - ${b} + ${c}`, title: (a, b, c) => `<span style="color: red;">${a}</span> - <span style="color: blue;">${b}</span> + <span style="color: green;">${c}</span> = ?`, calc: (a, b, c) => a - b + c },
-                { ops: ['+', '-'], fmt: (a, b, c) => `${a} + ${b} - ${c}`, title: (a, b, c) => `<span style="color: red;">${a}</span> + <span style="color: blue;">${b}</span> - <span style="color: green;">${c}</span> = ?`, calc: (a, b, c) => a + b - c }
-            ];
+            
+            const patterns = [];
+            
+            // If only addition selected: A+B+C
+            if (this.operations.includes('addition') && !this.operations.includes('subtraction')) {
+                patterns.push(
+                    { ops: ['+', '+'], fmt: (a, b, c) => `${a} + ${b} + ${c}`, title: (a, b, c) => `<span style="color: red;">${a}</span> + <span style="color: blue;">${b}</span> + <span style="color: green;">${c}</span> = ?`, calc: (a, b, c) => a + b + c }
+                );
+            }
+            // If only subtraction selected: A-B-C  
+            else if (this.operations.includes('subtraction') && !this.operations.includes('addition')) {
+                patterns.push(
+                    { ops: ['-', '-'], fmt: (a, b, c) => `${a} - ${b} - ${c}`, title: (a, b, c) => `<span style="color: red;">${a}</span> - <span style="color: blue;">${b}</span> - <span style="color: green;">${c}</span> = ?`, calc: (a, b, c) => a - b - c }
+                );
+            }
+            // If both selected: A+B+C, A-B-C, A-B+C, A+B-C
+            else {
+                patterns.push(
+                    { ops: ['+', '+'], fmt: (a, b, c) => `${a} + ${b} + ${c}`, title: (a, b, c) => `<span style="color: red;">${a}</span> + <span style="color: blue;">${b}</span> + <span style="color: green;">${c}</span> = ?`, calc: (a, b, c) => a + b + c },
+                    { ops: ['-', '-'], fmt: (a, b, c) => `${a} - ${b} - ${c}`, title: (a, b, c) => `<span style="color: red;">${a}</span> - <span style="color: blue;">${b}</span> - <span style="color: green;">${c}</span> = ?`, calc: (a, b, c) => a - b - c },
+                    { ops: ['-', '+'], fmt: (a, b, c) => `${a} - ${b} + ${c}`, title: (a, b, c) => `<span style="color: red;">${a}</span> - <span style="color: blue;">${b}</span> + <span style="color: green;">${c}</span> = ?`, calc: (a, b, c) => a - b + c },
+                    { ops: ['+', '-'], fmt: (a, b, c) => `${a} + ${b} - ${c}`, title: (a, b, c) => `<span style="color: red;">${a}</span> + <span style="color: blue;">${b}</span> - <span style="color: green;">${c}</span> = ?`, calc: (a, b, c) => a + b - c }
+                );
+            }
+            
+            // If no patterns available (shouldn't happen), default to addition
+            if (patterns.length === 0) {
+                patterns.push(
+                    { ops: ['+', '+'], fmt: (a, b, c) => `${a} + ${b} + ${c}`, title: (a, b, c) => `<span style="color: red;">${a}</span> + <span style="color: blue;">${b}</span> + <span style="color: green;">${c}</span> = ?`, calc: (a, b, c) => a + b + c }
+                );
+            }
+            
             let tries = 0;
             let valid = false;
             while (!valid && tries < 100) {
@@ -128,7 +177,8 @@ class NumberLinePuzzle {
                 num1 = Math.floor(Math.random() * (maxA - minA + 1)) + minA;
                 num2 = Math.floor(Math.random() * (maxB - minB + 1)) + minB;
                 num3 = Math.floor(Math.random() * (maxC - minC + 1)) + minC;
-                // Check intermediate and final results
+                
+                // Calculate step by step and validate
                 let intermediate1, intermediate2;
                 if (pattern.ops[0] === '+') {
                     intermediate1 = num1 + num2;
@@ -140,7 +190,8 @@ class NumberLinePuzzle {
                 } else {
                     intermediate2 = intermediate1 - num3;
                 }
-                // All must be in [0, maxResult]
+                
+                // All intermediate and final results must be >= 0 and <= maxResult
                 if (
                     num1 >= 0 && num1 <= maxResult &&
                     intermediate1 >= 0 && intermediate1 <= maxResult &&
@@ -153,12 +204,12 @@ class NumberLinePuzzle {
                 }
                 tries++;
             }
-            // Fallback: if no valid found, use A+B+C with capped values
+            
+            // Fallback: if no valid combination found, use simple A+B+C with constrained values
             if (!valid) {
-                num1 = Math.floor(Math.random() * (maxA - minA + 1)) + minA;
-                num2 = Math.floor(Math.random() * (maxB - minB + 1)) + minB;
-                const maxNum3 = Math.min(maxC, maxResult - num1 - num2);
-                num3 = Math.floor(Math.random() * (maxNum3 - minC + 1)) + minC;
+                num1 = Math.min(minA, Math.floor(maxResult / 3));
+                num2 = Math.min(minB, Math.floor(maxResult / 3));
+                num3 = Math.min(minC, maxResult - num1 - num2);
                 answer = num1 + num2 + num3;
                 equation = `${num1} + ${num2} + ${num3}`;
                 title = `<span style="color: red;">${num1}</span> + <span style="color: blue;">${num2}</span> + <span style="color: green;">${num3}</span> = ?`;
@@ -168,7 +219,6 @@ class NumberLinePuzzle {
         // Generate wrong answers (within ±4 of correct)
         const wrongAnswers = [];
         const maxDistance = 4;
-        const maxResult = numberLineConfig.maxResult || 12;
         let attempts = 0;
         const maxAttempts = 50;
         

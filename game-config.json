@@ -23,6 +23,8 @@
     "number_line": {
       "operations": ["addition", "subtraction"],
       "numberLine": {
+        "operations": ["addition", "subtraction"],
+        "terms": "2",
         "length": 12,
         "minA": 1,
         "maxA": 8,
@@ -103,6 +105,8 @@
           "type": "number_line",
           "operations": ["addition"],
           "numberLine": {
+            "operations": ["addition"],
+            "terms": "2",
             "length": 10,
             "minA": 1,
             "maxA": 9,
@@ -115,6 +119,8 @@
           "type": "number_line",
           "operations": ["subtraction"],
           "numberLine": {
+            "operations": ["subtraction"],
+            "terms": "2",
             "length": 10,
             "minA": 1,
             "maxA": 9,
@@ -174,6 +180,8 @@
           "type": "number_line",
           "operations": ["addition"],
           "numberLine": {
+            "operations": ["addition"],
+            "terms": "2",
             "length": 12,
             "minA": 1,
             "maxA": 11,
@@ -186,6 +194,8 @@
           "type": "number_line",
           "operations": ["subtraction"],
           "numberLine": {
+            "operations": ["subtraction"],
+            "terms": "2",
             "length": 12,
             "minA": 1,
             "maxA": 11,
@@ -271,6 +281,8 @@
           "type": "number_line",
           "operations": ["addition", "subtraction"],
           "numberLine": {
+            "operations": ["addition", "subtraction"],
+            "terms": "2",
             "length": 20,
             "minA": 1,
             "maxA": 19,
@@ -347,8 +359,10 @@
         },
         {
           "type": "number_line",
-          "operations": ["addition", "subtraction"],
+          "operations": ["addition"],
           "numberLine": {
+            "operations": ["addition"],
+            "terms": "3",
             "length": 20,
             "minA": 1,
             "maxA": 19,
@@ -356,8 +370,7 @@
             "maxB": 19,
             "minC": 1,
             "maxC": 4,
-            "maxResult": 20,
-            "equationType": "triple_add"
+            "maxResult": 20
           }
         }
       ],
@@ -504,7 +517,7 @@
       ],
       "assets": {
         "celebration": {
-          "frames": 62,
+          "frames": 47,
           "frameWidth": 200,
           "frameHeight": 200
         },

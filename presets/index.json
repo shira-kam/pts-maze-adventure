@@ -1,14 +1,14 @@
 {
   "presets": [
     {
-      "id": "early-phonics",
-      "file": "early-phonics.json",
+      "id": "foundations-of-phonics",
+      "file": "foundations-of-phonics.json",
       "category": "reading",
       "order": 1
     },
     {
-      "id": "reading-foundations", 
-      "file": "reading-foundations.json",
+      "id": "decoding-and-reading-foundations", 
+      "file": "decoding-and-reading-foundations.json",
       "category": "reading",
       "order": 2
     },
@@ -19,14 +19,14 @@
       "order": 3
     },
     {
-      "id": "early-math",
-      "file": "early-math.json",
+      "id": "beginning-math",
+      "file": "beginning-math.json",
       "category": "math", 
       "order": 1
     },
     {
-      "id": "math-foundations",
-      "file": "math-foundations.json",
+      "id": "intermediate-math",
+      "file": "intermediate-math.json",
       "category": "math",
       "order": 2
     },
@@ -49,8 +49,8 @@
       "order": 3
     },
     {
-      "id": "default",
-      "file": "balanced-learning.json",
+      "id": "default-settings",
+      "file": "default-settings.json",
       "category": "balanced",
       "order": 4
     }

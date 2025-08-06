@@ -35,7 +35,8 @@
             "minC": 1,
             "maxC": 9,
             "maxResult": 10,
-            "equationType": "triple_add"
+            "operations": ["addition"],
+            "terms": "3"
           }
         },
         {
@@ -47,7 +48,8 @@
             "maxA": 15,
             "minB": 0,
             "maxB": 15,
-            "maxResult": 15          
+            "maxResult": 15,
+            "terms": "2"
           }
         }      
       ]
@@ -129,7 +131,8 @@
             "minC": 1,
             "maxC": 14,
             "maxResult": 15,
-            "equationType": "triple_add"
+            "operations": ["addition"],
+            "terms": "3"
           }
         },
         {
@@ -242,7 +245,8 @@
             "maxA": 19,
             "minB": 1,
             "maxB": 19,
-            "maxResult": 20
+            "maxResult": 20,
+            "terms": "2"
           }
         },
         {
@@ -254,7 +258,8 @@
             "maxA": 19,
             "minB": 1,
             "maxB": 19,
-            "maxResult": 20
+            "maxResult": 20,
+            "terms": "2"
           }
         }
       ]

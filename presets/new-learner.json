@@ -18,7 +18,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         },
         {
@@ -30,7 +31,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         }
       ]
@@ -67,7 +69,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         },
         {
@@ -79,7 +82,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         }
       ]
@@ -113,7 +117,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         },
         {
@@ -125,7 +130,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         }
       ]
@@ -159,7 +165,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         },
         {
@@ -171,7 +178,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         }
       ]
@@ -202,7 +210,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         },
         {
@@ -214,7 +223,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         }
       ]
@@ -248,7 +258,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         },
         {
@@ -260,7 +271,8 @@
             "maxA": 10,
             "minB": 0,
             "maxB": 10,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         }
       ]

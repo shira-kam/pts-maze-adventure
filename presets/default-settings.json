@@ -1,5 +1,5 @@
 {
-  "id": "default",
+  "id": "default-settings",
   "name": "Default Settings",
   "description": "13 levels combining reading and math puzzles for balanced early learning.",
   "prerequisites": "Knows letter names, basic phonics sounds, and can count.",
@@ -17,7 +17,8 @@
             "maxA": 9,
             "minB": 1,
             "maxB": 9,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         },
         {
@@ -29,7 +30,8 @@
             "maxA": 9,
             "minB": 1,
             "maxB": 9,
-            "maxResult": 10
+            "maxResult": 10,
+            "terms": "2"
           }
         }
       ],
@@ -88,7 +90,8 @@
             "maxA": 11,
             "minB": 1,
             "maxB": 11,
-            "maxResult": 12
+            "maxResult": 12,
+            "terms": "2"
           }
         },
         {
@@ -100,7 +103,8 @@
             "maxA": 11,
             "minB": 1,
             "maxB": 11,
-            "maxResult": 12
+            "maxResult": 12,
+            "terms": "2"
           }
         }
       ],
@@ -185,7 +189,8 @@
             "maxA": 19,
             "minB": 1,
             "maxB": 19,
-            "maxResult": 20
+            "maxResult": 20,
+            "terms": "2"
           }
         },
         {
@@ -266,7 +271,8 @@
             "minC": 1,
             "maxC": 4,
             "maxResult": 20,
-            "equationType": "triple_add"
+            "operations": ["addition", "subtraction"],
+            "terms": "3"
           }
         }
       ],
@@ -413,7 +419,7 @@
       ],
       "assets": {
         "celebration": {
-          "frames": 62,
+          "frames": 47,
           "frameWidth": 200,
           "frameHeight": 200
         },

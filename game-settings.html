@@ -896,6 +896,7 @@
                         ${availableDigraphs.map(digraph => `
                             <label>
                                 <input type="checkbox" value="${digraph}" 
+                                       name="digraphs-${levelNum}-${puzzleNum}"
                                        ${selectedDigraphs.includes(digraph) ? 'checked' : ''}
                                        onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
                                 ${digraph}
@@ -909,7 +910,7 @@
         function generateNumberLineConfig(levelNum, puzzleNum, puzzleData) {
             const operations = puzzleData.operations || ['addition'];
             const numberLine = puzzleData.numberLine || {};
-            const equationType = numberLine.equationType || 'standard';
+            const terms = numberLine.terms || '2';
             
             return `
                 <div class="form-group">
@@ -924,6 +925,21 @@
                             <input type="checkbox" value="subtraction" ${operations.includes('subtraction') ? 'checked' : ''}
                                    onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
                             Subtraction
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Number of Terms:</label>
+                    <div class="radio-group terms">
+                        <label>
+                            <input type="radio" name="terms-${levelNum}-${puzzleNum}" value="2" ${terms === '2' ? 'checked' : ''}
+                                   onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum}); toggleTripleInputs(${levelNum}, ${puzzleNum})">
+                            2 terms (A+B and/or A-B)
+                        </label>
+                        <label>
+                            <input type="radio" name="terms-${levelNum}-${puzzleNum}" value="3" ${terms === '3' ? 'checked' : ''}
+                                   onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum}); toggleTripleInputs(${levelNum}, ${puzzleNum})">
+                            3 terms (A+B+C, and/or A-B-C, and/or A-B+C etc)
                         </label>
                     </div>
                 </div>
@@ -962,15 +978,7 @@
                                min="5" max="${numberLine.length || 12}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Equation Type:</label>
-                    <select id="equationType-${levelNum}-${puzzleNum}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum}); toggleTripleInputs(${levelNum}, ${puzzleNum})">
-                        <option value="standard" ${equationType === 'standard' ? 'selected' : ''}>Standard (A+B)</option>
-                        <option value="triple_add" ${equationType === 'triple_add' ? 'selected' : ''}>Triple Add (A+B+C)</option>
-                        <option value="triple_mixed" ${equationType === 'triple_mixed' ? 'selected' : ''}>Triple Mixed (A+B+C, A-B+C or A+B-C)</option>
-                    </select>
-                </div>
-                <div class="number-inputs" id="triple-inputs-${levelNum}-${puzzleNum}" style="display: ${equationType.includes('triple') ? 'grid' : 'none'}">
+                <div class="number-inputs" id="triple-inputs-${levelNum}-${puzzleNum}" style="display: ${terms === '3' ? 'grid' : 'none'}">
                     <div class="form-group">
                         <label>Min C:</label>
                         <input type="number" id="minC-${levelNum}-${puzzleNum}" value="${numberLine.minC || 1}" 
@@ -1260,23 +1268,31 @@
                 case 'number_line':
                     const nlOperations = Array.from(document.querySelectorAll(`#config-${levelNum}-${puzzleNum} input[type="checkbox"]:checked`))
                         .map(cb => cb.value).filter(v => ['addition', 'subtraction'].includes(v));
+                    const terms = document.querySelector(`#config-${levelNum}-${puzzleNum} input[name="terms-${levelNum}-${puzzleNum}"]:checked`)?.value || '2';
                     const length = parseInt(document.getElementById(`length-${levelNum}-${puzzleNum}`)?.value) || 12;
                     const minA = parseInt(document.getElementById(`minA-${levelNum}-${puzzleNum}`)?.value) || 1;
                     const maxANL = parseInt(document.getElementById(`maxA-${levelNum}-${puzzleNum}`)?.value) || 8;
                     const minB = parseInt(document.getElementById(`minB-${levelNum}-${puzzleNum}`)?.value) || 1;
                     const maxBNL = parseInt(document.getElementById(`maxB-${levelNum}-${puzzleNum}`)?.value) || 8;
                     const maxResultNL = parseInt(document.getElementById(`maxResult-${levelNum}-${puzzleNum}`)?.value) || 12;
-                    const equationType = document.getElementById(`equationType-${levelNum}-${puzzleNum}`)?.value || 'standard';
                     
                     puzzleConfig.operations = nlOperations;
-                    puzzleConfig.numberLine = { length, minA, maxA: maxANL, minB, maxB: maxBNL, maxResult: maxResultNL };
+                    puzzleConfig.numberLine = { 
+                        operations: nlOperations,
+                        terms: terms,
+                        length, 
+                        minA, 
+                        maxA: maxANL, 
+                        minB, 
+                        maxB: maxBNL, 
+                        maxResult: maxResultNL 
+                    };
                     
-                    if (equationType.includes('triple')) {
+                    if (terms === '3') {
                         const minC = parseInt(document.getElementById(`minC-${levelNum}-${puzzleNum}`)?.value) || 1;
                         const maxC = parseInt(document.getElementById(`maxC-${levelNum}-${puzzleNum}`)?.value) || 4;
                         puzzleConfig.numberLine.minC = minC;
                         puzzleConfig.numberLine.maxC = maxC;
-                        puzzleConfig.numberLine.equationType = equationType;
                     }
                     
                     puzzleConfig.tracking = {
@@ -1368,10 +1384,10 @@
         }
         
         function toggleTripleInputs(levelNum, puzzleNum) {
-            const equationType = document.getElementById(`equationType-${levelNum}-${puzzleNum}`).value;
+            const termsRadio = document.querySelector(`input[name="terms-${levelNum}-${puzzleNum}"]:checked`);
             const tripleInputs = document.getElementById(`triple-inputs-${levelNum}-${puzzleNum}`);
             
-            if (equationType.includes('triple')) {
+            if (termsRadio && termsRadio.value === '3') {
                 tripleInputs.style.display = 'grid';
             } else {
                 tripleInputs.style.display = 'none';
@@ -1650,14 +1666,14 @@
                     break;
                     
                 case 'number_line':
-                    const nlOperations = [];
-                    if (document.getElementById(`addition-${levelNum}-${puzzleNum}`)?.checked) nlOperations.push('addition');
-                    if (document.getElementById(`subtraction-${levelNum}-${puzzleNum}`)?.checked) nlOperations.push('subtraction');
-                    
-                    const equationType = document.getElementById(`equationType-${levelNum}-${puzzleNum}`)?.value || 'standard';
+                    const nlOperations = Array.from(document.querySelectorAll(`#config-${levelNum}-${puzzleNum} input[type="checkbox"]:checked`))
+                        .map(cb => cb.value).filter(v => ['addition', 'subtraction'].includes(v));
+                    const terms = document.querySelector(`#config-${levelNum}-${puzzleNum} input[name="terms-${levelNum}-${puzzleNum}"]:checked`)?.value || '2';
                     
                     puzzleConfig.operations = nlOperations.length > 0 ? nlOperations : ['addition'];
                     puzzleConfig.numberLine = {
+                        operations: nlOperations.length > 0 ? nlOperations : ['addition'],
+                        terms: terms,
                         length: parseInt(document.getElementById(`length-${levelNum}-${puzzleNum}`)?.value) || 12,
                         minA: parseInt(document.getElementById(`minA-${levelNum}-${puzzleNum}`)?.value) || 1,
                         maxA: parseInt(document.getElementById(`maxA-${levelNum}-${puzzleNum}`)?.value) || 8,
@@ -1666,8 +1682,7 @@
                         maxResult: parseInt(document.getElementById(`maxResult-${levelNum}-${puzzleNum}`)?.value) || 12
                     };
                     
-                    if (equationType.includes('triple')) {
-                        puzzleConfig.numberLine.equationType = equationType;
+                    if (terms === '3') {
                         puzzleConfig.numberLine.minC = parseInt(document.getElementById(`minC-${levelNum}-${puzzleNum}`)?.value) || 1;
                         puzzleConfig.numberLine.maxC = parseInt(document.getElementById(`maxC-${levelNum}-${puzzleNum}`)?.value) || 4;
                     }
@@ -1829,12 +1844,75 @@
                 window.divisionPuzzleInstance = null;
             }
             
+            if (window.digraphPuzzleInstance) {
+                window.digraphPuzzleInstance = null;
+            }
+            
             // Restore any DOM overrides
             if (window.previewModalOverride) {
                 window.previewModalOverride.restore();
             }
         }
         
+        /**
+         * Load digraph data for DigraphPuzzle preview
+         */
+        async function loadDigraphDataForPreview() {
+            if (!window.game.digraphEmojis || !window.game.digraphSounds || !window.game.emojiNames) {
+                try {
+                    const [emojiResponse, soundResponse, namesResponse] = await Promise.all([
+                        fetch('digraph-emojis.txt?v=' + Date.now()),
+                        fetch('digraph-sounds.txt?v=' + Date.now()),
+                        fetch('emoji-names.txt?v=' + Date.now())
+                    ]);
+                    
+                    // Parse digraph emojis (CSV format: CH,🧀,🍒,🪑,⛓️)
+                    const emojiText = await emojiResponse.text();
+                    window.game.digraphEmojis = {};
+                    emojiText.split('\n').forEach(line => {
+                        if (line.trim()) {
+                            const parts = line.split(',');
+                            if (parts.length > 1) {
+                                window.game.digraphEmojis[parts[0]] = parts.slice(1);
+                            }
+                        }
+                    });
+                    
+                    // Parse digraph sounds (CSV format: CH,cha)
+                    const soundText = await soundResponse.text();
+                    window.game.digraphSounds = {};
+                    soundText.split('\n').forEach(line => {
+                        if (line.trim()) {
+                            const parts = line.split(',');
+                            if (parts.length === 2) {
+                                window.game.digraphSounds[parts[0]] = parts[1];
+                            }
+                        }
+                    });
+                    
+                    // Parse emoji names (CSV format: 🍎,apple)
+                    const namesText = await namesResponse.text();
+                    window.game.emojiNames = {};
+                    namesText.split('\n').forEach(line => {
+                        if (line.trim()) {
+                            const parts = line.split(',');
+                            if (parts.length === 2) {
+                                window.game.emojiNames[parts[0]] = parts[1];
+                            }
+                        }
+                    });
+                    
+                    console.log('Digraph data loaded for preview:', {
+                        digraphs: Object.keys(window.game.digraphEmojis).length,
+                        sounds: Object.keys(window.game.digraphSounds).length,
+                        names: Object.keys(window.game.emojiNames).length
+                    });
+                } catch (error) {
+                    console.error('Failed to load digraph data:', error);
+                }
+            }
+        }
+
         /**
          * Set up minimal game state for puzzle compatibility
          */
@@ -1930,8 +2008,35 @@
                         
                     case 'digraph_sounds':
                         if (typeof DigraphPuzzle === 'function') {
-                            // TODO: Implement DigraphPuzzle preview - requires digraph data loading
-                            showPreviewError('Digraph puzzle preview not yet implemented');
+                            // Load all digraph data - puzzle will handle selection via config
+                            await loadDigraphDataForPreview();
+                            const mockDoor = createDigraphDoorMock(puzzleConfig);
+                            window.digraphPuzzleInstance = new DigraphPuzzle(mockDoor);
+                            
+                            // Override setTimeout to intercept the 1500ms delay used by DigraphPuzzle
+                            const originalSetTimeout = window.setTimeout;
+                            window.setTimeout = function(callback, delay) {
+                                // If this is the 1500ms timeout from DigraphPuzzle for modal closing
+                                if (window.isPreviewMode && delay === 1500 && callback.toString().includes('puzzleModal')) {
+                                    // Use much shorter delay for preview
+                                    return originalSetTimeout(() => {
+                                        closePuzzlePreview();
+                                    }, 500);
+                                }
+                                // For all other timeouts, use original
+                                return originalSetTimeout(callback, delay);
+                            };
+                            
+                            await digraphPuzzleInstance.render();
+                            
+                            // Store the original setTimeout override for cleanup
+                            window.previewModalOverride = {
+                                originalSetTimeout: originalSetTimeout,
+                                restore: function() {
+                                    window.setTimeout = originalSetTimeout;
+                                    window.previewModalOverride = null;
+                                }
+                            };
                         } else {
                             showPreviewError('Digraph puzzle function not available');
                         }
@@ -2187,6 +2292,17 @@
         function createDivisionDoorMock(puzzleConfig) {
             return {
                 type: 'division_visual',
+                config: puzzleConfig
+                // Simple door object - puzzle manages its own state
+            };
+        }
+
+        /**
+         * Create door mock for DigraphPuzzle
+         */
+        function createDigraphDoorMock(puzzleConfig) {
+            return {
+                type: 'digraph_sounds',
                 config: puzzleConfig
                 // Simple door object - puzzle manages its own state
             };
