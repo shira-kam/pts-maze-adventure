@@ -241,6 +241,36 @@
             background: #1e7e34;
         }
         
+        .preview-button {
+            display: block;
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(23, 162, 184, 0.3);
+            margin-top: 24px;
+            margin-left: 0;
+            width: fit-content;
+        }
+        
+        .preview-button:hover:not(:disabled) {
+            background: #138496;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(23, 162, 184, 0.4);
+        }
+        
+        .preview-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+        }
+        
         .icon {
             width: 24px;
             height: 24px;
@@ -260,28 +290,6 @@
         
         /* ===== PUZZLE MODAL STYLES - EXACT replica from real game ===== */
         
-        /* Puzzle button styling to match main game */
-        .puzzle-button {
-            margin: 10px 5px !important;
-            padding: 10px 15px !important;
-            border-radius: 8px !important;
-            cursor: pointer !important;
-            font-family: Arial, sans-serif !important;
-            font-weight: bold !important;
-            transition: all 0.2s ease !important;
-        }
-        
-        .puzzle-button:hover {
-            transform: scale(1.05) !important;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
-        }
-        
-        .puzzle-button:disabled {
-            opacity: 0.6 !important;
-            cursor: not-allowed !important;
-            transform: none !important;
-        }
-        
         /* Word emoji puzzle specific styling - only applied when class is present */
         #puzzleOptions.word-emoji-options {
             display: flex !important;
@@ -299,6 +307,47 @@
             justify-content: center !important;
             align-items: center !important;
             gap: 10px !important;
+            margin: 20px 0 !important;
+        }
+
+        /* Simple math puzzle specific styling - only applied when class is present */
+        #puzzleOptions.simple-math-options {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 10px !important;
+            margin: 20px 0 !important;
+        }
+
+        /* Simple math puzzle button styling - scoped to only affect simple math puzzles */
+        #puzzleOptions.simple-math-options .puzzle-button {
+            background: #013089 !important;
+            color: white !important;
+            border: none !important;
+            padding: 20px 40px !important;
+            margin: 12px !important;
+            border-radius: 25px !important;
+            font-size: 24px !important;
+            cursor: pointer !important;
+            font-family: 'Helvetica', 'Arial', sans-serif !important;
+            min-width: 100px !important;
+            min-height: 80px !important;
+            transition: all 0.3s ease !important;
+            user-select: none !important;
+        }
+
+        #puzzleOptions.simple-math-options .puzzle-button:hover {
+            background: #00215F !important;
+            transform: translateY(-2px) !important;
+        }
+
+        /* Rhyming puzzle specific styling - only applied when class is present */
+        #puzzleOptions.rhyming-options {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 20px !important;
             margin: 20px 0 !important;
         }
         
@@ -434,7 +483,7 @@
     <script src="multiplication-groups-puzzle.js"></script>
     <script src="letter-identification.js"></script>
     <script src="audio-reading-puzzle.js"></script>
-    <!-- Note: rhyming puzzle doesn't have separate JS file - integrated in main game -->
+    <script src="rhyming-puzzle.js"></script>
     
     <script>
         let gameConfig = {};
@@ -793,6 +842,12 @@
                         <div class="puzzle-config ${puzzle.type ? 'active' : ''}" id="config-${levelNum}-${puzzleNum}">
                             ${puzzle.type ? generatePuzzleConfig(levelNum, puzzleNum, puzzle.type, puzzle) : ''}
                         </div>
+                        <button class="preview-button" id="preview-btn-${levelNum}-${puzzleNum}" 
+                                onclick="previewPuzzle(${levelNum}, ${puzzleNum - 1})"
+                                ${!puzzle.type ? 'disabled' : ''} 
+                                ${!isPlayable ? 'disabled' : ''}>
+                            Preview
+                        </button>
                     </div>
                 `;
                 
@@ -1149,17 +1204,27 @@
             const puzzle1Section = document.getElementById(`puzzle-section-${levelNum}-1`);
             const puzzle2Section = document.getElementById(`puzzle-section-${levelNum}-2`);
             const puzzleDisplay = document.getElementById(`puzzle-display-${levelNum}`);
+            const previewBtn1 = document.getElementById(`preview-btn-${levelNum}-1`);
+            const previewBtn2 = document.getElementById(`preview-btn-${levelNum}-2`);
             
             if (isPlayable) {
                 puzzle1Section.classList.remove('disabled');
                 puzzle2Section.classList.remove('disabled');
                 puzzle1Section.querySelectorAll('input, select').forEach(el => el.disabled = false);
                 puzzle2Section.querySelectorAll('input, select').forEach(el => el.disabled = false);
+                
+                // Enable preview buttons only if puzzle type is selected
+                const puzzle1Type = document.getElementById(`puzzle-select-${levelNum}-1`).value;
+                const puzzle2Type = document.getElementById(`puzzle-select-${levelNum}-2`).value;
+                previewBtn1.disabled = !puzzle1Type;
+                previewBtn2.disabled = !puzzle2Type;
             } else {
                 puzzle1Section.classList.add('disabled');
                 puzzle2Section.classList.add('disabled');
                 puzzle1Section.querySelectorAll('input, select').forEach(el => el.disabled = true);
                 puzzle2Section.querySelectorAll('input, select').forEach(el => el.disabled = true);
+                previewBtn1.disabled = true;
+                previewBtn2.disabled = true;
                 puzzleDisplay.textContent = 'Not playable';
             }
             
@@ -1178,13 +1243,16 @@
         
         function updatePuzzleType(levelNum, puzzleNum, puzzleType) {
             const configDiv = document.getElementById(`config-${levelNum}-${puzzleNum}`);
+            const previewBtn = document.getElementById(`preview-btn-${levelNum}-${puzzleNum}`);
             
             if (puzzleType) {
                 configDiv.classList.add('active');
                 configDiv.innerHTML = generatePuzzleConfig(levelNum, puzzleNum, puzzleType, {});
+                previewBtn.disabled = false;
             } else {
                 configDiv.classList.remove('active');
                 configDiv.innerHTML = '';
+                previewBtn.disabled = true;
             }
             
             // Show/hide second puzzle section based on selection
@@ -1734,14 +1802,17 @@
                     break;
                     
                 case 'audio_reading':
-                    const mode = document.getElementById(`mode-${levelNum}-${puzzleNum}`)?.value || 'match_text_to_speech';
-                    const selectedWordLists = [];
-                    document.querySelectorAll(`input[name="wordLists-${levelNum}-${puzzleNum}"]:checked`).forEach(checkbox => {
-                        selectedWordLists.push(checkbox.value);
-                    });
+                    const selectedMode = document.querySelector(`input[name="mode-${levelNum}-${puzzleNum}"]:checked`)?.value || 'match_speech_to_text';
+                    const selectedWordLists = Array.from(document.querySelectorAll(`#config-${levelNum}-${puzzleNum} input[type="checkbox"]:checked`))
+                        .map(cb => cb.value);
                     
-                    puzzleConfig.mode = mode;
-                    puzzleConfig.wordLists = selectedWordLists.length > 0 ? selectedWordLists : ['cvc'];
+                    puzzleConfig.mode = selectedMode;
+                    puzzleConfig.wordLists = selectedWordLists.length > 0 ? selectedWordLists : (availableWordLists.length > 0 ? [availableWordLists[0].value] : ['basic-magic-e']);
+                    puzzleConfig.tracking = {
+                        preventRepetition: false, // Disabled for preview
+                        maxAttempts: 3,
+                        trackingScope: "level"
+                    };
                     break;
                     
                 case 'rhyming':
@@ -1848,6 +1919,15 @@
                 window.digraphPuzzleInstance = null;
             }
             
+            if (window.rhymingPuzzleInstance) {
+                // Stop any playing audio if needed
+                window.rhymingPuzzleInstance = null;
+            }
+            
+            if (window.audioReadingPuzzleInstance) {
+                window.audioReadingPuzzleInstance = null;
+            }
+            
             // Restore any DOM overrides
             if (window.previewModalOverride) {
                 window.previewModalOverride.restore();
@@ -1952,6 +2032,11 @@
                     getPuzzleConfig: function(level, puzzleType) {
                         // Return the current puzzle config from the preview
                         return window.currentPreviewPuzzleConfig || {};
+                    },
+                    getSpecificPuzzleConfig: function(level, puzzleType, obstacleCode) {
+                        // For preview purposes, return the current puzzle config
+                        // This method is needed for RhymingPuzzle compatibility
+                        return window.currentPreviewPuzzleConfig || {};
                     }
                 };
             }
@@ -1999,8 +2084,36 @@
                         
                     case 'simple_arithmetic':
                         if (typeof SimpleMathPuzzle === 'function') {
-                            // TODO: Implement SimpleMathPuzzle preview
-                            showPreviewError('Simple math puzzle preview not yet implemented');
+                            // Add specific styling class for simple math layout
+                            document.getElementById('puzzleOptions').className = 'simple-math-options';
+                            
+                            const mockDoor = createSimpleMathDoorMock(puzzleConfig);
+                            const puzzle = new SimpleMathPuzzle(mockDoor);
+                            
+                            // Override setTimeout to intercept the 800ms delay used by checkAnswer for modal closing
+                            const originalSetTimeout = window.setTimeout;
+                            window.setTimeout = function(callback, delay) {
+                                // If this is the 800ms timeout from checkAnswer for modal closing
+                                if (window.isPreviewMode && delay === 800 && callback.toString().includes('puzzleModal')) {
+                                    // Use much shorter delay for preview
+                                    return originalSetTimeout(() => {
+                                        closePuzzlePreview();
+                                    }, 500);
+                                }
+                                // For all other timeouts, use original
+                                return originalSetTimeout(callback, delay);
+                            };
+                            
+                            puzzle.render(); // Synchronous render
+                            
+                            // Store the original setTimeout override for cleanup
+                            window.previewModalOverride = {
+                                originalSetTimeout: originalSetTimeout,
+                                restore: function() {
+                                    window.setTimeout = originalSetTimeout;
+                                    window.previewModalOverride = null;
+                                }
+                            };
                         } else {
                             showPreviewError('Simple math puzzle function not available');
                         }
@@ -2169,16 +2282,75 @@
                         
                     case 'audio_reading':
                         if (typeof AudioReadingPuzzle === 'function') {
-                            // TODO: Implement AudioReadingPuzzle preview
-                            showPreviewError('Audio reading puzzle preview not yet implemented');
+                            const mockDoor = createAudioReadingDoorMock(puzzleConfig);
+                            window.audioReadingPuzzleInstance = new AudioReadingPuzzle(mockDoor);
+                            
+                            // Override setTimeout to intercept the 1500ms delay used by AudioReadingPuzzle
+                            const originalSetTimeout = window.setTimeout;
+                            window.setTimeout = function(callback, delay) {
+                                // If this is the 1500ms timeout from AudioReadingPuzzle for modal closing
+                                if (window.isPreviewMode && delay === 1500 && callback.toString().includes('puzzleModal')) {
+                                    // Use much shorter delay for preview
+                                    return originalSetTimeout(() => closePuzzlePreview(), 500);
+                                }
+                                return originalSetTimeout(callback, delay);
+                            };
+                            
+                            await audioReadingPuzzleInstance.render();
+                            
+                            // Store the original setTimeout override for cleanup
+                            window.previewModalOverride = {
+                                originalSetTimeout: originalSetTimeout,
+                                restore: function() {
+                                    window.setTimeout = originalSetTimeout;
+                                    window.previewModalOverride = null;
+                                }
+                            };
                         } else {
                             showPreviewError('Audio reading puzzle function not available');
                         }
                         break;
                         
                     case 'rhyming':
-                        // Rhyming puzzle is integrated in main game - we'll need to handle this specially
-                        showPreviewError('Rhyming puzzle preview not yet implemented');
+                        if (typeof RhymingPuzzle === 'function') {
+                            // Add specific styling class for rhyming layout
+                            document.getElementById('puzzleOptions').className = 'rhyming-options';
+                            
+                            const mockDoor = createRhymingDoorMock(puzzleConfig);
+                            const puzzle = new RhymingPuzzle(mockDoor);
+                            
+                            // Override setTimeout to intercept the 1500ms delay used by RhymingPuzzle for modal closing
+                            const originalSetTimeout = window.setTimeout;
+                            window.setTimeout = function(callback, delay) {
+                                // If this is the 1500ms timeout from RhymingPuzzle for modal closing
+                                if (window.isPreviewMode && delay === 1500 && callback.toString().includes('puzzleModal')) {
+                                    // Use much shorter delay for preview
+                                    return originalSetTimeout(() => {
+                                        closePuzzlePreview();
+                                    }, 500);
+                                }
+                                // For all other timeouts, use original
+                                return originalSetTimeout(callback, delay);
+                            };
+                            
+                            // Wait for initialization, then render
+                            await puzzle.initPromise;
+                            await puzzle.render(); // Async render method
+                            
+                            // Store instance for cleanup
+                            window.rhymingPuzzleInstance = puzzle;
+                            
+                            // Store the original setTimeout override for cleanup
+                            window.previewModalOverride = {
+                                originalSetTimeout: originalSetTimeout,
+                                restore: function() {
+                                    window.setTimeout = originalSetTimeout;
+                                    window.previewModalOverride = null;
+                                }
+                            };
+                        } else {
+                            showPreviewError('Rhyming puzzle function not available');
+                        }
                         break;
                         
                     default:
@@ -2298,12 +2470,47 @@
         }
 
         /**
+         * Create door mock for SimpleMathPuzzle
+         */
+        function createSimpleMathDoorMock(puzzleConfig) {
+            return {
+                type: 'simple_arithmetic',
+                config: puzzleConfig
+                // Simple door object - puzzle manages its own state
+            };
+        }
+
+        /**
+         * Create door mock for RhymingPuzzle
+         */
+        function createRhymingDoorMock(puzzleConfig) {
+            return {
+                type: 'rhyming',
+                config: puzzleConfig,
+                obstacleCode: 'ob1' // Required for configManager.getSpecificPuzzleConfig
+                // Simple door object - puzzle manages its own state
+            };
+        }
+
+        /**
          * Create door mock for DigraphPuzzle
          */
         function createDigraphDoorMock(puzzleConfig) {
             return {
                 type: 'digraph_sounds',
                 config: puzzleConfig
+                // Simple door object - puzzle manages its own state
+            };
+        }
+
+        /**
+         * Create door mock for AudioReadingPuzzle
+         */
+        function createAudioReadingDoorMock(puzzleConfig) {
+            return {
+                type: 'audio_reading',
+                config: puzzleConfig,
+                obstacleCode: 'ob1' // Required for configManager.getSpecificPuzzleConfig
                 // Simple door object - puzzle manages its own state
             };
         }

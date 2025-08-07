@@ -621,3 +621,171 @@ configManager.getPuzzleTypeFromObstacle(12, 'ob2')  // Returns: 'your_puzzle_typ
 ```
 
 This new system makes puzzle integration much simpler and more maintainable!
+
+## Step 6: Add Preview Support to Parent Settings
+
+For new puzzles to work with the Parent Puzzle Testing Feature, you need to add preview integration to the parent settings interface. This allows parents to test your puzzle with their exact configuration.
+
+### 6.1: Add Form Generation Function
+
+In `game-settings.html`, add a configuration form generation function:
+
+```javascript
+function generate{YourPuzzle}Config(levelNum, puzzleNum, puzzleData) {
+    const selectedOption = puzzleData.someProperty || 'default_value';
+    
+    return `
+        <div class="form-group">
+            <label>Your Setting:</label>
+            <select id="yourSetting-${levelNum}-${puzzleNum}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                <option value="option1" ${selectedOption === 'option1' ? 'selected' : ''}>Option 1</option>
+                <option value="option2" ${selectedOption === 'option2' ? 'selected' : ''}>Option 2</option>
+            </select>
+        </div>
+        <!-- Add more form controls as needed -->
+    `;
+}
+```
+
+### 6.2: Add to Configuration Generator Switch
+
+Add your puzzle to the `generatePuzzleConfig()` switch statement:
+
+```javascript
+case 'your_puzzle_type':
+    return generate{YourPuzzle}Config(levelNum, puzzleNum, puzzleData);
+```
+
+### 6.3: Add Form Data Extraction
+
+Add your puzzle to the `getCurrentPuzzleFormData()` switch statement:
+
+```javascript
+case 'your_puzzle_type':
+    const yourSetting = document.getElementById(`yourSetting-${levelNum}-${puzzleNum}`)?.value || 'default';
+    
+    puzzleConfig.yourProperty = yourSetting;
+    puzzleConfig.tracking = {
+        preventRepetition: false, // Disabled for preview
+        maxAttempts: 3,
+        trackingScope: "level"
+    };
+    break;
+```
+
+### 6.4: Add to updatePuzzleConfig Function
+
+Add your puzzle to the `updatePuzzleConfig()` switch statement (similar to step 6.3 but for live form updates).
+
+### 6.5: Create Door Mock Function
+
+Add a door mock function that creates the environment your puzzle expects:
+
+```javascript
+/**
+ * Create door mock for {YourPuzzle}
+ */
+function create{YourPuzzle}DoorMock(puzzleConfig) {
+    return {
+        type: 'your_puzzle_type',
+        config: puzzleConfig,
+        obstacleCode: 'ob1' // Required if puzzle uses configManager.getSpecificPuzzleConfig
+        // Add any other properties your puzzle's constructor expects
+    };
+}
+```
+
+### 6.6: Add Preview Case
+
+Add your puzzle to the main preview `switch` statement in `triggerPreviewPuzzleByType()`:
+
+```javascript
+case 'your_puzzle_type':
+    if (typeof YourPuzzleClass === 'function') {
+        // Add CSS class if your puzzle needs specific styling
+        document.getElementById('puzzleOptions').className = 'your-puzzle-options';
+        
+        const mockDoor = create{YourPuzzle}DoorMock(puzzleConfig);
+        window.yourPuzzleInstance = new YourPuzzleClass(mockDoor);
+        
+        // Override setTimeout if your puzzle has modal dismissal timing
+        const originalSetTimeout = window.setTimeout;
+        window.setTimeout = function(callback, delay) {
+            // Check for your puzzle's specific timeout (usually 1500ms or 2000ms)
+            if (window.isPreviewMode && delay === 1500 && callback.toString().includes('puzzleModal')) {
+                // Use faster delay for preview
+                return originalSetTimeout(() => closePuzzlePreview(), 500);
+            }
+            return originalSetTimeout(callback, delay);
+        };
+        
+        // Render puzzle (use await if puzzle.render() returns a Promise)
+        await yourPuzzleInstance.render();
+        
+        // Store setTimeout override for cleanup
+        window.previewModalOverride = {
+            originalSetTimeout: originalSetTimeout,
+            restore: function() {
+                window.setTimeout = originalSetTimeout;
+                window.previewModalOverride = null;
+            }
+        };
+    } else {
+        showPreviewError('Your puzzle function not available');
+    }
+    break;
+```
+
+### 6.7: Add Instance Cleanup
+
+Add your puzzle instance cleanup to the `closePuzzlePreview()` function:
+
+```javascript
+if (window.yourPuzzleInstance) {
+    // Add any puzzle-specific cleanup (e.g., stop audio, clear timers)
+    window.yourPuzzleInstance = null;
+}
+```
+
+### 6.8: Include Script Tag
+
+Make sure your puzzle script is loaded in `game-settings.html`:
+
+```html
+<script src="your-puzzle.js"></script>
+```
+
+## Preview Implementation Tips
+
+### Common setTimeout Patterns
+Most puzzles have a `setTimeout` for modal dismissal after correct answers:
+- **1500ms**: Most common (DigraphPuzzle, DivisionPuzzle, etc.)
+- **2000ms**: LetterIdentificationPuzzle  
+- **800ms**: SimpleMathPuzzle (uses global checkAnswer)
+
+### Form Data Extraction Gotchas
+- Use `document.querySelector('input[name="..."]:checked')` for radio buttons
+- Use `document.querySelectorAll('input[type="checkbox"]:checked')` for checkboxes
+- Use `document.getElementById('...')?.value` for select dropdowns
+- Always provide fallback values with `|| 'default'`
+
+### Audio/File Loading Puzzles
+If your puzzle loads external files, you may need:
+- `await` in the switch case for async initialization
+- Error handling for failed file loads
+- Proper asset path configuration
+
+### CSS Isolation
+If your puzzle needs specific CSS:
+- Add a unique class to `puzzleOptions` element
+- Reset the class in `closePuzzlePreview()` 
+- Use scoped selectors like `#puzzleOptions.your-options`
+
+### Testing Your Preview
+1. Configure puzzle settings in parent interface
+2. Click Preview button
+3. Verify puzzle shows with your exact configuration
+4. Solve puzzle correctly and confirm 500ms dismissal
+5. Test with different configurations to ensure form extraction works
+
+The preview system follows the "zero-modification principle" - your puzzle code should work unchanged when given the proper environment!

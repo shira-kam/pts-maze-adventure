@@ -430,6 +430,93 @@ The game includes a comprehensive parent settings interface (`game-settings.html
 - Maintains all existing configuration structure and validation
 - Compatible with all puzzle types and level configurations
 
+## 6.6. Parent Puzzle Testing Feature
+
+### Overview
+The Parent Puzzle Testing Feature provides an interactive preview system that allows parents/educators to experience puzzles exactly as their children would, using their exact configuration settings. This ensures parents can validate their customizations before children encounter them.
+
+### Purpose & Benefits
+**The Problem Solved:**
+- Parents configure puzzle settings without seeing how they actually work for children
+- Uncertainty about whether settings create appropriate difficulty levels
+- Configuration errors that seem reasonable but create impossible or trivial puzzles
+- Need for children to test every configuration change
+
+**The Solution:**
+- **Authentic Preview Experience**: Same puzzle rendering, interactions, and feedback as children see
+- **Full Interactivity**: Must solve puzzles correctly to proceed, just like children
+- **Complete Sensory Experience**: Audio recordings, visual feedback identical to real game
+- **Real-time Validation**: Immediate understanding of whether settings create appropriate difficulty
+- **Confidence Building**: Parents know exactly what their children will experience
+
+### Technical Architecture
+
+**Modal Overlay System:**
+- Preview shows as modal overlay on the settings page (identical to game puzzles)  
+- Uses exact same puzzle scripts with zero modifications to puzzle logic
+- Provides precise environment replication that each puzzle expects
+- Real game assets loaded from actual file paths
+
+**Preview Button Integration:**
+- Each puzzle section includes a "Preview" button positioned below configuration options
+- Buttons automatically enabled/disabled based on puzzle type selection and level playability
+- Clicking preview extracts current form configuration and launches puzzle with those exact settings
+
+**Environment Simulation:**
+- **Mock Door Objects**: Simple door mocks that provide puzzle type and configuration
+- **Game State Replication**: Required global variables (`game.selectedDifficulty`, `game.puzzleActive`, etc.)
+- **Asset Loading**: Real file loading from `word-lists/`, `Pronunciations/`, `Phonics/` directories
+- **Function Mocking**: Core functions like `checkAnswer()`, `updateScore()`, `speakEmojiWord()`
+
+**Performance Optimization:**
+- **setTimeout Interception**: Modal dismissal timeouts reduced from 1500-2000ms to 500ms for responsive testing UX
+- **Audio Preloading**: Force immediate loading of cached audio files for instant playback
+- **CSS Isolation**: Puzzle-specific CSS classes prevent cross-contamination between different puzzle types
+
+### Implementation Pattern
+
+**Standard Implementation Steps (per puzzle type):**
+1. **Environment Setup**: Initialize required game state variables
+2. **Door Mock Creation**: Simple object with puzzle type, configuration, and any required properties
+3. **Switch Case Addition**: Add puzzle type case to preview system with proper async handling
+4. **setTimeout Interception**: Override modal closing timeout for faster preview UX  
+5. **Instance Management**: Global instance cleanup to prevent memory leaks
+6. **CSS Isolation**: Puzzle-specific styling classes when needed
+
+**Zero-Modification Principle:**
+- **No puzzle logic changes**: All puzzles work completely unchanged
+- **Pure environment provision**: Supply exact environment each puzzle expects to find
+- **Real asset integration**: Use actual game file paths and loading mechanisms
+- **Authentic experience**: Identical behavior to real game with only timing optimizations
+
+### Supported Puzzle Types ✅ **ALL 9 IMPLEMENTED**
+
+1. **NumberLinePuzzle** - Mathematical number line with canvas system
+2. **WordEmojiPuzzle** - Word-to-emoji matching with async file loading
+3. **SimpleMathPuzzle** - Pure mathematical operations with blue button styling  
+4. **DigraphPuzzle** - Audio digraph sounds with CSV data loading
+5. **MultiplicationGroupsPuzzle** - Visual groups with red squares and purple dots
+6. **DivisionPuzzle** - Drag-and-drop dots into baskets interface
+7. **LetterIdentificationPuzzle** - Three-part letter recognition with audio
+8. **AudioReadingPuzzle** - Hybrid audio system with dual-mode support
+9. **RhymingPuzzle** - Audio-based rhyme matching with MP3 files
+
+**Key Implementation Discoveries:**
+- **Each puzzle has unique dependencies**: Cannot use generic mocks - must analyze each puzzle individually
+- **setTimeout timing conflicts**: Preview needs faster UX than child-appropriate delays
+- **CSS contamination issues**: Puzzle-specific styling must be isolated to prevent interference
+- **Audio loading performance**: Browser lazy-loading requires forced preload for instant playback
+- **Form data extraction bugs**: Preview implementation often reveals existing configuration extraction issues
+
+### Usage Workflow
+1. **Parent configures puzzle settings** (difficulty, word lists, constraints, etc.)
+2. **Parent clicks "Preview" button** in puzzle section  
+3. **Modal opens with exact puzzle configuration** applied
+4. **Parent experiences identical puzzle** as child would see
+5. **Parent must solve puzzle correctly** to see completion behavior
+6. **Modal dismisses with 500ms delay** (optimized for testing)
+7. **Parent adjusts settings if needed** and can preview again
+
 ## 7. Development Roadmap
 
 ### Completed Phases
