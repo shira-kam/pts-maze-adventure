@@ -11,15 +11,17 @@ class ConfigManager {
      * Load configuration from JSON file
      * @returns {Promise<object>} Game configuration object
      */
-    async loadConfig() {
-        if (this.isLoaded && this.gameConfig) {
+    async loadConfig(forceReload = false) {
+        if (this.isLoaded && this.gameConfig && !forceReload) {
             console.log('Config already loaded, returning cached config');
             return this.gameConfig;
         }
 
         try {
             console.log('Loading game configuration from game-config.json...');
-            const response = await fetch('game-config.json');
+            // Add cache busting parameter to prevent browser caching
+            const cacheBuster = forceReload ? `?v=${Date.now()}` : '';
+            const response = await fetch(`game-config.json${cacheBuster}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

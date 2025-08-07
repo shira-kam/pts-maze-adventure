@@ -1,0 +1,89 @@
+Task: create webpage for constructing the game config JSON. All the configurations not mentioned in this document should automatically be identical to the current game config file. 
+
+***** Page structure start *****
+Page title: Game Settings
+
+Level drawers:
+- Use current config file to decide what levels to display. 
+- Each level will have a drawer component that can be opened or closed by clicking on a sideways chevron icon that goes from sideways to pointing down (> to ⌄).  
+- drawer title (visible when level is open or closed): on the left: "[wall.png] Level N", on the right: "[puzzle name 1] & [puzzle name 2]" or "Not playable" 
+- on opening the level should have 3 sections:
+1. Playable: Yes No radio buttons. If No, the other two sections become inactive. 
+2. "[obstacle1.png] Puzzle 1" 
+2a. Select puzzle: [Select drop down menu with all 7 puzzles as drop down options].
+2b. Once a selection is made, show configuration options for the level (see below for the options for each puzzle)
+3.  "[obstacle2.png] Puzzle 2" -- same as puzzle 1, display only if the puzzle has two obstacles.
+
+Button: [generate JSON] 
+--> download JSON file 
+***** Page structure end **********
+
+Puzzle configuration options:
+
+1. Word Emoji Matching
+| Setting             | Input Mechanism                                          | Notes                                  |
+| ------------------- | -------------------------------------------------------- | -------------------------------------- |
+| Word List Level     | **Dropdown** (options: Beginner, Intermediate, Advanced) | Populated from `word-lists/` directory |
+
+
+2. Simple Math (A+B=?)
+| Setting            | Input Mechanism                                     | Notes |
+| ------------------ | --------------------------------------------------- | ----- |
+| Operations         | **Multi-select checkboxes** (Addition, Subtraction) |       |
+| Max A              | **Number input**                                    |       |
+| Max B              | **Number input**                                    |       |
+| Max Result         | **Number input**                                    |       |
+
+
+3. Digraph Matching
+| Setting            | Input Mechanism                                                   | Notes                            |
+| ------------------ | ----------------------------------------------------------------- | -------------------------        |
+| Digraphs 	     | **Multi-select checkboxes** (prepopulated list: CH, TH, SH, etc.) | populate from digraph-sounds.txt |
+
+4. Number Line (A+B+C=?)
+| Setting               | Input Mechanism                                     | Notes                            |
+| --------------------- | --------------------------------------------------- | ---------------------------------|
+| Operations            | **Multi-select checkboxes** (Addition, Subtraction) |                                  |
+| Length of Number Line | **Number input**                                    | allow between 5 and 20      	 |
+| Min A                 | **Number input**                                    | allow between 0 and length of NL |
+| Max A                 | **Number input**                                    | allow between 0 and length of NL |
+| Min B                 | **Number input**                                    | allow between 0 and length of NL |
+| Max B                 | **Number input**                                    | allow between 0 and length of NL |
+| Max Result            | **Number input**                                    | allow between 5 and length of NL |
+| Equation Type         | **Dropdown** (Standard (A+B), Triple Add (A+B+C),   |                                  | 
+|			|               Triple Mixed (A+B+C, A-B+C or A+B-C)  |  		                 |
+| Min C                 | **Number input** (only if triple terms used)        | allow between 0 and length of NL |
+| Max C                 | **Number input** (only if triple terms used)        | allow between 0 and length of NL |
+
+
+5. Division puzzle (A:B=?)
+| Setting                  | Input Mechanism  | Notes                   |
+| ------------------------ | ---------------- | ------------------------|
+| Max A                    | **Number input** | must be 12 or laregr    |
+| Max B                    | **Number input** | must be less than A     |
+| Max Answer               | **Number input** |                         |
+| Exclude Identity (A ÷ A) | **Checkbox**     |                         |
+| Exclude A = 1            | **Checkbox**     |                         |
+
+
+6. Multiplication puzzle (AxB=?)
+| Setting            | Input Mechanism  | Notes |
+| ------------------ | ---------------- | ----- |
+| Max Answer         | **Number input** |       |
+| Min A              | **Number input** |  10   |
+| Max B              | **Number input** |  10   |
+| Exclude One        | **Checkbox**     |       |
+
+7. Letter Identification 
+| Setting            | Input Mechanism               | Notes |
+| ------------------ | ------------------------------| ----- |
+| Exclude letters    | **Checkboxes** (for A,B,C,D...|       |
+
+
+
+
+
+
+
+
+
