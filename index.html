@@ -503,6 +503,24 @@
         function getCelebrationConfig(level) {
             if (configManager.isConfigLoaded()) {
                 const celebrationConfig = configManager.getCelebrationSpriteConfig(level);
+                
+                        // Debug Level 13 config loading issue
+                if (level === 13) {
+                    console.log('=== LEVEL 13 CONFIG DEBUG ===');
+                    console.log('Current config frames:', celebrationConfig.frames);
+                    console.log('Raw level config:', configManager.getLevelConfig(level));
+                    
+                    // Test force reload
+                    if (celebrationConfig.frames !== 47) {
+                        console.log('🚨 WRONG FRAMES DETECTED! Forcing config reload...');
+                        configManager.loadConfig(true).then(() => {
+                            const newConfig = configManager.getCelebrationSpriteConfig(level);
+                            console.log('After force reload - frames:', newConfig.frames);
+                            console.log('Raw level config after reload:', configManager.getLevelConfig(level));
+                        });
+                    }
+                }
+                
                 return {
                     frames: celebrationConfig.frames,
                     layout: 'horizontal' // All celebrations are horizontal
@@ -522,6 +540,15 @@
             const actualSheetWidth = sprite.width;
             const actualSheetHeight = sprite.height;
             
+            // Debug logging for Level 13
+            if (level === 13) {
+                console.log('=== LEVEL 13 CELEBRATION DEBUG ===');
+                console.log('config:', config);
+                console.log('sprite.width:', actualSheetWidth);
+                console.log('sprite.height:', actualSheetHeight);
+                console.log('config.frames:', config.frames);
+            }
+            
             let frameWidth, frameHeight, framesPerRow, totalFrames;
             
             if (config.layout === 'horizontal') {
@@ -529,6 +556,15 @@
                 frameWidth = actualSheetWidth / framesPerRow;
                 frameHeight = actualSheetHeight;
                 totalFrames = config.frames;
+                
+                // More debug logging for Level 13
+                if (level === 13) {
+                    console.log('calculated frameWidth:', frameWidth);
+                    console.log('calculated frameHeight:', frameHeight);
+                    console.log('framesPerRow:', framesPerRow);
+                    console.log('totalFrames:', totalFrames);
+                    console.log('=== END DEBUG ===');
+                }
             } else {
                 // Future support for other layouts like grid if needed
                 throw new Error(`Unsupported layout: ${config.layout}`);
@@ -566,6 +602,29 @@
         // Current sprites
         let currentMovementSprites = characterSprites.movement;
         let currentCelebrationSprites = characterSprites.celebration;
+        
+        // Manual test function for debugging config issues
+        window.testLevel13Config = async function() {
+            console.log('=== MANUAL LEVEL 13 CONFIG TEST ===');
+            
+            // Test current config
+            console.log('Current Level 13 config:', configManager.getLevelConfig(13));
+            console.log('Current celebration config:', configManager.getCelebrationSpriteConfig(13));
+            
+            // Force reload config
+            console.log('Forcing config reload...');
+            await configManager.loadConfig(true);
+            
+            // Test after reload
+            console.log('After reload Level 13 config:', configManager.getLevelConfig(13));
+            console.log('After reload celebration config:', configManager.getCelebrationSpriteConfig(13));
+            
+            // Test getCelebrationConfig function
+            const celebConfig = getCelebrationConfig(13);
+            console.log('getCelebrationConfig(13) returns:', celebConfig);
+            
+            console.log('=== TEST COMPLETE ===');
+        };
         
         // Texture system for maze elements - now supports dynamic door types
         const textures = {
@@ -1198,7 +1257,7 @@
                 game.rocketCountdown = 0;
                 currentMovementSprites = characterSprites.movement;
                 updateRocketDisplay(); // Hide countdown display
-                console.log('Reset bonus state for level 9');
+                console.log(`Reset bonus state for level ${game.selectedDifficulty}`);
             }
             
             // Load textures for this level
@@ -1527,7 +1586,7 @@
         
         // Wall transition functions for rocket boost
         function startBoostTransition() {
-            if (game.selectedDifficulty !== 9 && game.selectedDifficulty !== 10) return;
+            if (!configManager.hasFeature(game.selectedDifficulty, 'rocket_boost')) return;
             
             console.log('Starting rocket boost transition');
             game.boostTransitionState = 'starting';
@@ -1685,7 +1744,7 @@
         }
         
         function endBoostTransition() {
-            if (game.selectedDifficulty !== 9 && game.selectedDifficulty !== 10) return;
+            if (!configManager.hasFeature(game.selectedDifficulty, 'rocket_boost')) return;
             
             // Don't show boost end modal if level is already completed
             if (game.celebrating) {

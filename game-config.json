@@ -527,6 +527,43 @@
       "animation": {
         "frameDelay": 20
       }
+    },
+    "14": {
+      "playable": true,
+       "puzzles": [
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 20,
+            "maxB": 20,
+            "maxAnswer": 15,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        },
+        {
+          "type": "multiplication_groups",
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 20,
+            "minFactor": 2,
+            "maxFactor": 10,
+            "excludeOne": true
+          }
+        }
+      ],
+      "assets": {
+        "celebration": {
+          "frames": 53,
+          "frameWidth": 200,
+          "frameHeight": 200
+        },
+        "hearts": true,
+        "bonus": true
+      },
+      "animation": {
+        "frameDelay": 25
+      }
     }
   },
   "characters": {
@@ -537,7 +574,8 @@
       "gameOver": "PT-game-over.png",
       "bonus": {
         "9": "level-9/PT-Bonus-Sprite.svg",
-        "10": "level-10/PT-Bonus-Sprite.svg"
+        "10": "level-10/PT-Bonus-Sprite.svg",
+        "14": "level-14/PT-Bonus-Sprite.svg"
       },
       "description": "A friendly elephant who loves solving puzzles"
     },
@@ -548,7 +586,8 @@
       "gameOver": "Enderman-game-over.png",
       "bonus": {
         "9": "level-9/Enderman-Bonus-Sprite.svg",
-        "10": "level-10/Enderman-Bonus-Sprite.svg"
+        "10": "level-10/Enderman-Bonus-Sprite.svg",
+        "14": "level-14/Enderman-Bonus-Sprite.svg"
       },
       "description": "A mysterious dark figure from another dimension"
     },
@@ -559,7 +598,8 @@
       "gameOver": "Ori-game-over.png",
       "bonus": {
         "9": "level-9/Ori-Bonus-Sprite.svg",
-        "10": "level-10/Ori-Bonus-Sprite.svg"
+        "10": "level-10/Ori-Bonus-Sprite.svg",
+        "14": "level-14/Ori-Bonus-Sprite.svg"
       },
       "description": "A luminous spirit of light and forest magic"
     }
