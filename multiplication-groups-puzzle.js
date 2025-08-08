@@ -270,7 +270,7 @@ class MultiplicationGroupsPuzzle {
         const existingSquares = container.querySelectorAll('.red-square');
         
         // Limit to reasonable number of squares
-        if (existingSquares.length >= 10) {
+        if (existingSquares.length >= 12) {
             return;
         }
         

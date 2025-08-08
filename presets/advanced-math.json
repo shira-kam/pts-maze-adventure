@@ -1,0 +1,307 @@
+{
+  "id": "advanced-math",
+  "name": "Advanced Math",
+  "description": "10 levels of mathematical puzzles featuring negative numbers, multi-term equations, multiplication, and division.",
+  "prerequisites": "Mastery of basic addition/subtraction up to 20, understanding of multiplication and division concepts.",
+  "skills": "Introduces negative numbers and multiplication/division with products up to 30 and factors up to 12.",
+  "levels": {
+    "1": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "allowNegative": false,
+            "length": 20,
+            "minA": 1,
+            "maxA": 20,
+            "minB": 0,
+            "maxB": 20,
+            "minC": 0,
+            "maxC": 20,
+            "maxResult": 20,
+            "terms": "3"
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "allowNegative": false,
+            "length": 20,
+            "minA": 1,
+            "maxA": 20,
+            "minB": 0,
+            "maxB": 20,
+            "minC": 0,
+            "maxC": 20,
+            "maxResult": 20,
+            "terms": "3"
+          }
+        }
+      ]
+    },
+    "2": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "multiplication_groups",
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 24,
+            "minFactor": 3,
+            "maxFactor": 12,
+            "excludeOne": true
+          }
+        },
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 24,
+            "maxB": 12,
+            "maxAnswer": 12,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        }
+      ]
+    },
+    "3": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "allowNegative": true,
+            "minResult": -5,
+            "maxResult": 5,
+            "minA": -5,
+            "maxA": 0,
+            "minB": 1,
+            "maxB": 10,
+            "terms": "2"
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "allowNegative": true,
+            "minResult": -5,
+            "maxResult": 5,
+            "minA": 0,
+            "maxA": 5,
+            "minB": 1,
+            "maxB": 10,
+            "terms": "2"
+          }
+        }
+      ]
+    },
+    "4": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["subtraction", "addition"],
+          "numberLine": {
+            "allowNegative": true,
+            "minResult": -5,
+            "maxResult": 5,
+            "minA": -5,
+            "maxA": 5,
+            "minB": 1,
+            "maxB": 10,
+            "minC": -5,
+            "maxC": 10,
+            "terms": "3"          
+          }
+        }
+      ]
+    },
+    "5": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 24,
+            "maxB": 12,
+            "maxAnswer": 12,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        },
+        {
+          "type": "multiplication_groups",
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 30,
+            "minFactor": 3,
+            "maxFactor": 12,
+            "excludeOne": true
+          }
+        }
+      ]
+    },
+    "6": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "allowNegative": true,
+            "minResult": -10,
+            "maxResult": 10,
+            "minA": -10,
+            "maxA": 0,
+            "minB": 1,
+            "maxB": 20,
+            "terms": "2"
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "allowNegative": true,
+            "minResult": -10,
+            "maxResult": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 10,
+            "maxB": 20,
+            "terms": "2"          
+          }
+        }
+      ]
+    },
+    "7": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "multiplication_groups",
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 30,
+            "minFactor": 3,
+            "maxFactor": 12,
+            "excludeOne": true
+          }
+        },
+        {
+          "type": "division_visual",
+          "division": {
+            "maxA": 30,
+            "maxB": 12,
+            "maxAnswer": 10,
+            "excludeIdentity": true,
+            "excludeA1": true
+          }
+        }
+      ]
+    },
+    "8": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "allowNegative": true,
+            "minResult": -10,
+            "maxResult": 10,
+            "minA": -10,
+            "maxA": 0,
+            "minB": 2,
+            "maxB": 20,
+            "minC": 2,
+            "maxC": 20,
+            "terms": "3"
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "allowNegative": true,
+            "minResult": -10,
+            "maxResult": 10,
+            "minA": 0,
+            "maxA": 10,
+            "minB": 2,
+            "maxB": 20,
+            "minC": 2,
+            "maxC": 20,
+            "terms": "3"
+          }
+        }
+      ]
+    },
+    "9": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "number_line",
+          "operations": ["addition","subtraction"],
+          "numberLine": {
+            "allowNegative": true,
+            "minResult": -10,
+            "maxResult": 10,
+            "minA": -10,
+            "maxA": 20,
+            "minB": 1,
+            "maxB": 20,
+            "minC": 1,
+            "maxC": 20,
+            "terms": "3"
+          }
+        },
+        {
+          "type": "multiplication_groups",
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 30,
+            "minFactor": 3,
+            "maxFactor": 12,
+            "excludeOne": true
+          }
+        }
+      ]
+    },
+    "10": {
+      "playable": true,
+      "puzzles": [
+        {
+          "type": "multiplication_groups",
+          "operations": ["multiplication"],
+          "multiplication": {
+            "maxProduct": 30,
+            "minFactor": 4,
+            "maxFactor": 12,
+            "excludeOne": true
+          }
+        },
+        {
+          "type": "number_line",
+          "operations": ["addition","subtraction"],
+          "numberLine": {
+            "allowNegative": true,
+            "minResult": -10,
+            "maxResult": 10,
+            "minA": -10,
+            "maxA": 20,
+            "minB": 1,
+            "maxB": 20,
+            "minC": 1,
+            "maxC": 20,
+            "terms": "3"
+          }
+        }
+      ]
+    }
+  }
+}

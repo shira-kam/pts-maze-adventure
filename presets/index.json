@@ -31,6 +31,12 @@
       "order": 2
     },
     {
+      "id": "advanced-math",
+      "file": "advanced-math.json",
+      "category": "math",
+      "order": 3
+    },
+    {
       "id": "new-learner",
       "file": "new-learner.json",
       "category": "balanced",

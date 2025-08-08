@@ -1,11 +1,11 @@
 ,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T
-1,o,o,o,o,o,o,o,ob1,ob2,o,ob1,ob2,b,o,o,o,o,o,o,ob1
+1,o,o,o,o,o,o,o,ob1,ob2,o,ob1,ob2,o,o,o,o,o,o,o,ob1
 2,,,,,,,,,,,,,,,,,,,,o
 3,ob1,o,o,h,h,h,h,h,h,h,o,o,o,o,o,o,o,o,o,ob2
 4,o,,,,,,,,,,,,,,,,,,,
 5,ob2,o,ob2,o,ob2,o,o,o,o,o,o,o,o,o,o,ob1,o,ob1,o,ob1
 6,,,,,,,,,,,,,,,,,,,,o
-7,ob1,o,o,o,o,o,o,o,o,h,h,h,h,h,h,h,h,h,h,ob2
+7,ob1,o,o,o,b,o,o,o,o,h,h,h,h,h,h,h,h,h,h,ob2
 8,o,,,,,,,,,,,,,,,,,,,
 9,ob2,o,ob2,o,ob2,o,o,o,o,o,o,o,o,o,o,ob1,o,ob1,o,ob1
 10,,,,,,,,,,,,,,,,,,,,o
