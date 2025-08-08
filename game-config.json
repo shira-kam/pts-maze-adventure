@@ -532,29 +532,39 @@
       "playable": true,
        "puzzles": [
         {
-          "type": "division_visual",
-          "division": {
-            "maxA": 20,
-            "maxB": 20,
-            "maxAnswer": 15,
-            "excludeIdentity": true,
-            "excludeA1": true
+          "type": "number_line",
+          "operations": ["subtraction"],
+          "numberLine": {
+            "operations": ["subtraction"],
+            "terms": "2",
+            "allowNegative": true,
+            "minResult": -10,
+            "maxResult": 10,
+            "minA": 0,
+            "maxA": 2,
+            "minB": 3,
+            "maxB": 10
           }
         },
         {
-          "type": "multiplication_groups",
-          "operations": ["multiplication"],
-          "multiplication": {
-            "maxProduct": 20,
-            "minFactor": 2,
-            "maxFactor": 10,
-            "excludeOne": true
+          "type": "number_line",
+          "operations": ["addition"],
+          "numberLine": {
+            "operations": ["addition"],
+            "terms": "2",
+            "allowNegative": true,
+            "minResult": -10,
+            "maxResult": 10,
+            "minA": -10,
+            "maxA": -1,
+            "minB": 1,
+            "maxB": 10
           }
         }
       ],
       "assets": {
         "celebration": {
-          "frames": 53,
+          "frames": 75,
           "frameWidth": 200,
           "frameHeight": 200
         },

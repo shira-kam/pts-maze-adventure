@@ -999,12 +999,36 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Length of Number Line:</label>
-                    <input type="number" id="length-${levelNum}-${puzzleNum}" value="${numberLine.length || 12}" 
-                           min="5" max="20" 
-                           onchange="updateNumberLineValidation(${levelNum}, ${puzzleNum}); updatePuzzleConfig(${levelNum}, ${puzzleNum})"
-                           onblur="updateNumberLineValidation(${levelNum}, ${puzzleNum}); updatePuzzleConfig(${levelNum}, ${puzzleNum})"
-                           oninput="if(this.value > 20) this.value = 20; if(this.value < 5 && this.value !== '') this.value = 5;">
+                    <label>
+                        <input type="checkbox" id="allowNegative-${levelNum}-${puzzleNum}" 
+                               ${numberLine.allowNegative ? 'checked' : ''} 
+                               onchange="toggleNegativeFields(${levelNum}, ${puzzleNum}); updateNumberLineValidation(${levelNum}, ${puzzleNum}); updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                        Allow Negative Answers
+                    </label>
+                    <div id="negativeExplanation-${levelNum}-${puzzleNum}" style="font-size: 12px; color: #666; margin-top: 4px; line-height: 1.4; display: ${numberLine.allowNegative ? 'block' : 'none'};">
+                        The number line cannot exceed 21 total positions. For example: if Min Result is -12, Max Result can only go up to 9.
+                    </div>
+                </div>
+                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div id="leftField-${levelNum}-${puzzleNum}">
+                        <label id="leftLabel-${levelNum}-${puzzleNum}">${numberLine.allowNegative ? 'Min Result:' : 'Length of Number Line:'}</label>
+                        <input type="number" id="leftInput-${levelNum}-${puzzleNum}" 
+                               value="${numberLine.allowNegative ? (numberLine.minResult || -12) : (numberLine.length || 12)}" 
+                               min="${numberLine.allowNegative ? '-12' : '5'}" 
+                               max="${numberLine.allowNegative ? '0' : '20'}" 
+                               onchange="updateNumberLineValidation(${levelNum}, ${puzzleNum}); updatePuzzleConfig(${levelNum}, ${puzzleNum})"
+                               onblur="updateNumberLineValidation(${levelNum}, ${puzzleNum}); updatePuzzleConfig(${levelNum}, ${puzzleNum})"
+                               oninput="${numberLine.allowNegative ? '' : 'if(this.value > 20) this.value = 20; if(this.value < 5 && this.value !== \'\') this.value = 5;'}">
+                        <!-- Hidden fields for backward compatibility -->
+                        <input type="hidden" id="length-${levelNum}-${puzzleNum}" value="${numberLine.length || 12}">
+                        <input type="hidden" id="minResult-${levelNum}-${puzzleNum}" value="${numberLine.minResult || -12}">
+                    </div>
+                    <div>
+                        <label>Max Result:</label>
+                        <input type="number" id="maxResult-${levelNum}-${puzzleNum}" value="${numberLine.maxResult || 12}" 
+                               min="1" max="${numberLine.allowNegative ? '12' : (numberLine.length || 12)}" 
+                               onchange="updateNumberLineValidation(${levelNum}, ${puzzleNum}); updatePuzzleConfig(${levelNum}, ${puzzleNum})">
+                    </div>
                 </div>
                 <div class="number-inputs">
                     <div class="form-group">
@@ -1026,11 +1050,6 @@
                         <label>Max B:</label>
                         <input type="number" id="maxB-${levelNum}-${puzzleNum}" value="${numberLine.maxB || 8}" 
                                min="0" max="${numberLine.length || 12}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
-                    </div>
-                    <div class="form-group">
-                        <label>Max Result:</label>
-                        <input type="number" id="maxResult-${levelNum}-${puzzleNum}" value="${numberLine.maxResult || 12}" 
-                               min="5" max="${numberLine.length || 12}" onchange="updatePuzzleConfig(${levelNum}, ${puzzleNum})">
                     </div>
                 </div>
                 <div class="number-inputs" id="triple-inputs-${levelNum}-${puzzleNum}" style="display: ${terms === '3' ? 'grid' : 'none'}">
@@ -1337,7 +1356,9 @@
                     const nlOperations = Array.from(document.querySelectorAll(`#config-${levelNum}-${puzzleNum} input[type="checkbox"]:checked`))
                         .map(cb => cb.value).filter(v => ['addition', 'subtraction'].includes(v));
                     const terms = document.querySelector(`#config-${levelNum}-${puzzleNum} input[name="terms-${levelNum}-${puzzleNum}"]:checked`)?.value || '2';
+                    const allowNegative = document.getElementById(`allowNegative-${levelNum}-${puzzleNum}`)?.checked || false;
                     const length = parseInt(document.getElementById(`length-${levelNum}-${puzzleNum}`)?.value) || 12;
+                    const minResult = parseInt(document.getElementById(`minResult-${levelNum}-${puzzleNum}`)?.value) || -12;
                     const minA = parseInt(document.getElementById(`minA-${levelNum}-${puzzleNum}`)?.value) || 1;
                     const maxANL = parseInt(document.getElementById(`maxA-${levelNum}-${puzzleNum}`)?.value) || 8;
                     const minB = parseInt(document.getElementById(`minB-${levelNum}-${puzzleNum}`)?.value) || 1;
@@ -1348,7 +1369,9 @@
                     puzzleConfig.numberLine = { 
                         operations: nlOperations,
                         terms: terms,
+                        allowNegative: allowNegative,
                         length, 
+                        minResult: allowNegative ? minResult : undefined,
                         minA, 
                         maxA: maxANL, 
                         minB, 
@@ -1549,45 +1572,189 @@
         window.cancelAndReturnToCharacterSelection = cancelAndReturnToCharacterSelection;
         
         // Validation functions
-        function updateNumberLineValidation(levelNum, puzzleNum) {
+        function toggleNegativeFields(levelNum, puzzleNum) {
+            const allowNegativeCheckbox = document.getElementById(`allowNegative-${levelNum}-${puzzleNum}`);
+            const leftLabel = document.getElementById(`leftLabel-${levelNum}-${puzzleNum}`);
+            const leftInput = document.getElementById(`leftInput-${levelNum}-${puzzleNum}`);
             const lengthInput = document.getElementById(`length-${levelNum}-${puzzleNum}`);
-            let length = parseInt(lengthInput.value) || 12;
+            const minResultInput = document.getElementById(`minResult-${levelNum}-${puzzleNum}`);
+            const maxResultInput = document.getElementById(`maxResult-${levelNum}-${puzzleNum}`);
+            const negativeExplanation = document.getElementById(`negativeExplanation-${levelNum}-${puzzleNum}`);
             
-            // Enforce length constraints (5-20)
-            if (length < 5) {
-                length = 5;
-                lengthInput.value = 5;
-            } else if (length > 20) {
-                length = 20;
-                lengthInput.value = 20;
+            if (allowNegativeCheckbox.checked) {
+                // Switch to Min Result mode
+                leftLabel.textContent = 'Min Result:';
+                leftInput.value = minResultInput.value || -12;
+                leftInput.min = '-12';
+                leftInput.max = '0';
+                leftInput.removeAttribute('oninput');
+                
+                // Show explanation
+                negativeExplanation.style.display = 'block';
+                
+                // Constrain max result to 12 when negative enabled
+                maxResultInput.max = '12';
+                if (parseInt(maxResultInput.value) > 12) {
+                    maxResultInput.value = '12';
+                }
+            } else {
+                // Switch to Length mode
+                leftLabel.textContent = 'Length of Number Line:';
+                leftInput.value = lengthInput.value || 12;
+                leftInput.min = '5';
+                leftInput.max = '20';
+                leftInput.setAttribute('oninput', "if(this.value > 20) this.value = 20; if(this.value < 5 && this.value !== '') this.value = 5;");
+                
+                // Hide explanation
+                negativeExplanation.style.display = 'none';
+                
+                // Reset max result constraint to length
+                const length = parseInt(leftInput.value) || 12;
+                maxResultInput.max = length.toString();
             }
+        }
+        
+        function updateNumberLineValidation(levelNum, puzzleNum) {
+            const allowNegativeCheckbox = document.getElementById(`allowNegative-${levelNum}-${puzzleNum}`);
+            const leftInput = document.getElementById(`leftInput-${levelNum}-${puzzleNum}`);
+            const lengthInput = document.getElementById(`length-${levelNum}-${puzzleNum}`);
+            const minResultInput = document.getElementById(`minResult-${levelNum}-${puzzleNum}`);
+            const maxResultInput = document.getElementById(`maxResult-${levelNum}-${puzzleNum}`);
             
-            // Update max values for all A, B, C, and Result inputs
-            const inputs = ['minA', 'maxA', 'minB', 'maxB', 'maxResult', 'minC', 'maxC'];
-            inputs.forEach(inputId => {
-                const input = document.getElementById(`${inputId}-${levelNum}-${puzzleNum}`);
-                if (input) {
-                    input.max = length;
-                    // Adjust value if it exceeds new max
-                    let value = parseInt(input.value) || 0;
-                    if (value > length) {
-                        input.value = length;
-                    }
-                    // Ensure minimum values
-                    if (value < 0) {
-                        input.value = 0;
+            if (allowNegativeCheckbox.checked) {
+                // Update hidden minResult field with leftInput value
+                minResultInput.value = leftInput.value;
+                
+                // Validate negative number constraints
+                let minResult = parseInt(leftInput.value) || -12;
+                let maxResult = parseInt(maxResultInput.value) || 12;
+                
+                // Ensure minResult ≤ 0
+                if (minResult > 0) {
+                    minResult = 0;
+                    leftInput.value = 0;
+                    minResultInput.value = 0;
+                }
+                
+                // Ensure minResult ≥ -12
+                if (minResult < -12) {
+                    minResult = -12;
+                    leftInput.value = -12;
+                    minResultInput.value = -12;
+                }
+                
+                // Ensure maxResult ≥ 1 (so 0 is always visible) and ≤ 12
+                if (maxResult < 1) {
+                    maxResult = 1;
+                    maxResultInput.value = 1;
+                } else if (maxResult > 12) {
+                    maxResult = 12;
+                    maxResultInput.value = 12;
+                }
+                
+                // Ensure total length ≤ 21
+                const totalLength = (-1 * minResult) + maxResult;
+                if (totalLength > 21) {
+                    // Adjust maxResult to fit constraint, but keep it >= 1
+                    const newMaxResult = Math.max(1, 21 + minResult);
+                    maxResultInput.value = newMaxResult;
+                }
+                
+                // Update A constraints to allow negative values, but keep B and C positive
+                const minAInput = document.getElementById(`minA-${levelNum}-${puzzleNum}`);
+                const maxAInput = document.getElementById(`maxA-${levelNum}-${puzzleNum}`);
+                const minBInput = document.getElementById(`minB-${levelNum}-${puzzleNum}`);
+                const maxBInput = document.getElementById(`maxB-${levelNum}-${puzzleNum}`);
+                const minCInput = document.getElementById(`minC-${levelNum}-${puzzleNum}`);
+                const maxCInput = document.getElementById(`maxC-${levelNum}-${puzzleNum}`);
+                
+                // A can be negative
+                if (minAInput) {
+                    minAInput.min = minResult.toString();
+                    // Ensure A value isn't below minResult
+                    if (parseInt(minAInput.value) < minResult) {
+                        minAInput.value = minResult;
                     }
                 }
-            });
-            
-            // Special case for maxResult - minimum is 5
-            const maxResultInput = document.getElementById(`maxResult-${levelNum}-${puzzleNum}`);
-            if (maxResultInput) {
-                let value = parseInt(maxResultInput.value) || 5;
-                if (value < 5) {
-                    maxResultInput.value = 5;
-                } else if (value > length) {
-                    maxResultInput.value = length;
+                if (maxAInput) {
+                    maxAInput.min = minResult.toString();
+                    if (parseInt(maxAInput.value) < minResult) {
+                        maxAInput.value = Math.max(minResult, 1);
+                    }
+                }
+                
+                // B and C must stay positive (>= 1)
+                if (minBInput) {
+                    minBInput.min = '1';
+                    if (parseInt(minBInput.value) < 1) {
+                        minBInput.value = '1';
+                    }
+                }
+                if (maxBInput) {
+                    maxBInput.min = '1';
+                    if (parseInt(maxBInput.value) < 1) {
+                        maxBInput.value = '1';
+                    }
+                }
+                if (minCInput) {
+                    minCInput.min = '1';
+                    if (parseInt(minCInput.value) < 1) {
+                        minCInput.value = '1';
+                    }
+                }
+                if (maxCInput) {
+                    maxCInput.min = '1';
+                    if (parseInt(maxCInput.value) < 1) {
+                        maxCInput.value = '1';
+                    }
+                }
+                
+            } else {
+                // Update hidden length field with leftInput value
+                lengthInput.value = leftInput.value;
+                
+                // Standard positive-only validation
+                let length = parseInt(leftInput.value) || 12;
+                
+                // Enforce length constraints (5-20)
+                if (length < 5) {
+                    length = 5;
+                    leftInput.value = 5;
+                    lengthInput.value = 5;
+                } else if (length > 20) {
+                    length = 20;
+                    leftInput.value = 20;
+                    lengthInput.value = 20;
+                }
+                
+                // Update max values for all A, B, C, and Result inputs
+                const inputs = ['minA', 'maxA', 'minB', 'maxB', 'minC', 'maxC'];
+                inputs.forEach(inputId => {
+                    const input = document.getElementById(`${inputId}-${levelNum}-${puzzleNum}`);
+                    if (input) {
+                        input.max = length;
+                        input.min = '0';
+                        
+                        // Adjust value if it exceeds new max
+                        let value = parseInt(input.value) || 0;
+                        if (value > length) {
+                            input.value = length;
+                        }
+                        // Ensure minimum values
+                        if (value < 0) {
+                            input.value = 0;
+                        }
+                    }
+                });
+                
+                // Special case for maxResult - minimum is 1 (so 0 is always visible)
+                if (maxResultInput) {
+                    let value = parseInt(maxResultInput.value) || 5;
+                    if (value < 1) {
+                        maxResultInput.value = 1;
+                    } else if (value > length) {
+                        maxResultInput.value = length;
+                    }
                 }
             }
         }
@@ -1737,12 +1904,15 @@
                     const nlOperations = Array.from(document.querySelectorAll(`#config-${levelNum}-${puzzleNum} input[type="checkbox"]:checked`))
                         .map(cb => cb.value).filter(v => ['addition', 'subtraction'].includes(v));
                     const terms = document.querySelector(`#config-${levelNum}-${puzzleNum} input[name="terms-${levelNum}-${puzzleNum}"]:checked`)?.value || '2';
+                    const allowNegativePreview = document.getElementById(`allowNegative-${levelNum}-${puzzleNum}`)?.checked || false;
                     
                     puzzleConfig.operations = nlOperations.length > 0 ? nlOperations : ['addition'];
                     puzzleConfig.numberLine = {
                         operations: nlOperations.length > 0 ? nlOperations : ['addition'],
                         terms: terms,
+                        allowNegative: allowNegativePreview,
                         length: parseInt(document.getElementById(`length-${levelNum}-${puzzleNum}`)?.value) || 12,
+                        minResult: allowNegativePreview ? (parseInt(document.getElementById(`minResult-${levelNum}-${puzzleNum}`)?.value) || -12) : undefined,
                         minA: parseInt(document.getElementById(`minA-${levelNum}-${puzzleNum}`)?.value) || 1,
                         maxA: parseInt(document.getElementById(`maxA-${levelNum}-${puzzleNum}`)?.value) || 8,
                         minB: parseInt(document.getElementById(`minB-${levelNum}-${puzzleNum}`)?.value) || 1,

@@ -5,9 +5,9 @@ class NumberLinePuzzle {
     constructor(door) {
         this.door = door;
         
-        // Get puzzle configuration for this level
+        // Get puzzle configuration for this level and specific obstacle
         const level = game.selectedDifficulty;
-        const config = configManager.getPuzzleConfig(level, 'number_line');
+        const config = configManager.getSpecificPuzzleConfig(level, 'number_line', door.obstacleCode);
         
         // Get operations and terms from new configuration structure
         this.operations = config.numberLine?.operations || config.operations || ['addition'];
@@ -77,14 +77,21 @@ class NumberLinePuzzle {
      */
     createNumberLinePuzzle() {
         const level = game.selectedDifficulty;
-        const config = configManager.getPuzzleConfig(level, 'number_line');
+        const config = configManager.getSpecificPuzzleConfig(level, 'number_line', this.door.obstacleCode);
         const numberLineConfig = config.numberLine || {};
         
-        const minA = numberLineConfig.minA || 1;
-        const maxA = numberLineConfig.maxA || 8;
-        const minB = numberLineConfig.minB || 1;
-        const maxB = numberLineConfig.maxB || 8;
+        // Check if negative numbers are enabled
+        const allowNegative = numberLineConfig.allowNegative || false;
+        const minResult = allowNegative ? (numberLineConfig.minResult || -12) : 0;
         const maxResult = numberLineConfig.maxResult || 12;
+        
+        // A can be negative when allowNegative is true, B and C stay positive
+        const minA = allowNegative ? Math.max(numberLineConfig.minA ?? 1, minResult) : (numberLineConfig.minA ?? 1);
+        const maxA = numberLineConfig.maxA ?? 8;
+        const minB = Math.max(numberLineConfig.minB ?? 1, 1);  // Force positive - always >= 1
+        const maxB = Math.max(numberLineConfig.maxB ?? 8, 1);  // Force positive - always >= 1
+        const minC = Math.max(numberLineConfig.minC ?? 1, 1);  // Force positive - always >= 1
+        const maxC = Math.max(numberLineConfig.maxC ?? 4, 1);  // Force positive - always >= 1
 
         let equation, answer, title, num1, num2, num3;
         
@@ -117,14 +124,28 @@ class NumberLinePuzzle {
                     title = `${num1} + ${num2} = ?`;
                 }
             } else {
-                // A - B
+                // A - B (can result in negative answers when allowNegative is true)
                 num1 = Math.floor(Math.random() * (maxA - minA + 1)) + minA;
-                const maxNum2 = Math.min(maxB, num1);
+                // When negative allowed, don't constrain num2 to prevent negative results
+                const maxNum2 = allowNegative ? maxB : Math.min(maxB, num1);
                 if (maxNum2 >= minB) {
                     num2 = Math.floor(Math.random() * (maxNum2 - minB + 1)) + minB;
                     answer = num1 - num2;
-                    equation = `${num1} - ${num2}`;
-                    title = `${num1} - ${num2} = ?`;
+                    // Validate result is within allowed range
+                    if (answer >= minResult && answer <= maxResult) {
+                        equation = `${num1} - ${num2}`;
+                        title = `${num1} - ${num2} = ?`;
+                    } else {
+                        // Adjust to fit constraints
+                        if (answer < minResult) {
+                            num2 = num1 - minResult;
+                        } else if (answer > maxResult) {
+                            num2 = num1 - maxResult;
+                        }
+                        answer = num1 - num2;
+                        equation = `${num1} - ${num2}`;
+                        title = `${num1} - ${num2} = ?`;
+                    }
                 } else {
                     // Fallback if constraints too tight
                     num1 = Math.max(minA, minB);
@@ -136,8 +157,7 @@ class NumberLinePuzzle {
             }
         } else if (this.terms === '3') {
             // 3 terms: Generate patterns based on selected operations
-            const minC = numberLineConfig.minC || 1;
-            const maxC = numberLineConfig.maxC || 4;
+            // minC and maxC already defined above with positive constraints
             
             const patterns = [];
             
@@ -191,11 +211,17 @@ class NumberLinePuzzle {
                     intermediate2 = intermediate1 - num3;
                 }
                 
-                // All intermediate and final results must be >= 0 and <= maxResult
+                // Validate that B and C are positive (safety check)
+                if (num2 <= 0 || num3 <= 0) {
+                    tries++;
+                    continue;
+                }
+                
+                // All intermediate and final results must be within allowed range
                 if (
-                    num1 >= 0 && num1 <= maxResult &&
-                    intermediate1 >= 0 && intermediate1 <= maxResult &&
-                    intermediate2 >= 0 && intermediate2 <= maxResult
+                    num1 >= minResult && num1 <= maxResult &&
+                    intermediate1 >= minResult && intermediate1 <= maxResult &&
+                    intermediate2 >= minResult && intermediate2 <= maxResult
                 ) {
                     valid = true;
                     answer = intermediate2;
@@ -230,8 +256,8 @@ class NumberLinePuzzle {
             
             const wrong = answer + offset;
             
-            // Ensure answer is valid (0 to maxResult range) and unique
-            if (wrong >= 0 && wrong <= maxResult && 
+            // Ensure answer is valid (minResult to maxResult range) and unique
+            if (wrong >= minResult && wrong <= maxResult && 
                 wrong !== answer && !wrongAnswers.includes(wrong)) {
                 wrongAnswers.push(wrong);
             }
@@ -241,7 +267,7 @@ class NumberLinePuzzle {
         
         // Fallback: if we can't generate enough close answers, use broader range
         while (wrongAnswers.length < 2) {
-            const wrong = Math.floor(Math.random() * (maxResult + 1)); // 0 to maxResult
+            const wrong = Math.floor(Math.random() * (maxResult - minResult + 1)) + minResult; // minResult to maxResult
             if (wrong !== answer && !wrongAnswers.includes(wrong)) {
                 wrongAnswers.push(wrong);
             }
@@ -273,8 +299,19 @@ class NumberLinePuzzle {
         const level = game.selectedDifficulty;
         
         // Get number line configuration
-        const config = configManager.getPuzzleConfig(level, 'number_line');
-        const numberLineLength = config.numberLine?.length || 12;
+        const config = configManager.getSpecificPuzzleConfig(level, 'number_line', this.door.obstacleCode);
+        const numberLineConfig = config.numberLine || {};
+        const allowNegative = numberLineConfig.allowNegative || false;
+        
+        // Determine grid range
+        let minPosition, maxPosition;
+        if (allowNegative) {
+            minPosition = numberLineConfig.minResult || -12;
+            maxPosition = numberLineConfig.maxResult || 12;
+        } else {
+            minPosition = 0;
+            maxPosition = numberLineConfig.length || 12;
+        }
         
         // Clear any existing keyboard handlers
         if (game.currentKeyHandler) {
@@ -282,15 +319,17 @@ class NumberLinePuzzle {
             game.currentKeyHandler = null;
         }
         
-        // Create the number grid (0 to numberLineLength)
+        // Create the number grid (minPosition to maxPosition)
         const numberGrid = document.getElementById('numberGrid');
         const gridLabels = document.getElementById('gridLabels');
         
-        // Store PT canvases for each cell
+        // Store PT canvases for each position
         this.door.ptCanvases = {};
+        this.door.minPosition = minPosition;
+        this.door.maxPosition = maxPosition;
         
         // Create grid cells and labels
-        for (let i = 0; i <= numberLineLength; i++) {
+        for (let position = minPosition; position <= maxPosition; position++) {
             // Create grid cell
             const cell = document.createElement('div');
             cell.style.cssText = `
@@ -305,12 +344,12 @@ class NumberLinePuzzle {
                 background: white;
             `;
 
-            // Special styling for cell 0 in levels 0+ or test mode
-            if (i === 0 && (level >= 0 || game.testMode)) {
+            // Special styling for position 0 (always black)
+            if (position === 0) {
                 cell.style.background = 'black';
             }
             
-            // Create PT canvas for this cell
+            // Create PT canvas for this position
             const canvas = document.createElement('canvas');
             canvas.width = 40;
             canvas.height = 40;
@@ -322,30 +361,33 @@ class NumberLinePuzzle {
             `;
             
             cell.appendChild(canvas);
-            this.door.ptCanvases[i] = canvas;
+            this.door.ptCanvases[position] = canvas;
             
             // Add click handler
-            cell.onclick = () => this.movePTToPosition(i);
+            cell.onclick = () => this.movePTToPosition(position);
             
             numberGrid.appendChild(cell);
             
             // Create label
             const label = document.createElement('div');
-            label.textContent = i;
+            label.textContent = position.toString();
             label.style.cssText = `
                 cursor: pointer;
                 padding: 2px;
                 border-radius: 3px;
+                font-size: 12px;
+                text-align: center;
+                font-weight: bold;
             `;
 
-            // Special styling for label 0 in levels 0+ or test mode
-            if (i === 0 && (level >= 0 || game.testMode)) {
+            // Special styling for label 0 (always black background, white text)
+            if (position === 0) {
                 label.style.background = 'black';
                 label.style.color = 'white';
             }
             
             // Add click handler to label
-            label.onclick = () => this.movePTToPosition(i);
+            label.onclick = () => this.movePTToPosition(position);
             
             gridLabels.appendChild(label);
         }
@@ -356,6 +398,7 @@ class NumberLinePuzzle {
         game.currentKeyHandler = keyHandler;
         
         // Position PT at starting position (always 0)
+        this.door.mathStartPosition = 0;  // Always start at 0
         this.movePTToPosition(0);
     }
 
@@ -364,14 +407,10 @@ class NumberLinePuzzle {
      * Uses configurable number line length
      */
     movePTToPosition(position) {
-        const level = game.selectedDifficulty;
-        
-        // Get number line configuration
-        const config = configManager.getPuzzleConfig(level, 'number_line');
-        const numberLineLength = config.numberLine?.length || 12;
-        
-        // Validate position
-        if (position < 0 || position > numberLineLength) return;
+        // Validate position against stored min/max
+        const minPosition = this.door.minPosition;
+        const maxPosition = this.door.maxPosition;
+        if (position < minPosition || position > maxPosition) return;
         
         // Update door position
         this.door.foxPosition = position;
@@ -385,41 +424,37 @@ class NumberLinePuzzle {
         // Reset all grid cell colors
         const cells = document.querySelectorAll('#numberGrid > div');
         cells.forEach((cell, index) => {
-            if (index === 0 && (level >= 0 || game.testMode)) {
-                cell.style.background = 'black'; // Preserve special cell 0 color
+            const cellPosition = minPosition + index;
+            if (cellPosition === 0) {
+                cell.style.background = 'black'; // Position 0 is always black
             } else {
                 cell.style.background = 'white';
             }
         });
         
-        // Apply color coding based on movement
-        const startPos = this.door.mathStartPosition;
+        // Apply color coding based on position relative to 0
         const currentPos = position;
         
         cells.forEach((cell, index) => {
-            if (index === startPos && index !== 0) {
-                // Start position (green) - unless it's cell 0 which stays black
-                cell.style.background = '#32CD32';
-            } else if (index === currentPos) {
-                if (index === 0 && (level >= 0 || game.testMode)) {
-                    // Keep cell 0 black but draw PT on it
-                } else if (currentPos < startPos) {
-                    // Current position left of start (blue)
+            const cellPosition = minPosition + index;
+            
+            if (cellPosition === currentPos) {
+                if (cellPosition === 0) {
+                    // Keep position 0 black but draw PT on it
+                } else if (currentPos < 0) {
+                    // Current position left of 0 (blue)
                     cell.style.background = '#4169E1';
-                } else if (currentPos > startPos) {
-                    // Current position right of start (orange)
+                } else if (currentPos > 0) {
+                    // Current position right of 0 (orange)
                     cell.style.background = '#FF8C00';
-                } else {
-                    // Current position = start position (green)
-                    cell.style.background = '#32CD32';
                 }
-            } else if ((index > startPos && index < currentPos) || (index < startPos && index > currentPos)) {
-                // Trail cells between start and current
-                if (currentPos > startPos) {
-                    // Moving right (orange trail)
+            } else if ((cellPosition > 0 && cellPosition < currentPos) || (cellPosition < 0 && cellPosition > currentPos)) {
+                // Trail cells between 0 and current position
+                if (currentPos > 0) {
+                    // Moving right from 0 (orange trail)
                     cell.style.background = '#FF8C00';
                 } else {
-                    // Moving left (blue trail)
+                    // Moving left from 0 (blue trail)
                     cell.style.background = '#4169E1';
                 }
             }
@@ -458,19 +493,17 @@ class NumberLinePuzzle {
         if (modal.style.display !== 'block') return;
         
         const currentPos = this.door.foxPosition;
-        
-        // Get number line configuration
-        const config = configManager.getPuzzleConfig(level, 'number_line');
-        const numberLineLength = config.numberLine?.length || 12;
+        const minPosition = this.door.minPosition;
+        const maxPosition = this.door.maxPosition;
         
         switch (e.key) {
             case 'ArrowLeft':
-                if (currentPos > 0) {
+                if (currentPos > minPosition) {
                     this.movePTToPosition(currentPos - 1);
                 }
                 break;
             case 'ArrowRight':
-                if (currentPos < numberLineLength) {
+                if (currentPos < maxPosition) {
                     this.movePTToPosition(currentPos + 1);
                 }
                 break;
@@ -583,10 +616,22 @@ class NumberLinePuzzle {
         question.innerHTML = '';
         
         // Get number line configuration
-        const config = configManager.getPuzzleConfig(game.selectedDifficulty, 'number_line');
-        const numberLineLength = config.numberLine?.length || 12;
-        const gridColumns = numberLineLength + 1; // 0 to numberLineLength
-        const containerWidth = (gridColumns + 3) * 40; // 40px per cell + 2px gap
+        const config = configManager.getSpecificPuzzleConfig(game.selectedDifficulty, 'number_line', this.door.obstacleCode);
+        const numberLineConfig = config.numberLine || {};
+        const allowNegative = numberLineConfig.allowNegative || false;
+        
+        // Calculate grid dimensions
+        let minPosition, maxPosition;
+        if (allowNegative) {
+            minPosition = numberLineConfig.minResult || -12;
+            maxPosition = numberLineConfig.maxResult || 12;
+        } else {
+            minPosition = 0;
+            maxPosition = numberLineConfig.length || 12;
+        }
+        
+        const gridColumns = maxPosition - minPosition + 1;
+        const containerWidth = (gridColumns + 3) * 40; // 40px per cell + buffer
         // Create interface with number line and multiple choice
         options.innerHTML = `
             <div class="numberline-container" style="margin: 20px auto; max-width: ${containerWidth}px;">
